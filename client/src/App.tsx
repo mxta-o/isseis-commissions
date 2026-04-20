@@ -1,13 +1,20 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { checkCommissionStatus } from './lib/api'
 
-function App() {
-  const [trackingId, setTrackingId] = useState('')
-  const [statusData, setStatusData] = useState(null)
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+type StatusData = {
+  trackingId?: string
+  status?: string
+  updatedAt?: string
+  rejectionReason?: string | null
+}
 
-  async function handleStatusLookup(event) {
+export default function App(): React.ReactElement {
+  const [trackingId, setTrackingId] = useState<string>('')
+  const [statusData, setStatusData] = useState<StatusData | null>(null)
+  const [error, setError] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  async function handleStatusLookup(event: React.FormEvent) {
     event.preventDefault()
     setError('')
     setStatusData(null)
@@ -22,8 +29,8 @@ function App() {
     try {
       const data = await checkCommissionStatus(trackingId.trim())
       setStatusData(data)
-    } catch (lookupError) {
-      setError(lookupError.message)
+    } catch (lookupError: any) {
+      setError(lookupError?.message ?? String(lookupError))
     } finally {
       setIsLoading(false)
     }
@@ -95,8 +102,7 @@ function App() {
                 ) : null}
                 {statusData.rejectionReason ? (
                   <p>
-                    <span className="text-stone-400">Reason:</span> {statusData.rejectionReason}
-                  </p>
+                    <span className="text-stone-400">Reason:</span> {statusData.rejectionReason}</p>
                 ) : null}
               </div>
             ) : null}
@@ -110,5 +116,3 @@ function App() {
     </div>
   )
 }
-
-export default App
