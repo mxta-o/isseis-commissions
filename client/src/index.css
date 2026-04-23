@@ -1,13 +1,297 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200;300;400;600&display=swap');
+/* Local licensed font: Rodin Pro placed in public/fonts */
+@font-face {
+  font-family: 'Rodin Pro';
+  src: url('/fonts/FOT-Rodin%20Pro%20L.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Rodin Pro';
+  src: url('/fonts/FOT-Rodin%20Pro%20M.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Rodin Pro';
+  src: url('/fonts/FOT-Rodin%20Pro%20DB.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 @import 'tailwindcss';
 
 :root {
-  font-family: 'Space Grotesk', 'Avenir Next', 'Segoe UI', sans-serif;
+  font-family: 'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Courier New', monospace;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: 10;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* NieR-inspired color palette and helpers */
+:root {
+  --crt-bg-1: #181510;
+  --crt-bg-2: #14110C;
+  --crt-text: #FCF1EC;
+  --crt-muted: #9AA6A5;
+  --crt-glow: rgba(0, 255, 214, 0.12);
+  --crt-red: rgba(255, 90, 90, 0.18);
+  --crt-vignette: rgba(0, 0, 0, 0.9);
+  --boot-header-main-size: 36px;
+  --boot-header-sub-size: 16px;
+  --boot-header-line-height: 1.05;
+  --boot-header-letter-spacing: 0.12em;
+  --boot-header-gap: 2rem;
+  --boot-header-scale: 1.15;
+  /* grid tuning */
+  --grid-struct-size: 24px; /* size of the large structural cell */
+  --grid-struct-alpha: 0.18; /* structural line darkness (0-1) */
+  --grid-dot-size: 4px; /* 4x4 small squares inside a 20px cell */
+  --grid-dot-alpha: 0.1; /* inner small-square alpha */
+  --grid-opacity: 0.2;
+}
+
+.crt-root {
+  position: relative;
+  background-image: linear-gradient(160deg, var(--crt-bg-1), var(--crt-bg-2));
+  color: var(--crt-text);
+  filter: contrast(0.95) saturate(0.9);
+}
+
+/* Subtle grid underlay that sits beneath all content */
+.crt-root::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* structural dark lines + inner tiled 4x4 squares */
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,var(--grid-dot-alpha)) 50%, transparent 0),
+    linear-gradient(0deg, rgba(255,255,255,var(--grid-dot-alpha)) 50%, transparent 0),
+    repeating-linear-gradient(0deg, rgba(0,0,0,var(--grid-struct-alpha)) 0 1px, transparent 1px var(--grid-struct-size)),
+    repeating-linear-gradient(90deg, rgba(0,0,0,var(--grid-struct-alpha)) 0 1px, transparent 1px var(--grid-struct-size));
+  background-size:
+    var(--grid-dot-size) var(--grid-dot-size),
+    var(--grid-dot-size) var(--grid-dot-size),
+    var(--grid-struct-size) var(--grid-struct-size),
+    var(--grid-struct-size) var(--grid-struct-size);
+  opacity: var(--grid-opacity);
+  mix-blend-mode: normal;
+}
+
+.crt-title {
+  color: var(--crt-text);
+}
+
+.crt-muted {
+  color: var(--crt-muted);
+}
+
+.boot-log-line {
+  color: var(--crt-text);
+  text-shadow:
+    0 0 6px var(--crt-glow),
+    1px 0 rgba(0, 220, 255, 0.2),
+    -1px 0 var(--crt-red);
+}
+
+/* Text-only chromatic glitch (TikTok-like) */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  pointer-events: none;
+  white-space: pre;
+}
+.glitch::before {
+  color: rgba(101,197,198);
+  transform: translateX(-1.5px);
+  mix-blend-mode: screen;
+  filter: blur(0.2px);
+}
+.glitch::after {
+  color: rgb(255, 14, 14);
+  transform: translateX(2px);
+  mix-blend-mode: screen;
+  filter: blur(0.9px);
+}
+@keyframes glitch-jitter {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  50% { transform: translateX(1px); }
+  75% { transform: translateX(-0.6px); }
+  100% { transform: translateX(0); }
+}
+.glitch.jitter::before,
+.glitch.jitter::after { animation: glitch-jitter 1.2s infinite linear; }
+
+.crt-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Content container to sit above the CRT overlay */
+.crt-content {
+  position: relative;
+  z-index: 20;
+}
+
+/* Loading orb (top-right) */
+.loading-orb {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  position: absolute;
+  top: 2.5rem;
+  right: 2.5rem;
+  z-index: 30;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(63, 48, 47);
+  outline: 1px solid rgba(161, 158, 141);
+  pointer-events: none;
+  box-shadow:
+    0 0 8px rgba(0, 255, 214, 0.2),
+    0 0 18px rgba(230, 212, 224, 0.12);
+}
+.loading-orb::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: conic-gradient(
+    rgb(203, 204, 193) 0deg 260deg,
+    rgba(54, 52, 46, 0.9) 260deg 360deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 56%, #000 58%);
+  mask: radial-gradient(circle, transparent 56%, #000 58%);
+  animation: orb-spin 1.6s linear infinite;
+}
+.loading-orb::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 999px;
+  border: 1.7px solid rgba(55, 49, 34, 0.7);
+  box-shadow: inset 0 0 6px rgba(255,255,255,0.2);
+}
+
+@keyframes orb-spin {
+  to { transform: rotate(360deg); }
+}
+
+.crt-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* layered overlay: subtle dark bands, fine dot/grid, and light micro texture */
+  background-image:
+    /* green scanlines (subtle) */
+    repeating-linear-gradient(0deg, rgba(0,220,160,0.06) 0px, rgba(0,220,160,0.06) 1px, transparent 1px, transparent 5px),
+    /* red scanlines (offset for chromatic feel) */
+    repeating-linear-gradient(0deg, rgba(255,90,90,0.05) 0px, rgba(255,90,90,0.05) 1px, transparent 1px, transparent 5px),
+    /* fine dot grid */
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.02) 1px, transparent 2px),
+    /* minor vertical/horizontal noise bands */
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.18) 0px,
+      rgba(0, 0, 0, 0.18) 1px,
+      transparent 1px,
+      transparent 6px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 6px
+    );
+  background-size: 100% 4px, 100% 4px, 12px 200px, 100% 4px, 100% 6px;
+  /* offset the red channel slightly for chromatic separation */
+  background-position: 0 0, 1px 0, 0 0, 0 0, 0 0;
+  opacity: 0.36;
+  mix-blend-mode: overlay;
+}
+
+.crt-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(closest-side at 50% 50%, rgba(0, 0, 0, 0) 60%, var(--crt-vignette) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.25'/%3E%3C/svg%3E");
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  animation: crt-noise 0.8s steps(2, end) infinite;
+}
+
+.crt-flicker {
+  animation: crt-flicker 0.5s infinite;
+}
+
+.crt-soft {
+  filter: blur(0.2px) contrast(0.96) saturate(0.9);
+}
+
+.boot-header {
+  display: inline-flex;
+  align-items: baseline;
+  gap: calc(var(--boot-header-gap) + (var(--boot-header-scale) - 1) * 0.8rem);
+  letter-spacing: var(--boot-header-letter-spacing);
+  line-height: var(--boot-header-line-height);
+  text-shadow:
+    0 0 8px var(--crt-glow),
+    1px 0 rgba(0, 220, 255, 0.22),
+    -1px 0 var(--crt-red);
+}
+
+.boot-header-main {
+  font-size: var(--boot-header-main-size);
+  font-weight: 200;
+  color: var(--crt-text);
+  display: inline-block;
+  transform-origin: left center;
+  transform: scaleX(var(--boot-header-scale));
+  font-family: 'Rodin Pro';
+}
+
+.boot-header-sub {
+  font-size: var(--boot-header-sub-size);
+  font-weight: 400;
+  color: var(--crt-text);
+  font-family: 'Rodin Pro';
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 0.96; }
+  10% { opacity: 0.9; }
+  11% { opacity: 1; }
+  20% { opacity: 0.98; }
+  21% { opacity: 0.92; }
+  22% { opacity: 1; }
+  100% { opacity: 0.96; }
+}
+
+@keyframes crt-noise {
+  0% { background-position: 0 0, 0 0; }
+  50% { background-position: 10px -20px, 0 0; }
+  100% { background-position: -10px 20px, 0 0; }
 }
 
 * {
@@ -16,4 +300,6 @@
 
 body {
   margin: 0;
+  background: var(--crt-bg-1);
+  color: var(--crt-text);
 }

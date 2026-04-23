@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 // Loading component removed; BootLog now handles loading
 import BootLog from '../components/BootLog'
+import CrtOverlay from '../components/CrtOverlay'
 
 type Props = {
   onContinue: () => void
@@ -24,45 +25,59 @@ const BOOT_LINES = [
   'Equipment Status: Green',
   'All Systems Green',
   'Combat Preparations Complete',
-  'Press any button to continue...',
+  'Click anywhere to continue',
 ]
 
 export default function Landing({ onContinue }: Props): React.ReactElement {
   const [loaded, setLoaded] = useState<boolean>(false)
+  const [dots, setDots] = useState<string>('')
 
   useEffect(() => {
     if (!loaded) return
 
-    const forward = () => {
-      onContinue()
-    }
+    const forward = () => onContinue()
 
     const opts: AddEventListenerOptions = { once: true }
-    window.addEventListener('keydown', forward, opts)
     window.addEventListener('pointerdown', forward, opts)
 
     return () => {
-      window.removeEventListener('keydown', forward)
       window.removeEventListener('pointerdown', forward)
     }
   }, [loaded, onContinue])
 
-  return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-black text-white overflow-hidden">
-      <div className="absolute top-6 left-6 text-sm font-mono tracking-widest text-green-300/90 select-none">
-        <span className="uppercase">LOADING — BOOTING SYSTEM...</span>
-        <span className="ml-2 inline-block animate-pulse">_</span>
-      </div>
+  useEffect(() => {
+    const frames = ['', '.', '..', '...']
+    let idx = 0
+    const id = window.setInterval(() => {
+      idx = (idx + 1) % frames.length
+      setDots(frames[idx])
+    }, 350)
 
-      <div className="absolute top-20 left-6 w-[34rem] max-w-[46vw]">
-        <BootLog
-          lines={BOOT_LINES}
-          typingSpeed={30}
-          lineDelay={150}
-          onComplete={() => {
-            setLoaded(true)
-          }}
-        />
+    return () => window.clearInterval(id)
+  }, [])
+
+  return (
+    <div className="relative min-h-screen flex flex-col items-start justify-start overflow-hidden crt-root crt-soft crt-flicker">
+      <CrtOverlay />
+
+      <div className="crt-content w-full">
+        <div className="absolute top-10 right-10 loading-orb" aria-hidden />
+
+        <div className="absolute top-15 left-15 text-sm font-mono select-none boot-log-line boot-header">
+          <span className="boot-header-main"><span className="glitch" data-text="LOADING">LOADING</span></span>
+          <span className="boot-header-sub uppercase"><span className="glitch" data-text={`— BOOTING SYSTEM${dots}`}>— BOOTING SYSTEM<span className="ml-1">{dots}</span></span></span>
+        </div>
+
+        <div className="absolute top-33 left-18 w-[34rem] max-w-[46vw]">
+          <BootLog
+            lines={BOOT_LINES}
+            typingSpeed={24}
+            lineDelay={110}
+            onComplete={() => {
+              setLoaded(true)
+            }}
+          />
+        </div>
       </div>
     </div>
   )

@@ -79,8 +79,12 @@ export default function BootLog({
   return (
     <div className={className} aria-hidden>
       {displayed.map((text, idx) => (
-        <div key={idx} className="font-mono text-sm text-green-300/90 leading-6 whitespace-pre">
-          {text}
+        <div
+          key={idx}
+          className="font-mono text-sm leading-6 whitespace-pre boot-log-line"
+          data-text={text}
+        >
+          <span className="glitch" data-text={text}>{text}</span>
           {idx === currentLine ? <span className="inline-block ml-1 w-2 animate-pulse">▮</span> : null}
         </div>
       ))}
