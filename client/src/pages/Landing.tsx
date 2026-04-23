@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 // Loading component removed; BootLog now handles loading
 import BootLog from '../components/BootLog'
 import CrtOverlay from '../components/CrtOverlay'
+import isseiLogo from '../assets/isseiLogo.png'
 
 type Props = {
   onContinue: () => void
@@ -62,6 +63,10 @@ export default function Landing({ onContinue }: Props): React.ReactElement {
 
       <div className="crt-content w-full">
         <div className="absolute top-10 right-10 loading-orb" aria-hidden />
+
+        <div className="yorha-watermark" aria-hidden>
+          <img className="yorha-logo" src={isseiLogo} alt="" />
+        </div>
 
         <div className="absolute top-15 left-15 text-sm font-mono select-none boot-log-line boot-header">
           <span className="boot-header-main"><span className="glitch" data-text="LOADING">LOADING</span></span>

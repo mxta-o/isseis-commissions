@@ -152,6 +152,37 @@
   z-index: 20;
 }
 
+/* Center watermark using provided logo */
+.yorha-watermark {
+  /* center by default, then offset by CSS vars for pixel-precise positioning */
+  --yorha-x: 0px; /* horizontal offset from center */
+  --yorha-y: 400px; /* vertical offset from center */
+  --yorha-scale: 1; /* default shrink value (1 = native size) */
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--yorha-x), var(--yorha-y)) scale(var(--yorha-scale));
+  transform-origin: center center;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0.12;
+  mix-blend-mode: screen;
+  transition: transform 120ms linear, opacity 160ms linear;
+  will-change: transform, opacity;
+}
+
+.yorha-watermark img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 90vw; /* responsive cap */
+  max-height: 90vh;
+  image-rendering: optimizeQuality;
+}
+
 /* Loading orb (top-right) */
 .loading-orb {
   width: 36px;
