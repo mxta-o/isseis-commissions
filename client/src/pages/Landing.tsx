@@ -5,7 +5,7 @@ import CrtOverlay from '../components/CrtOverlay'
 import isseiLogo from '../assets/isseiLogo.png'
 
 type Props = {
-  onContinue: () => void
+  onRequestTransition: () => void
 }
 
 const BOOT_LINES = [
@@ -29,14 +29,14 @@ const BOOT_LINES = [
   'Click anywhere to continue',
 ]
 
-export default function Landing({ onContinue }: Props): React.ReactElement {
+export default function Landing({ onRequestTransition }: Props): React.ReactElement {
   const [loaded, setLoaded] = useState<boolean>(false)
   const [dots, setDots] = useState<string>('')
 
   useEffect(() => {
     if (!loaded) return
 
-    const forward = () => onContinue()
+    const forward = () => onRequestTransition()
 
     const opts: AddEventListenerOptions = { once: true }
     window.addEventListener('pointerdown', forward, opts)
@@ -44,7 +44,7 @@ export default function Landing({ onContinue }: Props): React.ReactElement {
     return () => {
       window.removeEventListener('pointerdown', forward)
     }
-  }, [loaded, onContinue])
+  }, [loaded, onRequestTransition])
 
   useEffect(() => {
     const frames = ['', '.', '..', '...']
@@ -76,8 +76,8 @@ export default function Landing({ onContinue }: Props): React.ReactElement {
         <div className="absolute top-33 left-18 w-[34rem] max-w-[46vw]">
           <BootLog
             lines={BOOT_LINES}
-            typingSpeed={24}
-            lineDelay={110}
+            typingSpeed={8}
+            lineDelay={80}
             onComplete={() => {
               setLoaded(true)
             }}
