@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import type { Screen } from '../components/AppFrame'
-import isseiLogo from '../assets/isseiLogo.png'
 
 type Props = { nav: (s: Screen) => void }
 
@@ -36,7 +35,6 @@ export default function MainMenu({ nav }: Props): React.ReactElement {
           {hovered ? hovered.desc : 'Awaiting input. Select a destination.'}
         </div>
         <div style={{ flex: 1 }} />
-        <img src={isseiLogo} alt="" style={{ width: 340, maxWidth: '100%', alignSelf: 'flex-end', mixBlendMode: 'multiply', opacity: 0.35, pointerEvents: 'none' }} />
       </div>
     </div>
   )
