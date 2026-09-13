@@ -31,7 +31,12 @@ const BOOT_LINES = [
 
 export default function Landing({ onRequestTransition }: Props): React.ReactElement {
   const [loaded, setLoaded] = useState<boolean>(false)
+  const [skipBoot, setSkipBoot] = useState<boolean>(false)
   const [dots, setDots] = useState<string>('')
+
+  const handleSkipClick = () => {
+    if (!loaded) setSkipBoot(true)
+  }
 
   useEffect(() => {
     if (!loaded) return
@@ -58,7 +63,10 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
   }, [])
 
   return (
-    <div className="relative min-h-screen flex flex-col items-start justify-start overflow-hidden crt-root crt-soft crt-flicker">
+    <div
+      className="relative min-h-screen flex flex-col items-start justify-start overflow-hidden crt-root crt-soft crt-flicker"
+      onClick={handleSkipClick}
+    >
       <CrtOverlay />
 
       <div className="crt-content w-full">
@@ -78,6 +86,7 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
             lines={BOOT_LINES}
             typingSpeed={8}
             lineDelay={80}
+            skip={skipBoot}
             onComplete={() => {
               setLoaded(true)
             }}

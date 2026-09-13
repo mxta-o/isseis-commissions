@@ -6,6 +6,7 @@ type Props = {
   lineDelay?: number // ms delay after a line completes
   className?: string
   onComplete?: () => void
+  skip?: boolean // instantly complete all lines when true
 }
 
 export default function BootLog({
@@ -14,6 +15,7 @@ export default function BootLog({
   lineDelay = 10,
   className = '',
   onComplete,
+  skip = false,
 }: Props): React.ReactElement {
   const [displayed, setDisplayed] = useState<string[]>(() => lines.map(() => ''))
   const [currentLine, setCurrentLine] = useState<number>(0)
@@ -75,6 +77,19 @@ export default function BootLog({
       completedRef.current = false
     }
   }, [lines, typingSpeed, lineDelay])
+
+  useEffect(() => {
+    if (!skip) return
+    if (timeoutRef.current) window.clearTimeout(timeoutRef.current)
+    lineIndexRef.current = lines.length
+    charIndexRef.current = 0
+    setDisplayed(lines.slice())
+    setCurrentLine(lines.length - 1)
+    if (!completedRef.current) {
+      completedRef.current = true
+      if (onCompleteRef.current) onCompleteRef.current()
+    }
+  }, [skip, lines])
 
   return (
     <div className={className} aria-hidden>
