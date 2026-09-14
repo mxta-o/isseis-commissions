@@ -55,11 +55,10 @@
 @keyframes ray-pulse{0%,100%{opacity:.45}50%{opacity:.85}}
 @keyframes title-pulse{0%,100%{opacity:.65}50%{opacity:1}}
 @keyframes screen-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes cur-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
 @keyframes nier-fade-in{from{opacity:0}to{opacity:1}}
 @keyframes nier-fade-out{from{opacity:1}to{opacity:0}}
 @keyframes toast-in{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
-@keyframes type-reveal{from{max-width:0}to{max-width:64ch}}
+@keyframes type-reveal{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 
 /* ============ title glitch structural classes ============ */
 /* Full-size absolutely positioned glitch layer inside the h1 */
@@ -118,8 +117,10 @@
 
 .nier-grid{position:absolute;inset:0;pointer-events:none;opacity:.55;
   background-image:repeating-linear-gradient(0deg,rgba(77,72,60,0.07) 0 1px,transparent 1px 26px),repeating-linear-gradient(90deg,rgba(77,72,60,0.07) 0 1px,transparent 1px 26px)}
-.nier-scan{position:absolute;inset:0;pointer-events:none;opacity:.4;mix-blend-mode:multiply;
-  background-image:repeating-linear-gradient(0deg,rgba(60,55,45,0.05) 0 1px,transparent 1px 4px)}
+/* Colour is pre-multiplied against --n-bg (#ccc7b1 x rgb(60,55,45) = rgb(48,43,31)) so this
+   matches the old mix-blend-mode:multiply exactly without forcing a full-viewport blend pass. */
+.nier-scan{position:absolute;inset:0;pointer-events:none;opacity:.4;
+  background-image:repeating-linear-gradient(0deg,rgba(48,43,31,0.05) 0 1px,transparent 1px 4px)}
 
 .kicker{margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.24em;color:var(--n-ink-2);white-space:nowrap;overflow:hidden;animation:type-reveal 1.1s steps(44) both}
 .screen-in{animation:screen-in 360ms ease both}

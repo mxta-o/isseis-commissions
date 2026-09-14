@@ -13,11 +13,21 @@ import { SAMPLE_COMMISSIONS, type Commission } from './lib/commissions'
 
 type Stage = 'boot' | 'pretitle' | 'title' | 'app'
 const FADE_MS = 300
+const DEV_STAGE_KEY = 'dev:stage'
+
+// In dev, HMR reloads would otherwise replay the whole boot sequence — by far the most
+// expensive thing the app renders. Resume where we left off instead; ?intro=1 forces a replay.
+function initialStage(): Stage {
+  if (!import.meta.env.DEV) return 'boot'
+  if (new URLSearchParams(window.location.search).has('intro')) return 'boot'
+  const saved = sessionStorage.getItem(DEV_STAGE_KEY)
+  return saved === 'pretitle' || saved === 'title' || saved === 'app' ? saved : 'boot'
+}
 
 // Stage machine: boot → pretitle → title → app, each hop through a black fade.
 // Replaces the Landing/TitleScreen switch previously in main.tsx — render <App /> from main.tsx.
 export default function App(): React.ReactElement {
-  const [stage, setStage] = useState<Stage>('boot')
+  const [stage, setStage] = useState<Stage>(initialStage)
   const [screen, setScreen] = useState<Screen>('menu')
   const [statusPrefill, setStatusPrefill] = useState<string | undefined>()
   const [overlay, setOverlay] = useState<'none' | 'in' | 'out'>('none')
@@ -26,8 +36,18 @@ export default function App(): React.ReactElement {
   const fading = useRef(false)
   const timers = useRef<number[]>([])
 
-  const later = (fn: () => void, ms: number) => { timers.current.push(window.setTimeout(fn, ms)) }
+  const later = (fn: () => void, ms: number) => {
+    const id = window.setTimeout(() => {
+      timers.current = timers.current.filter(t => t !== id)
+      fn()
+    }, ms)
+    timers.current.push(id)
+  }
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
+
+  useEffect(() => {
+    if (import.meta.env.DEV) sessionStorage.setItem(DEV_STAGE_KEY, stage)
+  }, [stage])
 
   const fade = useCallback((cb: () => void) => {
     if (fading.current) return

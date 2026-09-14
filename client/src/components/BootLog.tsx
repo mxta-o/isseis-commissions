@@ -9,6 +9,17 @@ type Props = {
   skip?: boolean // instantly complete all lines when true
 }
 
+// Memoized so a per-character tick only reconciles the line being typed. Each line carries two
+// blurred, blend-mode pseudo-elements, so re-rendering all of them per keystroke is expensive.
+const Line = React.memo(function Line({ text, cursor }: { text: string; cursor: boolean }) {
+  return (
+    <div className="font-mono text-sm leading-6 whitespace-pre boot-log-line" data-text={text}>
+      <span className="glitch" data-text={text}>{text}</span>
+      {cursor ? <span className="inline-block ml-1 w-2 animate-pulse">▮</span> : null}
+    </div>
+  )
+})
+
 export default function BootLog({
   lines,
   typingSpeed = 1,
@@ -17,8 +28,7 @@ export default function BootLog({
   onComplete,
   skip = false,
 }: Props): React.ReactElement {
-  const [displayed, setDisplayed] = useState<string[]>(() => lines.map(() => ''))
-  const [currentLine, setCurrentLine] = useState<number>(0)
+  const [active, setActive] = useState<{ line: number; text: string }>({ line: 0, text: '' })
 
   const lineIndexRef = useRef(0)
   const charIndexRef = useRef(0)
@@ -32,19 +42,16 @@ export default function BootLog({
 
   useEffect(() => {
     // reset if lines change
-    setDisplayed(lines.map(() => ''))
     lineIndexRef.current = 0
     charIndexRef.current = 0
-    setCurrentLine(0)
+    setActive({ line: 0, text: '' })
 
     function tick() {
       const li = lineIndexRef.current
       if (li >= lines.length) {
-        // ensure we only call onComplete once
-        setCurrentLine(Math.max(0, lines.length - 1))
         if (!completedRef.current) {
           completedRef.current = true
-          if (onCompleteRef.current) onCompleteRef.current()
+          onCompleteRef.current?.()
         }
         return
       }
@@ -53,19 +60,13 @@ export default function BootLog({
       const ci = charIndexRef.current
 
       if (ci < line.length) {
-        // append next character
-        setDisplayed((prev) => {
-          const copy = prev.slice()
-          copy[li] = line.slice(0, ci + 1)
-          return copy
-        })
         charIndexRef.current += 1
+        setActive({ line: li, text: line.slice(0, ci + 1) })
         timeoutRef.current = window.setTimeout(tick, typingSpeed)
       } else {
-        // line complete, move to next line after delay
         lineIndexRef.current += 1
-        setCurrentLine(lineIndexRef.current)
         charIndexRef.current = 0
+        setActive({ line: lineIndexRef.current, text: '' })
         timeoutRef.current = window.setTimeout(tick, lineDelay)
       }
     }
@@ -83,25 +84,23 @@ export default function BootLog({
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current)
     lineIndexRef.current = lines.length
     charIndexRef.current = 0
-    setDisplayed(lines.slice())
-    setCurrentLine(lines.length - 1)
+    setActive({ line: lines.length, text: '' })
     if (!completedRef.current) {
       completedRef.current = true
-      if (onCompleteRef.current) onCompleteRef.current()
+      onCompleteRef.current?.()
     }
   }, [skip, lines])
 
+  const cursorLine = Math.min(active.line, lines.length - 1)
+
   return (
     <div className={className} aria-hidden>
-      {displayed.map((text, idx) => (
-        <div
+      {lines.map((full, idx) => (
+        <Line
           key={idx}
-          className="font-mono text-sm leading-6 whitespace-pre boot-log-line"
-          data-text={text}
-        >
-          <span className="glitch" data-text={text}>{text}</span>
-          {idx === currentLine ? <span className="inline-block ml-1 w-2 animate-pulse">▮</span> : null}
-        </div>
+          text={idx < active.line ? full : idx === active.line ? active.text : ''}
+          cursor={idx === cursorLine}
+        />
       ))}
     </div>
   )

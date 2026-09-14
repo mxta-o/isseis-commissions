@@ -29,10 +29,32 @@ const BOOT_LINES = [
   'Click anywhere to continue',
 ]
 
+// Owns its own ticker so the 350ms dot cycle doesn't re-render BootLog's 18 lines and the
+// watermark along with it.
+function BootingDots(): React.ReactElement {
+  const [dots, setDots] = useState<string>('')
+
+  useEffect(() => {
+    const frames = ['', '.', '..', '...']
+    let idx = 0
+    const id = window.setInterval(() => {
+      idx = (idx + 1) % frames.length
+      setDots(frames[idx])
+    }, 350)
+
+    return () => window.clearInterval(id)
+  }, [])
+
+  return (
+    <span className="boot-header-sub uppercase">
+      <span className="glitch" data-text={`— BOOTING SYSTEM${dots}`}>— BOOTING SYSTEM<span className="ml-1">{dots}</span></span>
+    </span>
+  )
+}
+
 export default function Landing({ onRequestTransition }: Props): React.ReactElement {
   const [loaded, setLoaded] = useState<boolean>(false)
   const [skipBoot, setSkipBoot] = useState<boolean>(false)
-  const [dots, setDots] = useState<string>('')
 
   const handleSkipClick = () => {
     if (!loaded) setSkipBoot(true)
@@ -45,17 +67,6 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
 
     return () => window.clearTimeout(id)
   }, [loaded, onRequestTransition])
-
-  useEffect(() => {
-    const frames = ['', '.', '..', '...']
-    let idx = 0
-    const id = window.setInterval(() => {
-      idx = (idx + 1) % frames.length
-      setDots(frames[idx])
-    }, 350)
-
-    return () => window.clearInterval(id)
-  }, [])
 
   return (
     <div
@@ -73,7 +84,7 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
 
         <div className="absolute top-15 left-15 text-sm font-mono select-none boot-log-line boot-header">
           <span className="boot-header-main"><span className="glitch" data-text="LOADING">LOADING</span></span>
-          <span className="boot-header-sub uppercase"><span className="glitch" data-text={`— BOOTING SYSTEM${dots}`}>— BOOTING SYSTEM<span className="ml-1">{dots}</span></span></span>
+          <BootingDots />
         </div>
 
         <div className="absolute top-33 left-18 w-[34rem] max-w-[46vw]">
