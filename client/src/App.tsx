@@ -12,7 +12,7 @@ import AdminConsole from './pages/AdminConsole'
 import { SAMPLE_COMMISSIONS, type Commission } from './lib/commissions'
 
 type Stage = 'boot' | 'pretitle' | 'title' | 'app'
-const FADE_MS = 480
+const FADE_MS = 300
 
 // Stage machine: boot → pretitle → title → app, each hop through a black fade.
 // Replaces the Landing/TitleScreen switch previously in main.tsx — render <App /> from main.tsx.

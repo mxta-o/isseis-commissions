@@ -46,3 +46,6 @@ jest-cache/
 ### Docker
 docker-compose.override.yml
 
+### claude configs
+.claude/
+
