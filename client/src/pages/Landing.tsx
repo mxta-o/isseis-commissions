@@ -41,14 +41,9 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
   useEffect(() => {
     if (!loaded) return
 
-    const forward = () => onRequestTransition()
+    const id = window.setTimeout(() => onRequestTransition(), 200)
 
-    const opts: AddEventListenerOptions = { once: true }
-    window.addEventListener('pointerdown', forward, opts)
-
-    return () => {
-      window.removeEventListener('pointerdown', forward)
-    }
+    return () => window.clearTimeout(id)
   }, [loaded, onRequestTransition])
 
   useEffect(() => {
@@ -85,7 +80,7 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
           <BootLog
             lines={BOOT_LINES}
             typingSpeed={8}
-            lineDelay={80}
+            lineDelay={70}
             skip={skipBoot}
             onComplete={() => {
               setLoaded(true)

@@ -42,7 +42,7 @@ export default function App(): React.ReactElement {
 
   const toPretitle = useCallback(() => fade(() => {
     setStage('pretitle')
-    later(() => fade(() => setStage('title')), 2700)   // auto-advance
+    later(() => fade(() => setStage('title')), 2900)   // auto-advance
   }), [fade])
   const toTitle = useCallback(() => fade(() => setStage('title')), [fade])
   const toApp = useCallback(() => fade(() => { setStage('app'); setScreen('menu') }), [fade])
