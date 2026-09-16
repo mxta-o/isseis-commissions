@@ -70,7 +70,7 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
 
   return (
     <div
-      className="relative min-h-screen flex flex-col items-start justify-start overflow-hidden crt-root crt-soft crt-flicker"
+      className="relative min-h-screen flex flex-col items-start justify-start overflow-hidden crt-root crt-soft"
       onClick={handleSkipClick}
     >
       <CrtOverlay />

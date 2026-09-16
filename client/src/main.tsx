@@ -3,9 +3,6 @@ import { createRoot, type Root } from 'react-dom/client'
 import './index.css'
 import './styles/nier.css'
 import App from './App'
-import { detectFxTier } from './lib/fx'
-
-document.documentElement.dataset.fx = detectFxTier()
 
 type ErrorBoundaryState = {
   hasError: boolean

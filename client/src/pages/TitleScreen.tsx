@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
 import { genGarble } from '../lib/commissions'
-import { getFxTier } from '../lib/fx'
 
 type Props = { onAdvance: () => void }
 
@@ -102,11 +101,11 @@ const PLATE_SPECKS: Box[] = [
 ]
 
 type Particle = { x: string; y: string; s: string; o: string; blur: string; anim: string }
-function genParticles(count: number, allowBlur: boolean): Particle[] {
+function genParticles(): Particle[] {
   const pts: (Particle & { px: number; py: number })[] = []
   const minD = 5.5
   let guard = 0
-  while (pts.length < count && guard++ < 4000) {
+  while (pts.length < 60 && guard++ < 4000) {
     const x = ((Math.random() + Math.random()) / 2) * 100
     const y = ((Math.random() + Math.random()) / 2) * 100
     let ok = true
@@ -117,7 +116,7 @@ function genParticles(count: number, allowBlur: boolean): Particle[] {
       px: x, py: y, x: x.toFixed(2) + '%', y: y.toFixed(2) + '%',
       s: (1 + Math.random() * 2.5).toFixed(1) + 'px',
       o: (0.15 + Math.random() * 0.5).toFixed(2),
-      blur: allowBlur && Math.random() < 0.3 ? `blur(${(0.5 + Math.random() * 0.5).toFixed(1)}px)` : 'none',
+      blur: Math.random() < 0.3 ? `blur(${(0.5 + Math.random() * 0.5).toFixed(1)}px)` : 'none',
       anim: y < 62
         ? `p-rise${1 + Math.floor(Math.random() * 3)} ${(5.5 + Math.random() * 7).toFixed(1)}s linear ${(-Math.random() * 13).toFixed(1)}s infinite`
         : `p-twinkle ${(2.2 + Math.random() * 3.5).toFixed(1)}s ease-in-out ${(-Math.random() * 6).toFixed(1)}s infinite`,
@@ -130,17 +129,9 @@ const A16 = '1.6s steps(1,end) both'
 const TITLE = "Issei's Commissions"
 
 export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
-  const lite = getFxTier() === 'lite'
-  const particles = useMemo(() => genParticles(lite ? 20 : 60, !lite), [lite])
+  const particles = useMemo(genParticles, [])
   const garble1 = useMemo(() => genGarble('For the Vision of Creation'), [])
   const garble2 = useMemo(() => genGarble('Press Any Button'), [])
-
-  // In lite mode the two ~120%-viewport fog layers keep their drift but drop the blur filter —
-  // softer gradient stops read almost the same without two large offscreen filter passes.
-  const fogBlur = lite ? 'none' : undefined
-  const loop1 = lite ? '' : ',tg-loop1 7s steps(1,end) 4.5s infinite'
-  const loop2 = lite ? '' : ',tg-loop2 7.6s steps(1,end) 4.9s infinite'
-  const rayAnim = lite ? 'none' : 'ray-pulse 9s ease-in-out infinite'
 
   return (
     <div onClick={onAdvance} style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', background: '#14110c', color: '#f3e9da', cursor: 'pointer', userSelect: 'none' }}>
@@ -150,10 +141,10 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
       <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', height: '14%', background: 'linear-gradient(180deg,transparent,rgba(18,14,11,0.5) 70%,rgba(18,14,11,0.65))', filter: 'blur(1px)' }} />
       <div style={{ position: 'absolute', left: '14%', right: '14%', top: '56%', height: '24%', background: 'radial-gradient(ellipse 50% 42% at 50% 10%,rgba(240,220,180,0.26),transparent 70%)', filter: 'blur(2px)' }} />
       {/* god rays */}
-      <div style={{ position: 'absolute', left: '50%', top: '-8%', width: '130%', height: '85%', transform: 'translateX(-50%)', pointerEvents: 'none', animation: rayAnim, opacity: lite ? 0.65 : undefined, background: 'conic-gradient(from 90deg at 50% 0%,transparent 22%,rgba(240,225,190,0.09) 26%,transparent 30%,rgba(240,225,190,0.13) 37%,transparent 42%,rgba(240,225,190,0.08) 47%,transparent 51%,rgba(240,225,190,0.12) 58%,transparent 63%,rgba(240,225,190,0.07) 70%,transparent 76%)' }} />
+      <div style={{ position: 'absolute', left: '50%', top: '-8%', width: '130%', height: '85%', transform: 'translateX(-50%)', pointerEvents: 'none', animation: 'ray-pulse 9s ease-in-out infinite', background: 'conic-gradient(from 90deg at 50% 0%,transparent 22%,rgba(240,225,190,0.09) 26%,transparent 30%,rgba(240,225,190,0.13) 37%,transparent 42%,rgba(240,225,190,0.08) 47%,transparent 51%,rgba(240,225,190,0.12) 58%,transparent 63%,rgba(240,225,190,0.07) 70%,transparent 76%)' }} />
       {/* drifting fog */}
-      <div style={{ position: 'absolute', inset: '-10%', pointerEvents: 'none', filter: fogBlur ?? 'blur(7px)', animation: 'fog-drift 26s ease-in-out infinite', background: 'radial-gradient(ellipse 42% 26% at 28% 56%,rgba(230,210,175,0.17),transparent 70%),radial-gradient(ellipse 50% 24% at 76% 62%,rgba(215,195,160,0.13),transparent 70%)' }} />
-      <div style={{ position: 'absolute', inset: '-10%', pointerEvents: 'none', filter: fogBlur ?? 'blur(9px)', animation: 'fog-drift 34s ease-in-out -14s infinite reverse', background: 'radial-gradient(ellipse 55% 22% at 55% 48%,rgba(238,220,185,0.12),transparent 72%)' }} />
+      <div style={{ position: 'absolute', inset: '-10%', pointerEvents: 'none', filter: 'blur(7px)', animation: 'fog-drift 26s ease-in-out infinite', background: 'radial-gradient(ellipse 42% 26% at 28% 56%,rgba(230,210,175,0.17),transparent 70%),radial-gradient(ellipse 50% 24% at 76% 62%,rgba(215,195,160,0.13),transparent 70%)' }} />
+      <div style={{ position: 'absolute', inset: '-10%', pointerEvents: 'none', filter: 'blur(9px)', animation: 'fog-drift 34s ease-in-out -14s infinite reverse', background: 'radial-gradient(ellipse 55% 22% at 55% 48%,rgba(238,220,185,0.12),transparent 72%)' }} />
       {/* film grain + scanlines */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.18, mixBlendMode: 'soft-light', backgroundImage: NOISE }} />
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.35, mixBlendMode: 'overlay', backgroundImage: 'repeating-linear-gradient(0deg,rgba(255,255,255,0.04) 0px,rgba(255,255,255,0.04) 1px,transparent 1px,transparent 4px)' }} />
@@ -171,8 +162,8 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
         <div>
           <h1 style={{ margin: 0, position: 'relative', display: 'inline-block', fontFamily: "'Benguiat Std','Rodin Pro',serif", fontSize: 'clamp(2.5rem,4.5vw,4.6rem)', fontWeight: 400, letterSpacing: '0.05em', lineHeight: 1.15, whiteSpace: 'nowrap', animation: 'tg-twitch 8s steps(1,end) 4s infinite' }}>
             {/* chromatic ghosts (reveal + idle loop) */}
-            <span aria-hidden className="tgl" style={{ zIndex: 0, color: 'rgba(255,84,74,0.78)', mixBlendMode: 'screen', animation: `tg-rgbr ${A16}${loop1}` }}>{TITLE}</span>
-            <span aria-hidden className="tgl" style={{ zIndex: 0, color: 'rgba(88,214,255,0.72)', mixBlendMode: 'screen', animation: `tg-rgbc ${A16}${loop2}` }}>{TITLE}</span>
+            <span aria-hidden className="tgl" style={{ zIndex: 0, color: 'rgba(255,84,74,0.78)', mixBlendMode: 'screen', animation: `tg-rgbr ${A16},tg-loop1 7s steps(1,end) 4.5s infinite` }}>{TITLE}</span>
+            <span aria-hidden className="tgl" style={{ zIndex: 0, color: 'rgba(88,214,255,0.72)', mixBlendMode: 'screen', animation: `tg-rgbc ${A16},tg-loop2 7.6s steps(1,end) 4.9s infinite` }}>{TITLE}</span>
             {/* smears + tears */}
             <span aria-hidden className="tgl" style={{ zIndex: 2, color: 'rgba(245,244,222,0.7)', animation: `tg-smear1 ${A16}` }}>{TITLE}</span>
             <span aria-hidden className="tgl" style={{ zIndex: 2, color: 'rgba(245,244,222,0.6)', animation: `tg-smear2 ${A16}` }}>{TITLE}</span>

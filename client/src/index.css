@@ -274,10 +274,6 @@
   mix-blend-mode: overlay;
 }
 
-.crt-flicker {
-  animation: crt-flicker 0.5s infinite;
-}
-
 .crt-soft {
   filter: contrast(0.96) saturate(0.9);
 }
@@ -311,16 +307,6 @@
   font-family: 'Rodin Pro';
 }
 
-@keyframes crt-flicker {
-  0% { opacity: 0.96; }
-  10% { opacity: 0.9; }
-  11% { opacity: 1; }
-  20% { opacity: 0.98; }
-  21% { opacity: 0.92; }
-  22% { opacity: 1; }
-  100% { opacity: 0.96; }
-}
-
 * {
   box-sizing: border-box;
 }
@@ -331,39 +317,7 @@ body {
   color: var(--crt-text);
 }
 
-/* ============ lite effect tier ============
-   Set by detectFxTier() in lib/fx.ts on low-core/low-memory devices, when the user asks for
-   reduced motion, or explicitly via ?fx=lite. Each rule here removes a filter, blend, or
-   infinite animation — the things that keep the GPU busy rather than the things you notice. */
-
-/* Viewport-wide filters force the whole subtree through an offscreen pass on every change. */
-:root[data-fx='lite'] .crt-root,
-:root[data-fx='lite'] .crt-soft {
-  filter: none;
-}
-
-/* ~40 blurred, screen-blended pseudo-elements on the boot screen. The colour offset is the
-   part you actually see; the sub-pixel blur is not. */
-:root[data-fx='lite'] .glitch::before,
-:root[data-fx='lite'] .glitch::after {
-  filter: none;
-}
-
-/* Full-viewport feTurbulence tile under an overlay blend. */
-:root[data-fx='lite'] .crt-overlay::after {
-  display: none;
-}
-
-:root[data-fx='lite'] .crt-flicker {
-  animation: none;
-}
-
-:root[data-fx='lite'] .loading-orb::before {
-  animation: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .crt-flicker,
   .loading-orb::before {
     animation: none;
   }
