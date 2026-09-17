@@ -5,6 +5,7 @@ export type Screen = 'menu' | 'gallery' | 'about' | 'request' | 'status' | 'admi
 type Props = {
   screen: Screen
   onMenu: () => void
+  onExit: () => void
   children: React.ReactNode
 }
 
@@ -14,7 +15,7 @@ const TITLES: Record<Screen, string> = {
 }
 
 // Beige in-app chrome: header strip, rule, footer hint bar
-export default function AppFrame({ screen, onMenu, children }: Props): React.ReactElement {
+export default function AppFrame({ screen, onMenu, onExit, children }: Props): React.ReactElement {
   return (
     <div className="nier-app">
       <div className="nier-grid" />
@@ -33,7 +34,9 @@ export default function AppFrame({ screen, onMenu, children }: Props): React.Rea
       <div style={{ position: 'relative', zIndex: 2, flex: 1, padding: '36px 48px 28px' }}>{children}</div>
 
       <div className="mono" style={{ position: 'relative', zIndex: 2, display: 'flex', gap: 28, padding: '14px 48px 20px', borderTop: '1px solid rgba(69,65,54,0.35)', fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)', flexWrap: 'wrap' }}>
-        <span className="hint-link" onClick={onMenu}>[ESC] MAIN MENU</span>
+        <span className="hint-link" onClick={screen === 'menu' ? onExit : onMenu}>
+          {screen === 'menu' ? '[ESC] TITLE SCREEN' : '[ESC] MAIN MENU'}
+        </span>
         <span>[CLICK] SELECT</span>
         <span style={{ flex: 1 }} />
         <span>PROTOTYPE v0.2 — SIMULATED DATA</span>

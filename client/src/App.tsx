@@ -3,6 +3,7 @@ import Landing from './pages/Landing'          // existing boot screen (BootLog)
 import PreTitle from './pages/PreTitle'
 import TitleScreen from './pages/TitleScreen'
 import AppFrame, { type Screen } from './components/AppFrame'
+import ConfirmDialog from './components/ConfirmDialog'
 import MainMenu from './pages/MainMenu'
 import Gallery from './pages/Gallery'
 import About from './pages/About'
@@ -31,6 +32,7 @@ export default function App(): React.ReactElement {
   const [screen, setScreen] = useState<Screen>('menu')
   const [statusPrefill, setStatusPrefill] = useState<string | undefined>()
   const [overlay, setOverlay] = useState<'none' | 'in' | 'out'>('none')
+  const [confirmExit, setConfirmExit] = useState(false)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [commissions, setCommissions] = useState<Commission[]>(SAMPLE_COMMISSIONS)
   const fading = useRef(false)
@@ -71,11 +73,15 @@ export default function App(): React.ReactElement {
     const kb = (e: KeyboardEvent) => {
       if (stage === 'pretitle') toTitle()
       else if (stage === 'title') toApp()
-      else if (stage === 'app' && e.key === 'Escape') nav('menu')
+      else if (stage === 'app' && e.key === 'Escape') {
+        if (confirmExit) setConfirmExit(false)
+        else if (screen === 'menu') setConfirmExit(true)
+        else nav('menu')
+      }
     }
     window.addEventListener('keydown', kb)
     return () => window.removeEventListener('keydown', kb)
-  }, [stage, toTitle, toApp])
+  }, [stage, screen, confirmExit, toTitle, toApp])
 
   function nav(s: Screen, prefill?: string) {
     setStatusPrefill(prefill)
@@ -96,7 +102,7 @@ export default function App(): React.ReactElement {
       {stage === 'pretitle' && <PreTitle onAdvance={toTitle} />}
       {stage === 'title' && <TitleScreen onAdvance={toApp} />}
       {stage === 'app' && (
-        <AppFrame screen={screen} onMenu={() => nav('menu')}>
+        <AppFrame screen={screen} onMenu={() => nav('menu')} onExit={() => setConfirmExit(true)}>
           {screen === 'menu' && <MainMenu nav={nav} />}
           {screen === 'gallery' && <Gallery />}
           {screen === 'about' && <About />}
@@ -109,6 +115,13 @@ export default function App(): React.ReactElement {
       {overlay === 'in' && <div className="transition-overlay-in" />}
       {overlay === 'out' && <div className="transition-overlay-out" />}
       {toastMsg && <div className="nier-toast"><span className="sq" />{toastMsg}</div>}
+      {confirmExit && (
+        <ConfirmDialog
+          message="Return to the title screen?"
+          onConfirm={() => { setConfirmExit(false); toTitle() }}
+          onCancel={() => setConfirmExit(false)}
+        />
+      )}
     </>
   )
 }

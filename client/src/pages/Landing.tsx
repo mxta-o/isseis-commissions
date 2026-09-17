@@ -63,7 +63,7 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
   useEffect(() => {
     if (!loaded) return
 
-    const id = window.setTimeout(() => onRequestTransition(), 200)
+    const id = window.setTimeout(() => onRequestTransition(), 1500)
 
     return () => window.clearTimeout(id)
   }, [loaded, onRequestTransition])
