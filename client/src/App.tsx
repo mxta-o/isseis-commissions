@@ -72,7 +72,6 @@ export default function App(): React.ReactElement {
   useEffect(() => {
     const kb = (e: KeyboardEvent) => {
       if (stage === 'pretitle') toTitle()
-      else if (stage === 'title') toApp()
       else if (stage === 'app' && e.key === 'Escape') {
         if (confirmExit) setConfirmExit(false)
         else if (screen === 'menu') setConfirmExit(true)
@@ -81,7 +80,7 @@ export default function App(): React.ReactElement {
     }
     window.addEventListener('keydown', kb)
     return () => window.removeEventListener('keydown', kb)
-  }, [stage, screen, confirmExit, toTitle, toApp])
+  }, [stage, screen, confirmExit, toTitle])
 
   function nav(s: Screen, prefill?: string) {
     setStatusPrefill(prefill)

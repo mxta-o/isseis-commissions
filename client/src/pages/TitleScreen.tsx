@@ -131,17 +131,15 @@ const TITLE = "Issei's Commissions"
 export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
   const particles = useMemo(genParticles, [])
   const garble1 = useMemo(() => genGarble('For the Vision of Creation'), [])
-  const garble2 = useMemo(() => genGarble('Press Any Button'), [])
+  const garble2 = useMemo(() => genGarble('Click Anywhere'), [])
 
   return (
     <div onClick={onAdvance} style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', background: '#14110c', color: '#f3e9da', cursor: 'pointer', userSelect: 'none' }}>
       {/* dusk sky */}
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#221c17 0%,#3b322a 28%,#5f503c 50%,#3e3327 66%,#171310 100%)' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#221c15 0%,#1a1510 55%,#14110c 100%)' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 62% 44% at 50% 40%,rgba(238,216,178,0.5),rgba(180,148,108,0.22) 45%,transparent 72%)' }} />
-      <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', height: '14%', background: 'linear-gradient(180deg,transparent,rgba(18,14,11,0.5) 70%,rgba(18,14,11,0.65))', filter: 'blur(1px)' }} />
-      <div style={{ position: 'absolute', left: '14%', right: '14%', top: '56%', height: '24%', background: 'radial-gradient(ellipse 50% 42% at 50% 10%,rgba(240,220,180,0.26),transparent 70%)', filter: 'blur(2px)' }} />
       {/* god rays */}
-      <div style={{ position: 'absolute', left: '50%', top: '-8%', width: '130%', height: '85%', transform: 'translateX(-50%)', pointerEvents: 'none', animation: 'ray-pulse 9s ease-in-out infinite', background: 'conic-gradient(from 90deg at 50% 0%,transparent 22%,rgba(240,225,190,0.09) 26%,transparent 30%,rgba(240,225,190,0.13) 37%,transparent 42%,rgba(240,225,190,0.08) 47%,transparent 51%,rgba(240,225,190,0.12) 58%,transparent 63%,rgba(240,225,190,0.07) 70%,transparent 76%)' }} />
+      <div style={{ position: 'absolute', left: '50%', top: '-8%', width: '130%', height: '85%', transform: 'translateX(-50%)', pointerEvents: 'none', animation: 'ray-pulse 9s ease-in-out infinite', background: 'conic-gradient(from 90deg at 50% 0%,transparent 22%,rgba(240,225,190,0.09) 26%,transparent 30%,rgba(240,225,190,0.13) 37%,transparent 42%,rgba(240,225,190,0.08) 47%,transparent 51%,rgba(240,225,190,0.12) 58%,transparent 63%,rgba(240,225,190,0.07) 70%,transparent 76%)', WebkitMaskImage: 'linear-gradient(180deg,#000 0%,#000 55%,transparent 92%)', maskImage: 'linear-gradient(180deg,#000 0%,#000 55%,transparent 92%)' }} />
       {/* drifting fog */}
       <div style={{ position: 'absolute', inset: '-10%', pointerEvents: 'none', filter: 'blur(7px)', animation: 'fog-drift 26s ease-in-out infinite', background: 'radial-gradient(ellipse 42% 26% at 28% 56%,rgba(230,210,175,0.17),transparent 70%),radial-gradient(ellipse 50% 24% at 76% 62%,rgba(215,195,160,0.13),transparent 70%)' }} />
       <div style={{ position: 'absolute', inset: '-10%', pointerEvents: 'none', filter: 'blur(9px)', animation: 'fog-drift 34s ease-in-out -14s infinite reverse', background: 'radial-gradient(ellipse 55% 22% at 55% 48%,rgba(238,220,185,0.12),transparent 72%)' }} />
@@ -201,7 +199,7 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
           <div style={{ marginTop: '2.5rem', display: 'inline-flex', alignItems: 'center', gap: '1rem', fontFamily: "'FOT New Cezanne','Rodin Pro',sans-serif", color: 'rgba(243,233,218,0.85)', letterSpacing: '0.22em', fontSize: '0.8rem', animation: 'title-pulse 2.2s ease-in-out infinite,pab-jit 9s steps(1,end) 5s infinite' }}>
             <span style={{ height: 1, width: 'clamp(140px,24vw,280px)', background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.8),transparent)' }} />
             <span style={{ position: 'relative' }}>
-              <span style={{ animation: `sub-real ${A16}` }}>Press Any Button</span>
+              <span style={{ animation: `sub-real ${A16}` }}>Click Anywhere</span>
               <span aria-hidden style={{ position: 'absolute', inset: 0, animation: `sub-garble ${A16}` }}>{garble2}</span>
             </span>
             <span style={{ height: 1, width: 'clamp(140px,24vw,280px)', background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.8),transparent)' }} />
