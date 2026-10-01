@@ -12,7 +12,7 @@ export default function PreTitle({ onAdvance }: Props): React.ReactElement {
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.14, mixBlendMode: 'soft-light', backgroundImage: NOISE }} />
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', mixBlendMode: 'multiply', background: 'radial-gradient(circle at 50% 50%,rgba(0,0,0,0) 40%,rgba(0,0,0,0.5) 100%)' }} />
       <div style={{ position: 'relative', animation: 'pre-jitter 1.5s steps(1,end) both' }}>
-        <div style={{ position: 'relative', display: 'inline-block', fontFamily: "'Rodin Pro','Helvetica Neue',sans-serif", fontWeight: 200, fontSize: 'clamp(20px,2.8vw,36px)', letterSpacing: '0.55em', color: '#ece6da', whiteSpace: 'nowrap', animation: 'pre-in 1.5s steps(1,end) both' }}>
+        <div style={{ position: 'relative', display: 'inline-block', fontFamily: 'var(--font-ui)', fontWeight: 200, fontSize: 'clamp(20px,2.8vw,36px)', letterSpacing: '0.55em', color: '#ece6da', whiteSpace: 'nowrap', animation: 'pre-in 1.5s steps(1,end) both' }}>
           <span aria-hidden style={{ position: 'absolute', inset: 0, color: 'rgba(255,92,92,0.5)', animation: 'pre-chr1 2.8s steps(1,end) infinite' }}>Issei's Commissions</span>
           <span aria-hidden style={{ position: 'absolute', inset: 0, color: 'rgba(96,205,255,0.45)', animation: 'pre-chr2 2.8s steps(1,end) infinite' }}>Issei's Commissions</span>
           <span style={{ position: 'relative' }}>Issei's Commissions</span>

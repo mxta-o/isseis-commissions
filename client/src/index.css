@@ -1,44 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200;300;400;600&display=swap');
-/* Local licensed font: Rodin Pro placed in public/fonts */
-@font-face {
-  font-family: 'Rodin Pro';
-  src: url('/fonts/FOT-Rodin%20Pro%20L.otf') format('opentype');
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Rodin Pro';
-  src: url('/fonts/FOT-Rodin%20Pro%20M.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Rodin Pro';
-  src: url('/fonts/FOT-Rodin%20Pro%20DB.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Benguiat Std';
-  src: url('/fonts/BenguiatStd-Book.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'FOT New Cezanne';
-  src: url('/fonts/FOT-NewCezanne%20Pro%20DB.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@200;400;600&family=Playfair+Display:wght@400&display=swap');
 @import 'tailwindcss';
 
 :root {
+  /* Open-licensed (SIL OFL) fonts; change these three to retheme all text */
+  --font-ui: 'Noto Sans', 'Helvetica Neue', sans-serif;
+  --font-title: 'Playfair Display', Georgia, serif;
+  --font-accent: var(--font-ui);
   font-family: 'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Courier New', monospace;
   line-height: 1.5;
   font-weight: 10;
@@ -297,14 +265,14 @@
   display: inline-block;
   transform-origin: left center;
   transform: scaleX(var(--boot-header-scale));
-  font-family: 'Rodin Pro';
+  font-family: var(--font-ui);
 }
 
 .boot-header-sub {
   font-size: var(--boot-header-sub-size);
   font-weight: 400;
   color: var(--crt-text);
-  font-family: 'Rodin Pro';
+  font-family: var(--font-ui);
 }
 
 * {

@@ -158,7 +158,7 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
 
       <div style={{ position: 'relative', zIndex: 10, minHeight: '100vh', display: 'grid', placeItems: 'center', textAlign: 'center', padding: '4rem 1.5rem' }}>
         <div>
-          <h1 style={{ margin: 0, position: 'relative', display: 'inline-block', fontFamily: "'Benguiat Std','Rodin Pro',serif", fontSize: 'clamp(2.5rem,4.5vw,4.6rem)', fontWeight: 400, letterSpacing: '0.05em', lineHeight: 1.15, whiteSpace: 'nowrap', animation: 'tg-twitch 8s steps(1,end) 4s infinite' }}>
+          <h1 style={{ margin: 0, position: 'relative', display: 'inline-block', fontFamily: 'var(--font-title)', fontSize: 'clamp(2.5rem,4.5vw,4.6rem)', fontWeight: 400, letterSpacing: '0.05em', lineHeight: 1.15, whiteSpace: 'nowrap', animation: 'tg-twitch 8s steps(1,end) 4s infinite' }}>
             {/* chromatic ghosts (reveal + idle loop) */}
             <span aria-hidden className="tgl" style={{ zIndex: 0, color: 'rgba(255,84,74,0.78)', mixBlendMode: 'screen', animation: `tg-rgbr ${A16},tg-loop1 7s steps(1,end) 4.5s infinite` }}>{TITLE}</span>
             <span aria-hidden className="tgl" style={{ zIndex: 0, color: 'rgba(88,214,255,0.72)', mixBlendMode: 'screen', animation: `tg-rgbc ${A16},tg-loop2 7.6s steps(1,end) 4.9s infinite` }}>{TITLE}</span>
@@ -191,12 +191,12 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
             <span style={{ position: 'absolute', left: '-10%', right: '-10%', height: 1, bottom: '0.06em', zIndex: 2, background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.9) 20%,rgba(243,233,218,0.9) 80%,transparent)', opacity: 0.8, animation: `tg-bit ${A16}` }} />
           </h1>
 
-          <div style={{ position: 'relative', marginTop: '0.9rem', fontFamily: "'FOT New Cezanne','Rodin Pro',sans-serif", fontSize: 'clamp(0.8rem,1.2vw,1rem)', letterSpacing: '0.28em', color: 'rgba(243,233,218,0.7)' }}>
+          <div style={{ position: 'relative', marginTop: '0.9rem', fontFamily: 'var(--font-accent)', fontSize: 'clamp(0.8rem,1.2vw,1rem)', letterSpacing: '0.28em', color: 'rgba(243,233,218,0.7)' }}>
             <span style={{ animation: `sub-real ${A16}` }}>For the Vision of Creation</span>
             <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: 0, animation: `sub-garble ${A16},sub-jit ${A16}` }}>{garble1}</span>
           </div>
 
-          <div style={{ marginTop: '2.5rem', display: 'inline-flex', alignItems: 'center', gap: '1rem', fontFamily: "'FOT New Cezanne','Rodin Pro',sans-serif", color: 'rgba(243,233,218,0.85)', letterSpacing: '0.22em', fontSize: '0.8rem', animation: 'title-pulse 2.2s ease-in-out infinite,pab-jit 9s steps(1,end) 5s infinite' }}>
+          <div style={{ marginTop: '2.5rem', display: 'inline-flex', alignItems: 'center', gap: '1rem', fontFamily: 'var(--font-accent)', color: 'rgba(243,233,218,0.85)', letterSpacing: '0.22em', fontSize: '0.8rem', animation: 'title-pulse 2.2s ease-in-out infinite,pab-jit 9s steps(1,end) 5s infinite' }}>
             <span style={{ height: 1, width: 'clamp(140px,24vw,280px)', background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.8),transparent)' }} />
             <span style={{ position: 'relative' }}>
               <span style={{ animation: `sub-real ${A16}` }}>Click Anywhere</span>

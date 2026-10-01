@@ -109,7 +109,7 @@
 .nier-app{
   min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;
   background:var(--n-bg);color:var(--n-ink);
-  font-family:'Rodin Pro','Helvetica Neue',sans-serif;
+  font-family:var(--font-ui);
 }
 .nier-app a{color:#55503f;text-decoration-color:rgba(85,80,63,.5)}
 .nier-app a:hover{color:#23201a}
