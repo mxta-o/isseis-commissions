@@ -22,7 +22,7 @@ export default function AdminConsole({ commissions, patch, toast }: Props): Reac
   const byStatus = (st: Commission['status']) => commissions.filter(c => c.status === st && match(c))
 
   const nQueue = commissions.filter(c => c.status === 'pending_review').length
-  const nActive = commissions.filter(c => ['approved', 'awaiting_payment', 'in_progress'].includes(c.status)).length
+  const nActive = commissions.filter(c => ['awaiting_payment', 'in_progress'].includes(c.status)).length
   const nCancelled = commissions.filter(c => c.status === 'cancelled').length
   const tabs: { key: View; label: string }[] = [
     { key: 'queue', label: `[ QUEUE · ${nQueue} ]` },
@@ -33,7 +33,6 @@ export default function AdminConsole({ commissions, patch, toast }: Props): Reac
   let groups: { header: string; rows: Commission[] }[]
   if (view === 'queue') groups = [{ header: 'PENDING REVIEW — OLDEST FIRST', rows: byStatus('pending_review') }]
   else if (view === 'active') groups = [
-    { header: '[ APPROVED ]', rows: byStatus('approved') },
     { header: '[ AWAITING PAYMENT ]', rows: byStatus('awaiting_payment') },
     { header: '[ IN PROGRESS ]', rows: byStatus('in_progress') },
   ].filter(g => g.rows.length)
