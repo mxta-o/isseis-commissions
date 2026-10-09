@@ -14,10 +14,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
 
-/* NieR-inspired color palette and helpers */
-:root {
+  /* NieR-inspired color palette and helpers */
   --crt-bg-1: #181510;
   --crt-bg-2: #14110C;
   --crt-text: #FCF1EC;
