@@ -6,7 +6,7 @@ const { HttpError } = require('../lib/httpError')
 
 const statusUrl = id => `${env.publicSiteUrl}/?id=${id}`
 
-// Resend's SDK reports failures as { error } instead of throwing.
+// resend's SDK reports failures as error instead of throwing.
 async function send({ to, subject, text }) {
   const { error } = await resend.emails.send({ from: env.resendFromEmail, to, subject, text })
   if (error) {
