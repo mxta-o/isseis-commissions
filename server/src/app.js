@@ -8,9 +8,9 @@ const { errorHandler } = require('./middleware/errorHandler')
 const app = express()
 app.disable('x-powered-by')
 
-// Render/Railway put a proxy in front of the app. Trust exactly one hop so req.ip is the real
-// client (from X-Forwarded-For) — the rate limiter depends on it — without letting a client
-// spoof its IP by sending its own X-Forwarded-For header.
+// put a proxy in front of the app. trust exactly one hop so req.ip is the real
+// client. the rate limiter depends on it and without letting a client
+// spoof its IP by sending its own header
 app.set('trust proxy', 1)
 
 app.use(cors({ origin: env.clientUrl }))
