@@ -24,8 +24,27 @@ const referenceUpload = multer({
   },
 }).array('files', MAX_REFERENCE_FILES)
 
+// finished art from loraine. bigger cap (matches the storage bucket's 50 MB limit) but fewer
+// files per request: everything sits in memory until it's stored, and a free-tier host has
+// ~512 MB of RAM. the admin console uploads one file per request anyway.
+const MAX_FINAL_FILES = 3
+const MAX_FINAL_BYTES = 50 * 1024 * 1024
+
+const finalUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { files: MAX_FINAL_FILES, fileSize: MAX_FINAL_BYTES, fields: 5 },
+  fileFilter(req, file, cb) {
+    if (!ALLOWED_MIME.has(file.mimetype)) {
+      return cb(new HttpError(400, 'Only JPG, PNG and WebP images are accepted.'))
+    }
+    cb(null, true)
+  },
+}).array('files', MAX_FINAL_FILES)
+
 module.exports = {
   referenceUpload,
+  finalUpload,
   MAX_REFERENCE_FILES,
   MAX_REFERENCE_BYTES,
+  MAX_FINAL_BYTES,
 }
