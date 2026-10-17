@@ -38,6 +38,9 @@ const env = {
   resendApiKey: required('RESEND_API_KEY'),
   resendFromEmail: required('RESEND_FROM_EMAIL'),
   notifyEmail: process.env.NOTIFY_EMAIL || '',
+  // signups are disabled in supabase, but this list is the second lock: a valid login isn't
+  // enough on its own, the email has to be on it too
+  adminEmails: required('ADMIN_EMAILS').split(',').map(e => e.trim().toLowerCase()).filter(Boolean),
   kofiUrl: process.env.KOFI_URL || 'https://ko-fi.com/isseimx',
 }
 
