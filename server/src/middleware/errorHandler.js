@@ -1,12 +1,22 @@
 const multer = require('multer')
 const { HttpError } = require('../lib/httpError')
 const { TransitionInputError } = require('../domain/transitions')
-const { MAX_REFERENCE_FILES } = require('./upload')
+const { MAX_REFERENCE_FILES, MAX_REFERENCE_BYTES, MAX_FINAL_BYTES } = require('./upload')
 
-const MULTER_MESSAGES = {
-  LIMIT_FILE_SIZE: [413, 'Each file must be 10 MB or smaller.'],
-  LIMIT_FILE_COUNT: [400, `Attach at most ${MAX_REFERENCE_FILES} files.`],
-  LIMIT_UNEXPECTED_FILE: [400, `Attach at most ${MAX_REFERENCE_FILES} files.`],
+const MB = 1024 * 1024
+
+// reference uploads (public form) and final uploads (admin) have different limits
+function multerMessage(err, req) {
+  const isFinal = req.originalUrl.startsWith('/api/admin/')
+  switch (err.code) {
+    case 'LIMIT_FILE_SIZE':
+      return [413, `Each file must be ${(isFinal ? MAX_FINAL_BYTES : MAX_REFERENCE_BYTES) / MB} MB or smaller.`]
+    case 'LIMIT_FILE_COUNT':
+    case 'LIMIT_UNEXPECTED_FILE':
+      return [400, isFinal ? 'Too many files in one upload.' : `Attach at most ${MAX_REFERENCE_FILES} files.`]
+    default:
+      return [400, 'Invalid upload.']
+  }
 }
 
 // express forwards errors thrown in async handlers here automatically.
@@ -20,7 +30,7 @@ function errorHandler(err, req, res, next) {
     return res.status(400).json({ message: err.message })
   }
   if (err instanceof multer.MulterError) {
-    const [status, message] = MULTER_MESSAGES[err.code] || [400, 'Invalid upload.']
+    const [status, message] = multerMessage(err, req)
     return res.status(status).json({ message })
   }
   if (err.type === 'entity.parse.failed') {
