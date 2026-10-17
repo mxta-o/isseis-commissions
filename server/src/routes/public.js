@@ -3,6 +3,7 @@ const express = require('express')
 const { z } = require('zod')
 const { env } = require('../config/env')
 const { HttpError } = require('../lib/httpError')
+const { parse, parseCommissionId } = require('../lib/validate')
 const { sniffImageType } = require('../lib/imageType')
 const { verifyLimiter, submitLimiter } = require('../middleware/rateLimit')
 const { referenceUpload } = require('../middleware/upload')
@@ -41,19 +42,6 @@ const submitSchema = z.object({
 })
 
 const idempotencyKeySchema = z.uuid({ error: 'Missing or invalid Idempotency-Key header.' })
-
-function parse(schema, input) {
-  const result = schema.safeParse(input)
-  if (!result.success) throw new HttpError(400, result.error.issues[0].message)
-  return result.data
-}
-
-// invalid IDs throw 404
-function parseTrackingId(raw) {
-  const result = z.uuid().safeParse(raw)
-  if (!result.success) throw new HttpError(404, 'No commission found for that tracking ID.')
-  return result.data
-}
 
 // helper funcs v
 
@@ -159,7 +147,7 @@ publicRouter.post('/commissions', submitLimiter, referenceUpload, async (req, re
 })
 
 publicRouter.get('/commissions/:id', async (req, res) => {
-  const id = parseTrackingId(req.params.id)
+  const id = parseCommissionId(req.params.id)
   const commission = await commissions.getPublicCommission(id)
   if (!commission) throw new HttpError(404, 'No commission found for that tracking ID.')
 
@@ -169,7 +157,7 @@ publicRouter.get('/commissions/:id', async (req, res) => {
 
 // fresh signed links to the finished art, minted on each click so emailed links never expire
 publicRouter.get('/commissions/:id/download', async (req, res) => {
-  const id = parseTrackingId(req.params.id)
+  const id = parseCommissionId(req.params.id)
   const commission = await commissions.getPublicCommission(id)
   if (!commission) throw new HttpError(404, 'No commission found for that tracking ID.')
   if (commission.status !== STATUS.COMPLETED) throw new HttpError(409, 'The finished files aren\'t ready yet.')
