@@ -1,29 +1,25 @@
-const jwt = require('jsonwebtoken')
+const { supabase } = require('../lib/supabase')
 const { env } = require('../config/env')
+const { HttpError } = require('../lib/httpError')
 
-function requireAdmin(req, res, next) {
-  if (!env.adminJwtSecret) {
-    return res.status(500).json({
-      message: 'ADMIN_JWT_SECRET is missing. Configure backend environment first.',
-    })
-  }
+// guards every /api/admin route. the client logs in with supabase auth and sends the access
+// token as `Authorization: Bearer <token>`. supabase confirms the token is real and unexpired,
+// then the email has to be on ADMIN_EMAILS.
+//
+// 401 = we don't know who you are (missing/expired token). 403 = we know, and the answer is no.
+async function requireAdmin(req, _res, next) {
+  const header = req.get('Authorization') || ''
+  const token = header.startsWith('Bearer ') ? header.slice('Bearer '.length).trim() : ''
+  if (!token) throw new HttpError(401, 'Sign in to use the admin console.')
 
-  const authHeader = req.headers.authorization || ''
-  const token = authHeader.startsWith('Bearer ')
-    ? authHeader.slice('Bearer '.length)
-    : null
+  const { data, error } = await supabase.auth.getUser(token)
+  if (error || !data?.user) throw new HttpError(401, 'Your session has expired. Sign in again.')
 
-  if (!token) {
-    return res.status(401).json({ message: 'Missing admin bearer token.' })
-  }
+  const email = (data.user.email || '').toLowerCase()
+  if (!env.adminEmails.includes(email)) throw new HttpError(403, 'This account doesn\'t have admin access.')
 
-  try {
-    const payload = jwt.verify(token, env.adminJwtSecret)
-    req.admin = payload
-    next()
-  } catch {
-    return res.status(401).json({ message: 'Invalid or expired admin token.' })
-  }
+  req.admin = { id: data.user.id, email }
+  next()
 }
 
 module.exports = {
