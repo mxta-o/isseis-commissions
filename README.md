@@ -120,3 +120,5 @@ Default URLs:
 - Supabase and Resend integrations are wired as ready-to-configure modules.
 - If Supabase is not configured yet, the scaffold still runs and keeps status data in-memory.
 - Current admin auth middleware verifies JWTs using `ADMIN_JWT_SECRET`.
+
+- streak commit
