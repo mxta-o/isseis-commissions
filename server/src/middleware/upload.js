@@ -24,9 +24,8 @@ const referenceUpload = multer({
   },
 }).array('files', MAX_REFERENCE_FILES)
 
-// finished art from loraine. bigger cap (matches the storage bucket's 50 MB limit) but fewer
-// files per request: everything sits in memory until it's stored, and a free-tier host has
-// ~512 MB of RAM. the admin console uploads one file per request anyway.
+// finished art from loraine. bigger cap but fewer files per request:
+// everything sits in memory until it's stored. the admin console uploads one file per request anyway.
 const MAX_FINAL_FILES = 3
 const MAX_FINAL_BYTES = 50 * 1024 * 1024
 
