@@ -3,6 +3,7 @@
 const { resend } = require('../lib/resend')
 const { env } = require('../config/env')
 const { HttpError } = require('../lib/httpError')
+const { paymentRef, formatPrice } = require('../domain/payment')
 
 const statusUrl = id => `${env.publicSiteUrl}/?id=${id}`
 
@@ -78,9 +79,99 @@ function notifyNewCommission(commission, fileCount) {
   })
 }
 
+// status updates (sent after an admin action; never fail the action) vv
+
+function sendApproved(c) {
+  const ref = paymentRef(c.id)
+  const price = formatPrice(c.price_cents)
+  return sendQuietly({
+    to: c.email,
+    subject: `Accepted — ${c.title} (payment due within 24 h)`,
+    text: [
+      'Good news: your commission request has been accepted.',
+      '',
+      `Price: ${price}`,
+      `Payment reference: ${ref}`,
+      `Pay by: ${new Date(c.payment_deadline).toUTCString()}`,
+      '',
+      'How to pay:',
+      `1. Open ${env.kofiUrl}`,
+      `2. Send exactly ${price}.`,
+      `3. Put ${ref} in the message so the payment can be matched to your request.`,
+      '',
+      'Work starts once the payment is confirmed. If it isn\'t received within 24 hours the request is cancelled.',
+      '',
+      `Check status: ${statusUrl(c.id)}`,
+    ].join('\n'),
+  })
+}
+
+function sendRejected(c) {
+  return sendQuietly({
+    to: c.email,
+    subject: `Request declined — ${c.title}`,
+    text: [
+      'Your commission request was reviewed and declined.',
+      '',
+      `Reason: ${c.cancellation_reason}`,
+      '',
+      'You haven\'t been charged anything.',
+      '',
+      `Status page: ${statusUrl(c.id)}`,
+    ].join('\n'),
+  })
+}
+
+function sendPaymentConfirmed(c) {
+  return sendQuietly({
+    to: c.email,
+    subject: `Payment received — ${c.title}`,
+    text: [
+      `Your payment of ${formatPrice(c.price_cents)} was received and your commission is now in progress.`,
+      '',
+      'You\'ll get another email with a download link when it\'s finished.',
+      '',
+      `Check status: ${statusUrl(c.id)}`,
+    ].join('\n'),
+  })
+}
+
+function sendExpired(c) {
+  return sendQuietly({
+    to: c.email,
+    subject: `Request cancelled — ${c.title}`,
+    text: [
+      'Your commission request was cancelled because payment wasn\'t received within 24 hours of acceptance.',
+      '',
+      'You\'re welcome to submit a new request.',
+      '',
+      `Status page: ${statusUrl(c.id)}`,
+    ].join('\n'),
+  })
+}
+
+function sendCompleted(c) {
+  return sendQuietly({
+    to: c.email,
+    subject: `Your commission is ready — ${c.title}`,
+    text: [
+      'Your commission is finished!',
+      '',
+      `Download it here: ${statusUrl(c.id)}`,
+      '',
+      'The page gives you fresh download links whenever you visit, so you can come back to it any time.',
+    ].join('\n'),
+  })
+}
+
 module.exports = {
   statusUrl,
   sendVerificationCode,
   sendTrackingId,
   notifyNewCommission,
+  sendApproved,
+  sendRejected,
+  sendPaymentConfirmed,
+  sendExpired,
+  sendCompleted,
 }
