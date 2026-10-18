@@ -7,10 +7,10 @@ const bucket = () => supabase.storage.from(env.storageBucket)
 
 // uploads files in parallel to commissionId/fileType/n.ext and returns their paths.
 // if any upload fails, the ones that succeeded are removed before throwing.
-async function uploadFiles(commissionId, fileType, files) {
+async function uploadFiles(commissionId, fileType, files, { startAt = 1 } = {}) {
   const results = await Promise.allSettled(
     files.map(async (file, i) => {
-      const path = `${commissionId}/${fileType}/${i + 1}.${file.ext}`
+      const path = `${commissionId}/${fileType}/${startAt + i}.${file.ext}`
       const { error } = await bucket().upload(path, file.buffer, { contentType: file.mime, upsert: false })
       if (error) throw error
       return path
