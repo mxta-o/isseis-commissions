@@ -3,6 +3,7 @@ const cors = require('cors')
 const { env } = require('./config/env')
 const { healthRouter } = require('./routes/health')
 const { publicRouter } = require('./routes/public')
+const { adminRouter } = require('./routes/admin')
 const { errorHandler } = require('./middleware/errorHandler')
 
 const app = express()
@@ -17,6 +18,7 @@ app.use(cors({ origin: env.clientUrl }))
 app.use(express.json({ limit: '16kb' }))
 
 app.use('/api/health', healthRouter)
+app.use('/api/admin', adminRouter)
 app.use('/api', publicRouter)
 
 app.use('/api', (req, res) => res.status(404).json({ message: 'Not found.' }))
