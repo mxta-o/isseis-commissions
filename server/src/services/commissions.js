@@ -78,7 +78,73 @@ async function listFilePaths(commissionId, fileType) {
   return data.map(row => row.storage_path)
 }
 
+// admin vv
+
+const ADMIN_COLUMNS =
+  'id, email, title, description, tier, status, price_cents, payment_deadline, paid_at, cancellation_reason, created_at, updated_at'
+
+// newest first. capped so the console stays fast. the commission site won't get near this anytime soon so itll be fine
+async function listCommissions(limit = 500) {
+  const { data, error } = await supabase
+    .from('commissions')
+    .select(`${ADMIN_COLUMNS}, commission_files(count)`)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  check(error)
+  return data
+}
+
+async function getCommission(id) {
+  const { data, error } = await supabase.from('commissions').select(ADMIN_COLUMNS).eq('id', id).maybeSingle()
+  check(error)
+  return data
+}
+
+// only updates the row if it's still in `from`.
+// returns the updated row or null if the row is gone or someone already moved it
+async function applyTransition(id, from, patch) {
+  const { data, error } = await supabase
+    .from('commissions')
+    .update(patch)
+    .eq('id', id)
+    .eq('status', from)
+    .select(ADMIN_COLUMNS)
+    .maybeSingle()
+  check(error)
+  return data
+}
+
+async function listFiles(commissionId) {
+  const { data, error } = await supabase
+    .from('commission_files')
+    .select('id, storage_path, file_type, uploaded_at')
+    .eq('commission_id', commissionId)
+    .order('uploaded_at')
+    .order('storage_path')
+  check(error)
+  return data
+}
+
+// the file_type filter is part of the delete itself so the ref img can never be removed through this even if its id is passed in
+async function deleteFile(commissionId, fileId, fileType) {
+  const { data, error } = await supabase
+    .from('commission_files')
+    .delete()
+    .eq('id', fileId)
+    .eq('commission_id', commissionId)
+    .eq('file_type', fileType)
+    .select('storage_path, file_type')
+    .maybeSingle()
+  check(error)
+  return data
+}
+
 module.exports = {
+  listCommissions,
+  getCommission,
+  applyTransition,
+  listFiles,
+  deleteFile,
   findByIdempotencyKey,
   findRecentByEmail,
   insertCommission,
