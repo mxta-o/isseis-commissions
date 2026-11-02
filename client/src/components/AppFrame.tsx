@@ -14,6 +14,8 @@ const TITLES: Record<Screen, string> = {
   request: 'COMMISSION REQUEST', status: 'CHECK STATUS', admin: 'ADMIN CONSOLE',
 }
 
+const TODAY = new Date().toLocaleDateString('en-CA') // local YYYY-MM-DD
+
 // Beige in-app chrome: header strip, rule, footer hint bar
 export default function AppFrame({ screen, onMenu, onExit, children }: Props): React.ReactElement {
   return (
@@ -27,7 +29,7 @@ export default function AppFrame({ screen, onMenu, onExit, children }: Props): R
         <span className="mono" style={{ fontSize: 11, letterSpacing: '0.22em', color: 'var(--n-ink-2)' }}>{'// ' + TITLES[screen]}</span>
         <span style={{ flex: 1 }} />
         <span className="mono" style={{ fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)' }}>LINK: STABLE</span>
-        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)' }}>2026-07-20</span>
+        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)' }}>{TODAY}</span>
       </div>
       <div style={{ position: 'relative', zIndex: 2, margin: '0 48px', height: 2, background: 'linear-gradient(90deg,var(--n-ink) 0%,var(--n-ink) 34%,rgba(69,65,54,0.18) 100%)' }} />
 
@@ -39,7 +41,7 @@ export default function AppFrame({ screen, onMenu, onExit, children }: Props): R
         </span>
         <span>[CLICK] SELECT</span>
         <span style={{ flex: 1 }} />
-        <span>PROTOTYPE v0.2 — SIMULATED DATA</span>
+        <span>ISSEI'S COMMS v0.3</span>
       </div>
     </div>
   )
