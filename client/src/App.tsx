@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
 import Landing from './pages/Landing'          // existing boot screen (BootLog)
 import PreTitle from './pages/PreTitle'
 import TitleScreen from './pages/TitleScreen'
@@ -9,16 +9,22 @@ import Gallery from './pages/Gallery'
 import About from './pages/About'
 import CommissionRequest from './pages/CommissionRequest'
 import CheckStatus from './pages/CheckStatus'
-import AdminConsole from './pages/AdminConsole'
-import { SAMPLE_COMMISSIONS, type Commission } from './lib/commissions'
+
+// split into its own chunk: it pulls in the supabase client, which buyers never need
+const AdminConsole = lazy(() => import('./pages/AdminConsole'))
 
 type Stage = 'boot' | 'pretitle' | 'title' | 'app'
 const FADE_MS = 300
 const DEV_STAGE_KEY = 'dev:stage'
 
+// Emailed status links look like /?id=<tracking id>. They skip the boot intro and open the
+// status page with that ID already looked up.
+const DEEP_LINK_ID = new URLSearchParams(window.location.search).get('id') ?? undefined
+
 // In dev, HMR reloads would otherwise replay the whole boot sequence — by far the most
 // expensive thing the app renders. Resume where we left off instead; ?intro=1 forces a replay.
 function initialStage(): Stage {
+  if (DEEP_LINK_ID) return 'app'
   if (!import.meta.env.DEV) return 'boot'
   if (new URLSearchParams(window.location.search).has('intro')) return 'boot'
   const saved = sessionStorage.getItem(DEV_STAGE_KEY)
@@ -29,12 +35,11 @@ function initialStage(): Stage {
 // Replaces the Landing/TitleScreen switch previously in main.tsx — render <App /> from main.tsx.
 export default function App(): React.ReactElement {
   const [stage, setStage] = useState<Stage>(initialStage)
-  const [screen, setScreen] = useState<Screen>('menu')
-  const [statusPrefill, setStatusPrefill] = useState<string | undefined>()
+  const [screen, setScreen] = useState<Screen>(DEEP_LINK_ID ? 'status' : 'menu')
+  const [statusPrefill, setStatusPrefill] = useState<string | undefined>(DEEP_LINK_ID)
   const [overlay, setOverlay] = useState<'none' | 'in' | 'out'>('none')
   const [confirmExit, setConfirmExit] = useState(false)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
-  const [commissions, setCommissions] = useState<Commission[]>(SAMPLE_COMMISSIONS)
   const fading = useRef(false)
   const timers = useRef<number[]>([])
 
@@ -90,10 +95,6 @@ export default function App(): React.ReactElement {
     setToastMsg(msg)
     later(() => setToastMsg(null), 4000)
   }
-  function addCommission(c: Commission) { setCommissions(cs => [c, ...cs]) }
-  function patch(id: string, p: Partial<Commission>) {
-    setCommissions(cs => cs.map(c => (c.id === id ? { ...c, ...p } : c)))
-  }
 
   return (
     <>
@@ -105,9 +106,13 @@ export default function App(): React.ReactElement {
           {screen === 'menu' && <MainMenu nav={nav} />}
           {screen === 'gallery' && <Gallery />}
           {screen === 'about' && <About />}
-          {screen === 'request' && <CommissionRequest addCommission={addCommission} toast={toast} nav={nav} />}
-          {screen === 'status' && <CheckStatus key={statusPrefill ?? 'blank'} commissions={commissions} prefill={statusPrefill} toast={toast} />}
-          {screen === 'admin' && <AdminConsole commissions={commissions} patch={patch} toast={toast} />}
+          {screen === 'request' && <CommissionRequest toast={toast} nav={nav} />}
+          {screen === 'status' && <CheckStatus key={statusPrefill ?? 'blank'} prefill={statusPrefill} toast={toast} />}
+          {screen === 'admin' && (
+            <Suspense fallback={<div className="mono" style={{ fontSize: 12, letterSpacing: '0.22em', color: 'var(--n-ink-2)' }}>LOADING CONSOLE…</div>}>
+              <AdminConsole toast={toast} />
+            </Suspense>
+          )}
         </AppFrame>
       )}
 
