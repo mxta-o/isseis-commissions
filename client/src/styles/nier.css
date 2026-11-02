@@ -138,6 +138,7 @@
 .btn-danger-ghost:hover{background:var(--n-red);color:var(--n-cream)}
 .btn-danger{background:var(--n-red);color:var(--n-cream);border:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.2em;padding:12px 22px;cursor:pointer;transition:background .12s}
 .btn-danger:hover{background:#5e211c}
+button:disabled{opacity:.55;cursor:wait}
 
 .tag-btn{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.18em;padding:8px 16px;border:1px solid rgba(69,65,54,0.45);cursor:pointer;background:transparent;color:var(--n-ink);transition:background .12s,color .12s}
 .tag-btn:hover,.tag-btn.on{background:var(--n-ink);color:var(--n-cream)}
