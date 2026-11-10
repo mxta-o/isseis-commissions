@@ -121,6 +121,13 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
       {/* film grain + scanlines */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.18, mixBlendMode: 'soft-light', backgroundImage: NOISE }} />
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.35, mixBlendMode: 'overlay', backgroundImage: 'repeating-linear-gradient(0deg,rgba(255,255,255,0.04) 0px,rgba(255,255,255,0.04) 1px,transparent 1px,transparent 4px)' }} />
+      {/* hollow rings cut off by two opposite corners; sized in vw so they stay clear of the title */}
+      <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+        <span style={{ position: 'absolute', left: '-22.9vw', top: '-22.9vw', width: '52.8vw', height: '52.8vw', border: '1px solid rgba(243,233,218,0.16)', borderRadius: '50%' }} />
+        <span style={{ position: 'absolute', left: '-20.8vw', top: '-20.8vw', width: '48.6vw', height: '48.6vw', border: '1px solid rgba(243,233,218,0.1)', borderRadius: '50%' }} />
+        <span style={{ position: 'absolute', right: '-26.4vw', bottom: '-29.2vw', width: '62.5vw', height: '62.5vw', border: '1px solid rgba(243,233,218,0.16)', borderRadius: '50%' }} />
+        <span style={{ position: 'absolute', right: '-24.3vw', bottom: '-27.1vw', width: '58.3vw', height: '58.3vw', border: '1px solid rgba(243,233,218,0.1)', borderRadius: '50%' }} />
+      </div>
       {/* particles */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
         {particles.map((p, i) => (
@@ -191,6 +198,11 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
             <span style={{ height: 1, width: 'clamp(140px,24vw,280px)', background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.8),transparent)' }} />
           </div>
         </div>
+      </div>
+
+      {/* licence line */}
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 34, zIndex: 10, padding: '0 1rem', textAlign: 'center', fontFamily: 'var(--font-accent)', fontSize: 'clamp(10px,1vw,13px)', letterSpacing: '0.22em', color: 'rgba(243,233,218,0.8)', animation: `sub-real ${A16}` }}>
+        © {new Date().getFullYear()} ISSEI · ALL ARTWORK BELONGS TO THE ARTIST
       </div>
     </div>
   )
