@@ -1,51 +1,59 @@
 import React from 'react'
-import { ScreenHead, Slot } from '../components/AppFrame'
+import { ScreenHead, Slot, type Screen } from '../components/AppFrame'
 import { WILL_DRAW, WONT_DRAW } from '../lib/commissions'
 
-export default function About(): React.ReactElement {
+type Props = { nav: (s: Screen) => void }
+
+export default function About({ nav }: Props): React.ReactElement {
   return (
     <div className="screen-in">
-      <ScreenHead title="ABOUT" kicker="ARTIST PROFILE — UNIT DESIGNATION: LORAINE" />
-      <div style={{ display: 'flex', gap: 56, marginTop: 36, flexWrap: 'wrap' }}>
-        <div style={{ flex: 1.1, minWidth: 320, maxWidth: 600 }}>
-          <div style={{ display: 'flex', gap: 26, alignItems: 'flex-start' }}>
-            <div style={{ width: 140, height: 140, flex: 'none', border: '1px solid rgba(69,65,54,0.4)', padding: 5, background: '#c2bda6' }}>
-              <Slot label="artist portrait" />
-            </div>
-            <div>
-              <div style={{ fontWeight: 400, fontSize: 22, letterSpacing: '0.14em' }}>LORAINE</div>
-              <div className="mono" style={{ fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)', marginTop: 8 }}>DIGITAL ILLUSTRATOR</div>
-              <div className="mono" style={{ display: 'flex', gap: 18, marginTop: 18, fontSize: 11, letterSpacing: '0.16em' }}>
-                <a href="#" onClick={e => e.preventDefault()}>[ TWITTER/X ]</a>
-                <a href="#" onClick={e => e.preventDefault()}>[ INSTAGRAM ]</a>
-                <a href="#" onClick={e => e.preventDefault()}>[ VGEN ]</a>
+      <ScreenHead title="ABOUT" sub="Artist Profile" />
+      <div className="n-cols" style={{ marginTop: 32 }}>
+        <div className="n-col n-panel" style={{ flex: '1.6 1 380px' }}>
+          <div className="n-panel-head"><span className="grow">LORAINE</span><small>Digital Illustrator</small></div>
+          <div className="n-panel-body">
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              <div style={{ width: 150, height: 150, flex: 'none' }}><Slot label="artist portrait" /></div>
+              <div className="n-stack" style={{ flex: '1 1 220px', gap: 8 }}>
+                <div className="n-kv"><span>Focus:</span><span>Character art</span></div>
+                <div className="n-kv"><span>Payment:</span><span>Ko-fi</span></div>
+                <div className="n-kv"><span>Revisions:</span><span>None — final</span></div>
+                <div className="n-line" />
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 4 }}>
+                  <a className="tag-btn" href="#" onClick={e => e.preventDefault()} style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>Twitter/X</a>
+                  <a className="tag-btn" href="#" onClick={e => e.preventDefault()} style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>Instagram</a>
+                  <a className="tag-btn" href="#" onClick={e => e.preventDefault()} style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>VGen</a>
+                </div>
               </div>
             </div>
-          </div>
-          <div style={{ marginTop: 30, fontWeight: 200, fontSize: 16, lineHeight: 1.9, maxWidth: '56ch' }}>
-            <p style={{ margin: '0 0 16px' }}>{'// placeholder bio — replace with Loraine\u2019s own words //'}</p>
-            <p style={{ margin: '0 0 16px' }}>Loraine is a digital illustrator focused on character art — expressive portraits, full-body designs, and quiet, atmospheric scenes. Comfortable across original characters, fanart, and tabletop-party commissions.</p>
-            <p style={{ margin: 0 }}>Every piece is drawn to order. Delivery is final — no revision rounds — so the intake form asks for everything up front: clear references, palette notes, and the mood you're after.</p>
+            <div className="n-line" />
+            <div className="n-text" style={{ maxWidth: '60ch' }}>
+              <p style={{ margin: '0 0 12px' }}>{'// placeholder bio — replace with Loraine’s own words //'}</p>
+              <p style={{ margin: '0 0 12px' }}>Loraine is a digital illustrator focused on character art — expressive portraits, full-body designs, and quiet, atmospheric scenes. Comfortable across original characters, fanart, and tabletop-party commissions.</p>
+              <p style={{ margin: 0 }}>Every piece is drawn to order. Delivery is final — no revision rounds — so the intake form asks for everything up front: clear references, palette notes, and the mood you're after.</p>
+            </div>
           </div>
         </div>
-        <div style={{ flex: 1, minWidth: 300, maxWidth: 520 }}>
-          <div className="mono" style={{ fontSize: 11, letterSpacing: '0.3em', color: 'var(--n-ink-2)', marginBottom: 16 }}>COMMISSION RULESET</div>
-          <div style={{ border: '1px solid rgba(69,65,54,0.4)', background: 'rgba(69,65,54,0.06)', padding: '24px 26px' }}>
-            <div className="mono" style={{ fontSize: 12, letterSpacing: '0.2em', marginBottom: 12 }}>[ WILL DRAW ]</div>
-            {WILL_DRAW.map(w => (
-              <div key={w} style={{ display: 'flex', gap: 12, alignItems: 'baseline', fontWeight: 200, fontSize: 15, lineHeight: 2 }}>
-                <span style={{ width: 7, height: 7, background: 'var(--n-ink)', flex: 'none', transform: 'translateY(-2px)' }} /><span>{w}</span>
-              </div>
-            ))}
-            <div style={{ height: 1, background: 'rgba(69,65,54,0.3)', margin: '18px 0' }} />
-            <div className="mono" style={{ fontSize: 12, letterSpacing: '0.2em', marginBottom: 12, color: 'var(--n-red)' }}>[ WON'T DRAW ]</div>
-            {WONT_DRAW.map(w => (
-              <div key={w} style={{ display: 'flex', gap: 12, alignItems: 'baseline', fontWeight: 200, fontSize: 15, lineHeight: 2, color: '#5d4a42' }}>
-                <span style={{ width: 7, height: 7, background: 'var(--n-red)', flex: 'none', transform: 'translateY(-2px)' }} /><span>{w}</span>
-              </div>
-            ))}
+
+        <div className="n-col n-panel" style={{ flex: '1 1 260px' }}>
+          <div className="n-panel-head"><span className="sq" aria-hidden />Will Draw</div>
+          <div className="n-panel-body">
+            <ul className="n-bullets">
+              {WILL_DRAW.map(w => <li key={w}><span className="dia" aria-hidden />{w}</li>)}
+            </ul>
           </div>
-          <div className="mono" style={{ fontSize: 10, letterSpacing: '0.16em', color: 'var(--n-ink-2)', marginTop: 12 }}>RULESET IS FINAL — REQUESTS OUTSIDE IT ARE REJECTED AT REVIEW.</div>
+        </div>
+
+        <div className="n-col n-panel" style={{ flex: '1 1 260px' }}>
+          <div className="n-panel-head red"><span aria-hidden style={{ width: 14, height: 14, boxSizing: 'border-box', border: '2px solid currentColor' }} />Won't Draw</div>
+          <div className="n-panel-body">
+            <ul className="n-bullets">
+              {WONT_DRAW.map(w => <li key={w}><span aria-hidden style={{ width: 12, height: 2, background: 'var(--n-red)', flex: 'none' }} />{w}</li>)}
+            </ul>
+            <div className="n-small">The ruleset is final — requests outside it are rejected at review.</div>
+            <span className="grow" />
+            <button className="btn-solid" onClick={() => nav('request')}><span className="sq" aria-hidden />Start a request</button>
+          </div>
         </div>
       </div>
     </div>

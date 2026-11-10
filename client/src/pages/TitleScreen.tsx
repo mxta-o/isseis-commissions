@@ -52,53 +52,28 @@ const AFTER_BLK: Box[] = [
   { l: '17%', t: '-30%', w: '0.45em', h: '0.22em', bg: '#a49e8f', o: 0.7 }, { l: '64%', t: '-24%', w: '0.3em', h: '0.3em', bg: '#f5f4de', o: 0.75 },
   { l: '72%', t: '-30%', w: '0.4em', h: '0.2em', bg: '#cfc9b8', o: 0.65 },
 ]
-// Jagged transition zone over the plate's left edge (mixed white/dark)
-const EDGE_BITS: Box[] = [
-  { l: '1%', t: '18%', w: '5px', h: '4px', bg: 'rgba(45,40,34,0.8)' }, { l: '7%', t: '6%', w: '4px', h: '4px', bg: '#fffefa' },
-  { l: '11%', t: '38%', w: '6px', h: '5px', bg: 'rgba(45,40,34,0.7)' }, { l: '4%', t: '56%', w: '4px', h: '3px', bg: '#fffefa', o: 0.85 },
-  { l: '15%', t: '14%', w: '7px', h: '4px', bg: 'rgba(45,40,34,0.6)' }, { l: '19%', t: '60%', w: '5px', h: '5px', bg: '#fffefa' },
-  { l: '9%', t: '76%', w: '6px', h: '4px', bg: 'rgba(45,40,34,0.75)' }, { l: '23%', t: '30%', w: '4px', h: '4px', bg: '#fffefa', o: 0.8 },
-  { l: '26%', t: '70%', w: '6px', h: '3px', bg: 'rgba(45,40,34,0.65)' }, { l: '13%', t: '88%', w: '5px', h: '3px', bg: '#fffefa', o: 0.7 },
+// The plate behind "…missions", in the wordmark SVG's own units (1100 x 136, baseline rule at
+// y=124). Each entry is [x, y, width, height]. PLATE is what the plate covers: the solid block,
+// the three steps eaten out of its top-left corner, the strip running left along the baseline,
+// and the loose debris above and beside it. PLATE_HOLES are notches punched back out of it.
+// The left edge sits mid-way through the second "m", so that letter is half cream, half dark.
+// Positions are deliberate (placed against Marcellus at 116px); don't randomise.
+type Rect = [number, number, number, number, number?]
+const PLATE: Rect[] = [
+  [706, 40, 335, 84], [690, 48, 16, 76], [676, 60, 14, 64], [664, 74, 12, 50],
+  [656, 84, 8, 8], [650, 100, 14, 6], [658, 110, 6, 6], [600, 116, 40, 8], [646, 116, 18, 8],
+  [678, 48, 8, 6], [662, 62, 8, 6], [644, 70, 6, 6], [636, 90, 5, 5],
+  [708, 30, 20, 7], [734, 33, 8, 7], [748, 26, 12, 6], [800, 34, 8, 6], [722, 20, 8, 6],
+  [818, 33, 14, 7], [846, 35, 6, 5], [790, 22, 6, 6],
 ]
-// Dark ticks below the baseline (right half of the plate)
-const BELOW_TICKS: Box[] = [
-  { l: '58%', t: '3px', w: '7px', h: '3px', bg: 'rgba(50,44,37,0.75)' }, { l: '66%', t: '1px', w: '4px', h: '3px', bg: 'rgba(50,44,37,0.74)' },
-  { l: '74%', t: '4px', w: '9px', h: '3px', bg: 'rgba(50,44,37,0.68)' }, { l: '83%', t: '2px', w: '5px', h: '4px', bg: 'rgba(50,44,37,0.76)' },
-  { l: '91%', t: '5px', w: '6px', h: '3px', bg: 'rgba(50,44,37,0.75)' }, { l: '97%', t: '1px', w: '4px', h: '3px', bg: 'rgba(50,44,37,0.60)' },
+const PLATE_HOLES: Rect[] = [
+  [664, 92, 8, 8], [672, 74, 8, 6], [684, 60, 8, 6], [700, 48, 8, 6], [676, 104, 6, 6], [712, 40, 12, 5], [690, 80, 6, 6],
 ]
-// Settled debris field above the plate (the NieR overspill) — positions are deliberate; do not regenerate
-const ABOVE_DEBRIS: Box[] = [
-  { l: '7.2%', b: '11.2px', w: '3.6px', h: '3.4px', bg: '#fffefa', o: 0.84 }, { l: '38.1%', b: '9.3px', w: '2.1px', h: '4.1px', bg: '#fffefa', o: 0.51 },
-  { l: '55.2%', b: '10.5px', w: '7.0px', h: '5.0px', bg: '#fffefa' }, { l: '36.9%', b: '0px', w: '3.8px', h: '5.7px', bg: '#fffefa' },
-  { l: '-1.8%', b: '0px', w: '4.4px', h: '5.4px', bg: '#fffefa' }, { l: '82.9%', b: '4.0px', w: '5.5px', h: '4.3px', bg: '#fffefa', o: 0.8 },
-  { l: '65.2%', b: '3.2px', w: '7.4px', h: '4.2px', bg: '#fffefa' }, { l: '62.9%', b: '0px', w: '4.6px', h: '3.9px', bg: '#fffefa' },
-  { l: '47.9%', b: '12.6px', w: '5.9px', h: '4.3px', bg: 'rgba(50,44,37,0.84)' }, { l: '89.5%', b: '0px', w: '5.5px', h: '4.3px', bg: 'rgba(50,44,37,0.92)' },
-  { l: '44.6%', b: '4.5px', w: '2.9px', h: '3.7px', bg: '#fffefa' }, { l: '12.2%', b: '7.1px', w: '4.5px', h: '2.1px', bg: '#fffefa' },
-  { l: '48.7%', b: '0px', w: '5.2px', h: '4.8px', bg: '#fffefa' }, { l: '39.5%', b: '4.3px', w: '4.4px', h: '5.7px', bg: '#fffefa' },
-  { l: '69.4%', b: '0px', w: '5.1px', h: '5.7px', bg: '#fffefa' }, { l: '91.8%', b: '6.9px', w: '4.2px', h: '2.2px', bg: '#fffefa' },
-  { l: '77.9%', b: '10.5px', w: '8.3px', h: '4.4px', bg: '#fffefa' }, { l: '58.3%', b: '7.1px', w: '2.3px', h: '3.3px', bg: '#fffefa' },
-  { l: '14.1%', b: '3.9px', w: '5.7px', h: '5.3px', bg: '#fffefa' }, { l: '76.1%', b: '0px', w: '6.2px', h: '5.4px', bg: '#fffefa', o: 0.56 },
-  { l: '21.2%', b: '0px', w: '3.0px', h: '4.0px', bg: '#fffefa' }, { l: '93.5%', b: '0px', w: '8.3px', h: '5.2px', bg: '#fffefa' },
-  { l: '31.1%', b: '0px', w: '8.3px', h: '5.5px', bg: '#fffefa' }, { l: '101.7%', b: '11.9px', w: '5.2px', h: '3.7px', bg: '#fffefa' },
-  { l: '87.8%', b: '8.1px', w: '6.4px', h: '4.2px', bg: '#fffefa' }, { l: '29.2%', b: '4.8px', w: '5.2px', h: '4.5px', bg: 'rgba(50,44,37,0.84)' },
-  { l: '54.9%', b: '0px', w: '4.1px', h: '3.3px', bg: '#fffefa', o: 0.77 }, { l: '90.3%', b: '8.7px', w: '4.4px', h: '3.7px', bg: 'rgba(50,44,37,0.70)' },
-  { l: '46.1%', b: '0px', w: '4.1px', h: '2.3px', bg: 'rgba(50,44,37,0.71)' }, { l: '34.9%', b: '3.8px', w: '8.1px', h: '5.3px', bg: '#fffefa' },
-  { l: '69.1%', b: '0px', w: '9.0px', h: '2.1px', bg: '#fffefa' }, { l: '52.6%', b: '14.7px', w: '5.9px', h: '4.1px', bg: '#fffefa' },
-  { l: '29.0%', b: '0px', w: '8.4px', h: '3.6px', bg: '#fffefa', o: 0.73 }, { l: '27.2%', b: '4.9px', w: '6.7px', h: '2.2px', bg: '#fffefa' },
-  { l: '76.6%', b: '6.0px', w: '4.5px', h: '3.9px', bg: '#fffefa' }, { l: '47.8%', b: '0px', w: '5.6px', h: '3.8px', bg: 'rgba(50,44,37,0.79)' },
-  { l: '6.6%', b: '0px', w: '3.6px', h: '5.6px', bg: 'rgba(50,44,37,0.69)' }, { l: '62.9%', b: '14.2px', w: '2.0px', h: '3.1px', bg: '#fffefa' },
-  { l: '90.3%', b: '2.4px', w: '3.1px', h: '5.0px', bg: '#fffefa' }, { l: '13.1%', b: '0px', w: '4.7px', h: '5.3px', bg: '#fffefa', o: 0.5 },
-  { l: '12%', b: '0', w: '13px', h: '8px', bg: '#fffefa' }, { l: '30%', b: '3px', w: '11px', h: '6px', bg: '#fffefa', o: 0.9 },
-  { r: '0', b: '0', w: '22px', h: '11px', bg: '#fffefa' }, { r: '8px', b: '0', w: '8px', h: '17px', bg: '#fffefa' },
-  { r: '-14px', b: '9px', w: '6px', h: '5px', bg: 'rgba(50,44,37,0.85)' }, { r: '-22px', b: '4px', w: '4px', h: '4px', bg: '#fffefa', o: 0.7 },
-]
-// Dark specks scattered on the plate itself
-const PLATE_SPECKS: Box[] = [
-  { l: '14%', t: '9px', w: '7px', h: '4px', bg: 'rgba(56,50,42,0.73)' }, { l: '23%', t: '12px', w: '5px', h: '5px', bg: 'rgba(56,50,42,0.52)' },
-  { l: '31%', t: '8px', w: '9px', h: '4px', bg: 'rgba(56,50,42,0.55)' }, { l: '44%', t: '11px', w: '6px', h: '6px', bg: 'rgba(56,50,42,0.66)' },
-  { l: '52%', t: '9px', w: '4px', h: '4px', bg: 'rgba(56,50,42,0.75)' }, { l: '63%', t: '13px', w: '8px', h: '4px', bg: 'rgba(56,50,42,0.54)' },
-  { l: '71%', t: '8px', w: '5px', h: '5px', bg: 'rgba(56,50,42,0.61)' },
-]
+// two grey fragments in the debris band (last number is opacity)
+const PLATE_GREY: Rect[] = [[770, 31, 24, 9], [756, 16, 10, 6, 0.7]]
+const rect = ([x, y, w, h, o]: Rect, i: number) => <rect key={i} x={x} y={y} width={w} height={h} opacity={o} />
+// where the title text sits inside the SVG
+const T = { x: 59, y: 123, fontSize: 116 }
 
 type Particle = { x: string; y: string; s: string; o: string; blur: string; anim: string }
 function genParticles(): Particle[] {
@@ -158,15 +133,41 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
 
       <div style={{ position: 'relative', zIndex: 10, minHeight: '100vh', display: 'grid', placeItems: 'center', textAlign: 'center', padding: '4rem 1.5rem' }}>
         <div>
-          <h1 style={{ margin: 0, position: 'relative', display: 'inline-block', fontFamily: 'var(--font-title)', fontSize: 'clamp(2.5rem,4.5vw,4.6rem)', fontWeight: 400, letterSpacing: '0.05em', lineHeight: 1.15, whiteSpace: 'nowrap', animation: 'tg-twitch 8s steps(1,end) 4s infinite' }}>
-            {/* chromatic ghosts (reveal + idle loop) */}
-            <span aria-hidden className="tgl" style={{ zIndex: 0, color: 'rgba(255,84,74,0.78)', mixBlendMode: 'screen', animation: `tg-rgbr ${A16},tg-loop1 7s steps(1,end) 4.5s infinite` }}>{TITLE}</span>
-            <span aria-hidden className="tgl" style={{ zIndex: 0, color: 'rgba(88,214,255,0.72)', mixBlendMode: 'screen', animation: `tg-rgbc ${A16},tg-loop2 7.6s steps(1,end) 4.9s infinite` }}>{TITLE}</span>
-            {/* smears + tears */}
-            <span aria-hidden className="tgl" style={{ zIndex: 2, color: 'rgba(245,244,222,0.7)', animation: `tg-smear1 ${A16}` }}>{TITLE}</span>
-            <span aria-hidden className="tgl" style={{ zIndex: 2, color: 'rgba(245,244,222,0.6)', animation: `tg-smear2 ${A16}` }}>{TITLE}</span>
-            <span aria-hidden className="tgl" style={{ zIndex: 2, color: '#f5f4de', animation: `tg-tear1 ${A16}` }}>{TITLE}</span>
-            <span aria-hidden className="tgl" style={{ zIndex: 2, color: '#f5f4de', animation: `tg-tear2 ${A16}` }}>{TITLE}</span>
+          {/* The wordmark is an SVG so the plate can be one mask: everything inside the mask is cream
+              with dark letters, everything outside is cream letters on the sky. The h1 is sized in em
+              (9.483em x 1.172em = the 1100x136 viewBox at 116px type) so the glitch layers still line up. */}
+          <h1 aria-label={TITLE} style={{ margin: 0, position: 'relative', display: 'inline-block', fontFamily: 'var(--font-title)', fontSize: 'clamp(1.9rem,7.4vw,6.4rem)', fontWeight: 400, lineHeight: 1, animation: 'tg-twitch 8s steps(1,end) 4s infinite' }}>
+            <svg aria-hidden viewBox="0 0 1100 136" style={{ display: 'block', width: '9.483em', height: '1.172em', overflow: 'visible' }}>
+              <defs>
+                <mask id="tw-plate" maskUnits="userSpaceOnUse" x="0" y="0" width="1100" height="136">
+                  <g fill="#fff">{PLATE.map(rect)}</g>
+                  <g fill="#000">{PLATE_HOLES.map(rect)}</g>
+                </mask>
+                <linearGradient id="tw-line" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0" stopColor="#f3e9da" stopOpacity="0" /><stop offset="0.12" stopColor="#f3e9da" stopOpacity="0.9" />
+                  <stop offset="0.88" stopColor="#f3e9da" stopOpacity="0.9" /><stop offset="1" stopColor="#f3e9da" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              {/* chromatic ghosts (reveal + idle loop) */}
+              <text {...T} fill="rgba(255,84,74,0.78)" style={{ opacity: 0, mixBlendMode: 'screen', animation: `tg-rgbr ${A16},tg-loop1 7s steps(1,end) 4.5s infinite` }}>{TITLE}</text>
+              <text {...T} fill="rgba(88,214,255,0.72)" style={{ opacity: 0, mixBlendMode: 'screen', animation: `tg-rgbc ${A16},tg-loop2 7.6s steps(1,end) 4.9s infinite` }}>{TITLE}</text>
+              {/* the settled wordmark */}
+              <g style={{ animation: `tg-textin ${A16}` }}>
+                <text {...T} fill="#f5f4de">{TITLE}</text>
+                <g style={{ animation: `tg-plate ${A16},tg-platejit 7s steps(1,end) 4.5s infinite` }}>
+                  <rect width="1100" height="136" fill="#f5f4de" mask="url(#tw-plate)" />
+                  <text {...T} fill="#25202a" mask="url(#tw-plate)">{TITLE}</text>
+                  <g fill="#a49e8f">{PLATE_GREY.map(rect)}</g>
+                </g>
+              </g>
+              {/* smears + tears */}
+              <text {...T} fill="rgba(245,244,222,0.7)" style={{ opacity: 0, animation: `tg-smear1 ${A16}` }}>{TITLE}</text>
+              <text {...T} fill="rgba(245,244,222,0.6)" style={{ opacity: 0, animation: `tg-smear2 ${A16}` }}>{TITLE}</text>
+              <text {...T} fill="#f5f4de" style={{ opacity: 0, animation: `tg-tear1 ${A16}` }}>{TITLE}</text>
+              <text {...T} fill="#f5f4de" style={{ opacity: 0, animation: `tg-tear2 ${A16}` }}>{TITLE}</text>
+              {/* baseline hairline */}
+              <rect x="-70" y="124" width="1240" height="1" fill="url(#tw-line)" style={{ animation: `tg-bit ${A16}` }} />
+            </svg>
             {/* block flash + mosaic sweeps */}
             <span aria-hidden className="tgl" style={{ zIndex: 3, animation: `tg-blocks ${A16},tg-blockjit ${A16}` }}>{FLASH_BLOCKS.map(box)}</span>
             <span aria-hidden className="tgl-wide" style={{ zIndex: 3, animation: `tg-mzlow ${A16}` }}>{MZ_LOW.map(box)}</span>
@@ -174,21 +175,6 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
             <span aria-hidden className="tgl-wide" style={{ zIndex: 3, animation: `tg-mztop ${A16}` }}>{MZ_TOP.map(box)}</span>
             <span aria-hidden className="tgl" style={{ zIndex: 3, animation: `tg-noiseblk ${A16}` }}>{NOISE_BLK.map(box)}</span>
             <span aria-hidden className="tgl" style={{ zIndex: 3, animation: `tg-after ${A16}` }}>{AFTER_BLK.map(box)}</span>
-            {/* real text: white "Issei's Comm" + plate-inverted "issions" */}
-            <span style={{ position: 'relative', zIndex: 1, color: '#f5f4de', textShadow: '0 0 10px rgba(255,240,220,0.35),0 0 30px rgba(255,240,220,0.15)', animation: `tg-textin ${A16}` }}>
-              {"Issei's Comm"}
-              <span style={{ position: 'relative', display: 'inline-block', textShadow: 'none', padding: '0 0.55em 0 0.04em', animation: `tg-ink ${A16},tg-platejit 7s steps(1,end) 4.5s infinite` }}>
-                <span aria-hidden className="tg-plate" />
-                <span className="tg-ink-grad">issions</span>
-                <span aria-hidden className="tg-cap">issions</span>
-                <span aria-hidden style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none', animation: `tg-plate ${A16}` }}>{EDGE_BITS.map(box)}</span>
-                <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: '100%', height: 10, pointerEvents: 'none', animation: `tg-plate ${A16}` }}>{BELOW_TICKS.map(box)}</span>
-                <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: '100%', height: 22, pointerEvents: 'none', animation: `tg-plate ${A16}` }}>{ABOVE_DEBRIS.map(box)}</span>
-                <span aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', animation: `tg-plate ${A16}` }}>{PLATE_SPECKS.map(box)}</span>
-              </span>
-            </span>
-            {/* baseline hairline */}
-            <span style={{ position: 'absolute', left: '-10%', right: '-10%', height: 1, bottom: '0.06em', zIndex: 2, background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.9) 20%,rgba(243,233,218,0.9) 80%,transparent)', opacity: 0.8, animation: `tg-bit ${A16}` }} />
           </h1>
 
           <div style={{ position: 'relative', marginTop: '0.9rem', fontFamily: 'var(--font-accent)', fontSize: 'clamp(0.8rem,1.2vw,1rem)', letterSpacing: '0.28em', color: 'rgba(243,233,218,0.7)' }}>

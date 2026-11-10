@@ -4,60 +4,76 @@ export type Screen = 'menu' | 'gallery' | 'about' | 'request' | 'status' | 'admi
 
 type Props = {
   screen: Screen
-  onMenu: () => void
+  nav: (s: Screen) => void
   onExit: () => void
   children: React.ReactNode
 }
 
-const TITLES: Record<Screen, string> = {
-  menu: 'MAIN MENU', gallery: 'GALLERY', about: 'ABOUT',
-  request: 'COMMISSION REQUEST', status: 'CHECK STATUS', admin: 'ADMIN CONSOLE',
+// the section tabs across the top. admin is reached from the menu only, so it has no tab.
+const TABS: { key: Screen; label: string }[] = [
+  { key: 'gallery', label: 'GALLERY' },
+  { key: 'request', label: 'COMMISSION' },
+  { key: 'status', label: 'STATUS' },
+  { key: 'about', label: 'ABOUT' },
+]
+
+// one line of guidance in the footer bar, per screen
+const HINTS: Record<Screen, string> = {
+  menu: 'Select a destination.',
+  gallery: 'Select a work to view it.',
+  about: 'Who’s drawing, and what they will and won’t take on.',
+  request: 'Choose a type and describe what you’d like drawn.',
+  status: 'Enter a tracking ID to see where a commission stands.',
+  admin: 'Select an entry to review it.',
 }
 
-const TODAY = new Date().toLocaleDateString('en-CA') // local YYYY-MM-DD
+function Ornament(): React.ReactElement {
+  return <div aria-hidden><div className="n-rule" /><div className="n-orn" /></div>
+}
 
-// Beige in-app chrome: header strip, rule, footer hint bar
-export default function AppFrame({ screen, onMenu, onExit, children }: Props): React.ReactElement {
+// Beige in-app chrome: section tabs, ornament rules, footer hint bar
+export default function AppFrame({ screen, nav, onExit, children }: Props): React.ReactElement {
+  const onMenu = screen === 'menu'
   return (
     <div className="nier-app">
-      <div className="nier-grid" />
-      <div className="nier-scan" />
+      <div className="nier-weave" />
+      <div className="nier-deco" aria-hidden><i className="arc" /><i className="arc b" /><i className="diag" /><i className="diag b" /></div>
+      <div className="nier-vig" />
 
-      <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', gap: 20, padding: '22px 48px 14px', flexWrap: 'wrap' }}>
-        <span style={{ width: 10, height: 10, background: 'var(--n-ink)', display: 'inline-block', flex: 'none' }} />
-        <span className="mono" style={{ fontSize: 13, letterSpacing: '0.32em' }}>ISSEI'S COMMS</span>
-        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.22em', color: 'var(--n-ink-2)' }}>{'// ' + TITLES[screen]}</span>
-        <span style={{ flex: 1 }} />
-        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)' }}>LINK: STABLE</span>
-        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)' }}>{TODAY}</span>
-      </div>
-      <div style={{ position: 'relative', zIndex: 2, margin: '0 48px', height: 2, background: 'linear-gradient(90deg,var(--n-ink) 0%,var(--n-ink) 34%,rgba(69,65,54,0.18) 100%)' }} />
+      <div className="n-shell">
+        {!onMenu && (
+          <nav className="n-tabs" aria-label="Sections">
+            {TABS.map(t => (
+              <button key={t.key} className={`n-tab${screen === t.key ? ' on' : ''}`} aria-current={screen === t.key ? 'page' : undefined} onClick={() => nav(t.key)}>
+                <span className="sq" aria-hidden />{t.label}
+              </button>
+            ))}
+            <span className="grow" />
+            <button className="n-tab narrow" onClick={() => nav('menu')}><span className="sq" aria-hidden />MENU</button>
+          </nav>
+        )}
+        <Ornament />
 
-      <div style={{ position: 'relative', zIndex: 2, flex: 1, padding: '36px 48px 28px' }}>{children}</div>
+        <main className="n-body">{children}</main>
 
-      <div className="mono" style={{ position: 'relative', zIndex: 2, display: 'flex', gap: 28, padding: '14px 48px 20px', borderTop: '1px solid rgba(69,65,54,0.35)', fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)', flexWrap: 'wrap' }}>
-        <span className="hint-link" onClick={screen === 'menu' ? onExit : onMenu}>
-          {screen === 'menu' ? '[ESC] TITLE SCREEN' : '[ESC] MAIN MENU'}
-        </span>
-        <span>[CLICK] SELECT</span>
-        <span style={{ flex: 1 }} />
-        <span>ISSEI'S COMMS v0.3</span>
+        <div className="n-hint">
+          <div className="n-hint-msg">{HINTS[screen]}</div>
+          <div className="n-keys">
+            <span><span className="n-key">ENTER</span>Confirm</span>
+            <button onClick={onMenu ? onExit : () => nav('menu')}>
+              <span className="n-key">ESC</span>{onMenu ? 'Title Screen' : 'Menu'}
+            </button>
+          </div>
+        </div>
+        <Ornament />
       </div>
     </div>
   )
 }
 
-// Shared screen header: square bullet + tracked title + typing kicker
-export function ScreenHead({ title, kicker }: { title: string; kicker: string }): React.ReactElement {
-  return (
-    <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-        <span style={{ width: 12, height: 12, background: 'var(--n-ink)', flex: 'none' }} />
-        <h1 style={{ margin: 0, fontWeight: 200, fontSize: 34, letterSpacing: '0.38em' }}>{title}</h1>
-      </div>
-      <div className="kicker">{kicker}</div>
-    </>
-  )
+// Shared screen header: big tracked title with a quiet "- subtitle" after it
+export function ScreenHead({ title, sub }: { title: string; sub: string }): React.ReactElement {
+  return <h1 className="n-title">{title}<small>{` - ${sub}`}</small></h1>
 }
 
 // Placeholder image well (replace with real <img> / upload previews)

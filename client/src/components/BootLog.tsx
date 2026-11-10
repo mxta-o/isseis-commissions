@@ -13,7 +13,7 @@ type Props = {
 // blurred, blend-mode pseudo-elements, so re-rendering all of them per keystroke is expensive.
 const Line = React.memo(function Line({ text, cursor }: { text: string; cursor: boolean }) {
   return (
-    <div className="font-mono text-sm leading-6 whitespace-pre boot-log-line" data-text={text}>
+    <div className="boot-log-text text-sm leading-6 whitespace-pre boot-log-line" data-text={text}>
       <span className="glitch" data-text={text}>{text}</span>
       {cursor ? <span className="inline-block ml-1 w-2 animate-pulse">▮</span> : null}
     </div>

@@ -12,9 +12,9 @@ type Props = {
 type Step = 'form' | 'verify' | 'done'
 
 const KICKERS: Record<Step, string> = {
-  form: 'INTAKE FORM — ALL FIELDS VETTED AT REVIEW',
-  verify: 'STEP 2 OF 2 — EMAIL VERIFICATION',
-  done: 'REQUEST REGISTERED — SAVE YOUR TRACKING ID',
+  form: 'New Request',
+  verify: 'Step 2 of 2 — Email Verification',
+  done: 'Request Registered',
 }
 
 // Mirrors the server's limits so most mistakes are caught before uploading anything.
@@ -108,122 +108,138 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
     }
   }
 
-  const label = (text: string, count?: string, countColor?: string) => (
-    <div className="mono" style={{ display: 'flex', fontSize: 11, letterSpacing: '0.24em', color: 'var(--n-ink-2)', marginBottom: 9 }}>
-      <span>{text}</span><span style={{ flex: 1 }} />{count && <span style={{ color: countColor }}>{count}</span>}
+  const label = (text: string, htmlFor?: string, count?: string, full?: boolean) => (
+    <div className="n-label">
+      {htmlFor ? <label htmlFor={htmlFor}>{text}</label> : <span>{text}</span>}
+      {count && <span style={{ color: full ? 'var(--n-red)' : undefined }}>{count}</span>}
     </div>
   )
+  const picked = TIERS.find(t => t.key === tier) ?? TIERS[0]
 
   return (
     <div className="screen-in">
-      <ScreenHead title="COMMISSION REQUEST" kicker={KICKERS[step]} />
+      <ScreenHead title="COMMISSION" sub={KICKERS[step]} />
 
       {step === 'form' && (
-        <div style={{ display: 'flex', gap: 56, marginTop: 34, flexWrap: 'wrap' }}>
-          <div style={{ flex: 1.2, minWidth: 340, maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 26 }}>
+        <div className="n-cols" style={{ marginTop: 32 }}>
+          {/* left: what kind of piece */}
+          <div className="n-col" style={{ flex: '0.8 1 240px' }}>
+            <div className="n-gutter n-stack" style={{ flex: 1, padding: '4px 0 4px 16px' }}>
+              <div id="tier-label" className="n-small">Commission Type</div>
+              <div className="n-stack" role="radiogroup" aria-labelledby="tier-label">
+                {TIERS.map(t => (
+                  <button key={t.key} type="button" role="radio" aria-checked={tier === t.key} className={`n-bar-btn${tier === t.key ? ' on' : ''}`} onClick={() => setTier(t.key)}>
+                    <span className="sq" aria-hidden />{t.name}
+                  </button>
+                ))}
+              </div>
+              <span className="grow" />
+              <div className="n-small" style={{ lineHeight: 1.7 }}>Prices are confirmed when the request is accepted. Nothing is charged at submission.</div>
+            </div>
+          </div>
+
+          {/* middle: the request itself */}
+          <div className="n-col n-gutter n-stack" style={{ flex: '1.3 1 340px' }}>
             <div>
-              {label('TITLE / SUBJECT', `${title.length}/100`, title.length >= 100 ? 'var(--n-red)' : 'var(--n-ink-2)')}
-              <input className="field" value={title} onChange={e => setTitle(e.target.value.slice(0, 100))} placeholder="e.g. Half-body portrait of my OC" />
+              {label('Title / Subject', 'rq-title', `${title.length}/100`, title.length >= 100)}
+              <input id="rq-title" className="field" value={title} onChange={e => setTitle(e.target.value.slice(0, 100))} placeholder="e.g. Half-body portrait of my OC" />
             </div>
             <div>
-              {label('DESCRIPTION', `${desc.length}/750`, desc.length >= 750 ? 'var(--n-red)' : 'var(--n-ink-2)')}
-              <textarea className="field" value={desc} onChange={e => setDesc(e.target.value.slice(0, 750))} rows={7} style={{ resize: 'vertical', lineHeight: 1.7 }}
-                placeholder="Pose, mood, palette, references — delivery is final, so include everything." />
+              {label('Description', 'rq-desc', `${desc.length}/750`, desc.length >= 750)}
+              <textarea id="rq-desc" className="field" value={desc} onChange={e => setDesc(e.target.value.slice(0, 750))} rows={5} style={{ resize: 'vertical', lineHeight: 1.5 }}
+                placeholder="Pose, mood, palette, references. Delivery is final, so include everything." />
             </div>
             <div>
-              {label('REFERENCE FILES — UP TO 5 · 10 MB EACH · JPG/PNG/WEBP', `${files.length}/${MAX_FILES}`)}
+              {label('Reference Files — JPG / PNG / WEBP, 10 MB each', undefined, `${files.length}/${MAX_FILES}`)}
               <input ref={fileInput} type="file" accept={ACCEPTED_TYPES.join(',')} multiple hidden
                 onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 {Array.from({ length: MAX_FILES }, (_, i) => {
                   const file = files[i]
-                  const slotStyle: React.CSSProperties = { width: 92, height: 92, border: '1px dashed rgba(69,65,54,0.5)', padding: 3, background: 'rgba(69,65,54,0.05)', position: 'relative' }
+                  const slotStyle: React.CSSProperties = { width: 64, height: 64, boxSizing: 'border-box', border: '1px dashed var(--n-ink)', background: 'var(--n-field)', position: 'relative', padding: 0 }
                   if (file) return (
                     <div key={i} style={{ ...slotStyle, borderStyle: 'solid' }}>
                       <img src={previews[i]} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                      <button className="mono" aria-label={`Remove ${file.name}`} onClick={() => setFiles(fs => fs.filter((_, j) => j !== i))}
-                        style={{ position: 'absolute', top: 3, right: 3, width: 20, height: 20, border: 'none', background: 'var(--n-ink)', color: 'var(--n-cream)', fontSize: 11, lineHeight: '20px', padding: 0, cursor: 'pointer' }}>×</button>
+                      <button type="button" aria-label={`Remove ${file.name}`} onClick={() => setFiles(fs => fs.filter((_, j) => j !== i))}
+                        style={{ position: 'absolute', top: -8, right: -8, width: 24, height: 24, border: 'none', background: 'var(--n-ink)', color: 'var(--n-cream)', fontSize: 14, lineHeight: '24px', padding: 0, cursor: 'pointer' }}>×</button>
                     </div>
                   )
                   if (i === files.length) return (
-                    <button key={i} onClick={() => fileInput.current?.click()} style={{ ...slotStyle, cursor: 'pointer' }}>
-                      <Slot label="+ add" />
-                    </button>
+                    <button key={i} type="button" aria-label="Add reference file" onClick={() => fileInput.current?.click()}
+                      style={{ ...slotStyle, border: '2px solid var(--n-ink)', background: 'var(--n-panel)', color: 'var(--n-ink)', fontFamily: 'inherit', fontSize: 28, lineHeight: 1, cursor: 'pointer' }}>+</button>
                   )
-                  return <div key={i} style={slotStyle}><Slot label={`ref ${i + 1}`} /></div>
+                  return <span key={i} aria-hidden style={slotStyle} />
                 })}
               </div>
             </div>
             <div>
-              {label('EMAIL — FOR VERIFICATION & TRACKING ID')}
-              <input className="field" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" />
+              {label('Email — for verification and your tracking ID', 'rq-email')}
+              <input id="rq-email" className="field" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" />
             </div>
-            {error && <div className="mono" style={{ fontSize: 12, letterSpacing: '0.14em', color: 'var(--n-red)' }}>▮ {error}</div>}
+            {error && <div className="n-err" role="alert">▮ {error}</div>}
             <div>
-              <button className="btn-solid lift" onClick={sendCode} disabled={busy}><span className="sq" />{busy ? 'SENDING…' : 'REQUEST VERIFICATION CODE'}</button>
+              <button className="btn-solid lift" onClick={sendCode} disabled={busy}><span className="sq" aria-hidden />{busy ? 'Sending…' : 'Request Verification Code'}</button>
             </div>
           </div>
-          <div style={{ flex: 1, minWidth: 300, maxWidth: 460 }}>
-            <div id="tier-label" className="mono" style={{ fontSize: 11, letterSpacing: '0.3em', color: 'var(--n-ink-2)', marginBottom: 16 }}>COMMISSION TYPE</div>
-            <div role="radiogroup" aria-labelledby="tier-label">
-            {TIERS.map(t => {
-              const on = tier === t.key
-              return (
-                <div key={t.key} role="radio" aria-checked={on} tabIndex={0} className={`admin-row${on ? ' on' : ''}`}
-                  onClick={() => setTier(t.key)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setTier(t.key) } }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px', marginBottom: 12, border: '1px solid rgba(69,65,54,0.4)', background: on ? undefined : 'rgba(69,65,54,0.06)' }}>
-                  <span style={{ width: 9, height: 9, background: 'currentColor', flex: 'none' }} />
-                  <span style={{ flex: 1 }}>
-                    <span style={{ display: 'block', fontWeight: 400, fontSize: 16, letterSpacing: '0.18em' }}>{t.name}</span>
-                    <span style={{ display: 'block', fontWeight: 200, fontSize: 13, marginTop: 4, opacity: 0.8 }}>{t.detail}</span>
-                  </span>
-                  <span className="mono" style={{ fontSize: 12, letterSpacing: '0.1em' }}>{formatPrice(t.priceCents)}</span>
-                </div>
-              )
-            })}
-            </div>
-            <div className="mono" style={{ border: '1px solid rgba(69,65,54,0.4)', background: 'rgba(69,65,54,0.06)', padding: '20px 22px', marginTop: 26, fontSize: 11, letterSpacing: '0.14em', lineHeight: 2.1, color: 'var(--n-ink-3)' }}>
-              <div>· 1 REQUEST PER EMAIL / 30 MIN</div>
-              <div>· EMAIL VERIFICATION REQUIRED</div>
-              <div>· PAY VIA KO-FI ONLY IF ACCEPTED</div>
-              <div>· PAYMENT WINDOW: 24 H AFTER ACCEPTANCE</div>
-              <div>· DELIVERY IS FINAL — NO REVISIONS</div>
+
+          {/* right: what the picked type means, and the terms */}
+          <div className="n-col n-panel" style={{ flex: '0.9 1 280px' }}>
+            <div className="n-panel-head"><span className="grow">{picked.name}</span><small>{formatPrice(picked.priceCents)}</small></div>
+            <div className="n-panel-body">
+              <div className="n-text">{picked.detail}</div>
+              <div className="n-line" />
+              <ul className="n-bullets n-small" style={{ lineHeight: 1.35 }}>
+                {['1 request per email / 30 min', 'Email verification required', 'Pay via Ko-fi only if accepted', 'Payment window: 24 h after acceptance', 'Delivery is final — no revisions'].map(rule => (
+                  <li key={rule} style={{ minHeight: 34 }}><span className="sq" aria-hidden style={{ width: 7, height: 7 }} />{rule}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
       )}
 
       {step === 'verify' && (
-        <div className="screen-in" style={{ maxWidth: 520, marginTop: 44 }}>
-          <div style={{ fontWeight: 200, fontSize: 17, lineHeight: 1.9 }}>
-            A 6-digit verification code has been sent to <span className="mono" style={{ fontWeight: 400 }}>{email.trim()}</span>. Enter it below to submit your request.
-          </div>
-          <div className="mono" style={{ fontSize: 10, letterSpacing: '0.18em', color: 'var(--n-ink-2)', marginTop: 10 }}>CODE EXPIRES IN 10 MINUTES · CHECK SPAM IF IT DOESN'T ARRIVE</div>
-          <input className="field" value={code} onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="······" maxLength={6}
-            inputMode="numeric" autoComplete="one-time-code" onKeyDown={e => { if (e.key === 'Enter' && !busy) void verify() }}
-            style={{ marginTop: 26, width: 280, fontSize: 30, letterSpacing: '0.6em', textAlign: 'center', padding: '14px 0 14px 0.6em' }} />
-          {error && <div className="mono" style={{ fontSize: 12, letterSpacing: '0.14em', color: 'var(--n-red)', marginTop: 14 }}>▮ {error}</div>}
-          <div style={{ display: 'flex', gap: 16, marginTop: 30, flexWrap: 'wrap' }}>
-            <button className="btn-solid" onClick={verify} disabled={busy}><span className="sq" />{busy ? 'SUBMITTING…' : 'VERIFY & SUBMIT'}</button>
-            <button className="btn-ghost" onClick={resendCode} disabled={busy}>RESEND CODE</button>
-            <button className="btn-ghost" onClick={() => { setStep('form'); setError('') }} disabled={busy}>BACK</button>
+        <div className="n-panel screen-in" style={{ maxWidth: 640, margin: '40px auto 0' }}>
+          <div className="n-panel-head wide"><span className="sq" aria-hidden />SYSTEM MESSAGE</div>
+          <div className="n-panel-body" style={{ gap: 16 }}>
+            <div className="n-text">A 6-digit code was sent to <strong style={{ fontWeight: 500, wordBreak: 'break-all' }}>{email.trim()}</strong>. Enter it to submit your request.</div>
+            <div>
+              {label('Verification code', 'rq-code')}
+              <input id="rq-code" className="field" value={code} onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="······" maxLength={6}
+                inputMode="numeric" autoComplete="one-time-code" onKeyDown={e => { if (e.key === 'Enter' && !busy) void verify() }}
+                style={{ width: 300, maxWidth: '100%', minHeight: 60, fontSize: 32, letterSpacing: '0.6em', textAlign: 'center', padding: '0 0 0 0.6em' }} />
+              <div className="n-small" style={{ marginTop: 8 }}>Code expires in 10 minutes · check spam if it doesn't arrive</div>
+            </div>
+            {error && <div className="n-err" role="alert">▮ {error}</div>}
+            <div className="confirm-actions" style={{ marginTop: 4 }}>
+              <span className="n-pointer" aria-hidden />
+              <button className="btn-solid" onClick={verify} disabled={busy}><span className="sq" aria-hidden />{busy ? 'Submitting…' : 'Verify & Submit'}</button>
+              <button className="btn-ghost" onClick={resendCode} disabled={busy}><span className="sq" aria-hidden />Resend Code</button>
+              <button className="btn-ghost" onClick={() => { setStep('form'); setError('') }} disabled={busy}><span className="sq" aria-hidden />Back</button>
+            </div>
           </div>
         </div>
       )}
 
       {step === 'done' && (
-        <div className="screen-in" style={{ maxWidth: 640, marginTop: 44 }}>
-          <div className="mono" style={{ fontSize: 15, letterSpacing: '0.24em' }}>[ REQUEST REGISTERED ]</div>
-          <div style={{ marginTop: 26, border: '1px solid rgba(69,65,54,0.5)', background: 'rgba(69,65,54,0.06)', padding: '30px 34px' }}>
-            <div className="mono" style={{ fontSize: 11, letterSpacing: '0.28em', color: 'var(--n-ink-2)' }}>TRACKING ID</div>
-            <div className="mono" style={{ fontSize: 17, letterSpacing: '0.06em', marginTop: 12, wordBreak: 'break-all' }}>{trackingId}</div>
-            <button className="btn-ghost" style={{ marginTop: 20, fontSize: 12, padding: '11px 20px' }}
-              onClick={() => { navigator.clipboard?.writeText(trackingId).then(() => toast('ID COPIED TO CLIPBOARD'), () => toast('COPY FAILED — SELECT THE ID MANUALLY')) }}>[ COPY ID ]</button>
+        <div className="n-panel screen-in" style={{ maxWidth: 640, margin: '40px auto 0' }}>
+          <div className="n-panel-head wide"><span className="sq" aria-hidden />REQUEST REGISTERED</div>
+          <div className="n-panel-body" style={{ gap: 14 }}>
+            <div className="n-small">Tracking ID</div>
+            <div className="n-big" style={{ wordBreak: 'break-all', fontSize: 22 }}>{trackingId}</div>
+            <div>
+              <button className="btn-ghost"
+                onClick={() => { navigator.clipboard?.writeText(trackingId).then(() => toast('ID COPIED TO CLIPBOARD'), () => toast('COPY FAILED — SELECT THE ID MANUALLY')) }}><span className="sq" aria-hidden />Copy ID</button>
+            </div>
+            <div className="n-line" />
+            <div className="n-text">
+              <strong style={{ fontWeight: 500 }}>Save this ID.</strong> It is the only way to check your commission status. A copy has also been emailed to <span style={{ wordBreak: 'break-all' }}>{email.trim()}</span>. If your request is accepted, you'll get another email with the price and how to pay on Ko-fi.
+            </div>
+            <div className="confirm-actions" style={{ marginTop: 4 }}>
+              <span className="n-pointer" aria-hidden />
+              <button className="btn-solid" onClick={() => nav('status', trackingId)}><span className="sq" aria-hidden />Check Status</button>
+            </div>
           </div>
-          <div style={{ marginTop: 22, fontWeight: 200, fontSize: 16, lineHeight: 1.9, maxWidth: '52ch' }}>
-            <strong style={{ fontWeight: 600 }}>Save this ID.</strong> It is the only way to check your commission status. A copy has also been emailed to <span className="mono">{email.trim()}</span>. If your request is accepted, you'll get another email with the price and how to pay on Ko-fi.
-          </div>
-          <button className="btn-solid" style={{ marginTop: 28 }} onClick={() => nav('status', trackingId)}><span className="sq" />CHECK STATUS</button>
         </div>
       )}
     </div>

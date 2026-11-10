@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import type { Screen } from '../components/AppFrame'
-import isseiLogo from '../assets/isseiLogo.png'
+import { ScreenHead, type Screen } from '../components/AppFrame'
+import Wordmark from '../components/Wordmark'
 
 type Props = { nav: (s: Screen) => void }
 
@@ -17,26 +17,32 @@ export default function MainMenu({ nav }: Props): React.ReactElement {
   const hovered = ITEMS.find(i => i.key === hover)
 
   return (
-    <div className="screen-in" style={{ display: 'flex', gap: 64, alignItems: 'stretch', flexWrap: 'wrap' }}>
-      <div style={{ flex: 1.2, minWidth: 340, maxWidth: 640 }}>
-        <div className="mono" style={{ fontSize: 11, letterSpacing: '0.3em', color: 'var(--n-ink-2)', marginBottom: 18 }}>DESTINATION SELECT</div>
-        {ITEMS.map((it, i) => (
-          <div key={it.key} className="menu-item" style={{ animationDelay: `${i * 70}ms` }}
-            onClick={() => nav(it.key)} onMouseEnter={() => setHover(it.key)} onMouseLeave={() => setHover(null)}>
-            <span style={{ width: 10, height: 10, background: 'currentColor', flex: 'none' }} />
-            <span style={{ fontWeight: 400, fontSize: 19, letterSpacing: '0.32em' }}>{it.label}</span>
-            <span style={{ flex: 1 }} />
-            <span className="mono" style={{ fontSize: 11, letterSpacing: '0.2em', opacity: 0.55 }}>{`0${i + 1}`}</span>
+    <div className="screen-in">
+      <ScreenHead title="MENU" sub="Destination Select" />
+      <div className="n-cols" style={{ marginTop: 32 }}>
+        <nav className="n-col n-gutter" aria-label="Destinations" style={{ flex: '1.15 1 340px' }}>
+          <div className="n-stack" style={{ gap: 18, padding: '6px 0' }}>
+            {ITEMS.map((it, i) => (
+              <button key={it.key} className="n-bar-btn big" style={{ animationDelay: `${i * 70}ms` }}
+                onClick={() => nav(it.key)} onMouseEnter={() => setHover(it.key)} onMouseLeave={() => setHover(null)}
+                onFocus={() => setHover(it.key)} onBlur={() => setHover(null)}>
+                <span className="sq" aria-hidden />
+                <span className="grow">{it.label}</span>
+                <span className="n-small" aria-hidden>{`0${i + 1}`}</span>
+              </button>
+            ))}
           </div>
-        ))}
-      </div>
-      <div style={{ flex: 1, minWidth: 300, borderLeft: '1px solid rgba(69,65,54,0.3)', paddingLeft: 40, display: 'flex', flexDirection: 'column' }}>
-        <div className="mono" style={{ fontSize: 11, letterSpacing: '0.3em', color: 'var(--n-ink-2)' }}>SYSTEM MESSAGE</div>
-        <div style={{ marginTop: 18, fontWeight: 200, fontSize: 17, lineHeight: 1.85, maxWidth: '36ch', minHeight: 110 }}>
-          {hovered ? hovered.desc : 'Awaiting input. Select a destination.'}
+        </nav>
+        <div className="n-col n-panel" style={{ minHeight: 360 }}>
+          <div className="n-panel-head wide"><span className="sq" aria-hidden />SYSTEM MESSAGE</div>
+          <div className="n-panel-body" aria-live="polite">
+            <div className="n-big">{hovered ? hovered.label : 'AWAITING INPUT'}</div>
+            <div className="n-line" />
+            <div className="n-text" style={{ fontSize: 20, minHeight: 104 }}>{hovered ? hovered.desc : 'Select a destination.'}</div>
+            <span className="grow" />
+            <Wordmark size={44} style={{ alignSelf: 'flex-end', textAlign: 'right', color: '#8f8a76' }} />
+          </div>
         </div>
-        <div style={{ flex: 1 }} />
-        <img src={isseiLogo} alt="" style={{ width: 340, maxWidth: '100%', alignSelf: 'flex-end', mixBlendMode: 'multiply', opacity: 0.35, pointerEvents: 'none' }} />
       </div>
     </div>
   )

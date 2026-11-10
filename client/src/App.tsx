@@ -102,14 +102,14 @@ export default function App(): React.ReactElement {
       {stage === 'pretitle' && <PreTitle onAdvance={toTitle} />}
       {stage === 'title' && <TitleScreen onAdvance={toApp} />}
       {stage === 'app' && (
-        <AppFrame screen={screen} onMenu={() => nav('menu')} onExit={() => setConfirmExit(true)}>
+        <AppFrame screen={screen} nav={nav} onExit={() => setConfirmExit(true)}>
           {screen === 'menu' && <MainMenu nav={nav} />}
-          {screen === 'gallery' && <Gallery />}
-          {screen === 'about' && <About />}
+          {screen === 'gallery' && <Gallery nav={nav} />}
+          {screen === 'about' && <About nav={nav} />}
           {screen === 'request' && <CommissionRequest toast={toast} nav={nav} />}
           {screen === 'status' && <CheckStatus key={statusPrefill ?? 'blank'} prefill={statusPrefill} toast={toast} />}
           {screen === 'admin' && (
-            <Suspense fallback={<div className="mono" style={{ fontSize: 12, letterSpacing: '0.22em', color: 'var(--n-ink-2)' }}>LOADING CONSOLE…</div>}>
+            <Suspense fallback={<div className="n-text">Loading console…</div>}>
               <AdminConsole toast={toast} />
             </Suspense>
           )}

@@ -21,8 +21,6 @@ function timeLeft(deadline: string): string {
   return h > 0 ? `${h} H ${m} MIN LEFT` : `${m} MIN LEFT`
 }
 
-const panel: React.CSSProperties = { marginTop: 26, borderLeft: '3px solid var(--n-ink)', padding: '16px 20px', background: 'rgba(69,65,54,0.07)' }
-const panelHead: React.CSSProperties = { fontSize: 10, letterSpacing: '0.24em', color: 'var(--n-ink-2)' }
 
 export default function CheckStatus({ prefill, toast }: Props): React.ReactElement {
   const [input, setInput] = useState(prefill ?? '')
@@ -74,87 +72,97 @@ export default function CheckStatus({ prefill, toast }: Props): React.ReactEleme
   const curIdx = result ? FLOW.indexOf(result.status) : -1
 
   return (
-    <div className="screen-in" style={{ maxWidth: 680 }}>
-      <ScreenHead title="CHECK STATUS" kicker="QUERY A COMMISSION BY TRACKING ID" />
-      <div style={{ display: 'flex', gap: 14, marginTop: 34, flexWrap: 'wrap' }}>
-        <input className="field" value={input} onChange={e => setInput(e.target.value)} placeholder="TRACKING ID (FROM YOUR EMAIL)"
-          onKeyDown={e => { if (e.key === 'Enter' && !busy) void query() }}
-          style={{ flex: 1, minWidth: 220, fontSize: 14, letterSpacing: '0.08em', padding: '13px 16px', width: 'auto' }} />
-        <button className="btn-solid" style={{ padding: '0 28px' }} onClick={() => query()} disabled={busy}><span className="sq" />{busy ? '…' : 'QUERY'}</button>
-      </div>
-      {error && <div className="mono" style={{ marginTop: 30, fontSize: 12, letterSpacing: '0.14em', color: 'var(--n-red)' }}>▮ {error}</div>}
-      {result && meta && (
-        <div className="screen-in" style={{ marginTop: 34, border: '1px solid rgba(69,65,54,0.5)', background: 'rgba(69,65,54,0.06)', padding: '30px 34px' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 20, flexWrap: 'wrap' }}>
-            <span className="mono" style={{ fontSize: 20, letterSpacing: '0.16em', color: meta.color }}>{meta.publicLabel}</span>
-            <span style={{ flex: 1 }} />
-            <span className="mono" style={{ fontSize: 11, letterSpacing: '0.16em', color: 'var(--n-ink-2)' }}>LAST UPDATE: {formatDate(result.updatedAt)}</span>
+    <div className="screen-in">
+      <ScreenHead title="STATUS" sub="Track a Commission" />
+      <div className="n-cols" style={{ marginTop: 28 }}>
+        <div className="n-col" style={{ flex: '1.5 1 380px', gap: 22 }}>
+          <div>
+            <div className="n-label"><label htmlFor="st-id">Tracking ID — from your confirmation email</label></div>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+              <input id="st-id" className="field" value={input} onChange={e => setInput(e.target.value)} placeholder="Tracking ID"
+                onKeyDown={e => { if (e.key === 'Enter' && !busy) void query() }}
+                style={{ flex: 1, minWidth: 220, width: 'auto', letterSpacing: '0.06em' }} />
+              <button className="btn-solid" onClick={() => query()} disabled={busy}><span className="sq" aria-hidden />{busy ? '…' : 'Query'}</button>
+            </div>
           </div>
-          <div style={{ marginTop: 14, fontWeight: 400, fontSize: 18, letterSpacing: '0.04em' }}>{result.title}</div>
-          <div className="mono" style={{ marginTop: 8, fontSize: 11, letterSpacing: '0.1em', color: 'var(--n-ink-2)', wordBreak: 'break-all' }}>ID: {result.id}</div>
 
-          {result.status !== 'cancelled' && (
-            <div style={{ display: 'flex', marginTop: 28, flexWrap: 'wrap' }}>
-              {FLOW_NAMES.map((name, i) => (
-                <div key={name} style={{ flex: 1, minWidth: 90 }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span style={{ width: 11, height: 11, flex: 'none', border: '1px solid var(--n-ink)', background: i <= curIdx ? 'var(--n-ink)' : 'transparent' }} />
-                    <span style={{ flex: 1, height: 1, background: i < curIdx ? 'var(--n-ink)' : 'rgba(69,65,54,0.3)' }} />
+          {error && <div className="n-err" role="alert">▮ {error}</div>}
+
+          {result && meta && (
+            <div className="n-panel screen-in">
+              <div className="n-panel-head">
+                <span className="grow">{meta.publicLabel.replace(/^\[\s*|\s*\]$/g, '')}</span>
+                <small>Last update: {formatDate(result.updatedAt)}</small>
+              </div>
+              <div className="n-panel-body">
+                <div className="n-big">{result.title}</div>
+                <div className="n-small" style={{ wordBreak: 'break-all' }}>ID: {result.id}</div>
+
+                {result.status !== 'cancelled' && (
+                  <>
+                    <div className="n-line" />
+                    <ol aria-label="Progress" style={{ listStyle: 'none', margin: '14px 0 6px', padding: 0, display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
+                      {FLOW_NAMES.map((name, i) => (
+                        <li key={name} aria-current={i === curIdx ? 'step' : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <span aria-hidden style={{ width: 20, height: 20, flex: 'none', border: '2px solid var(--n-ink)', background: i <= curIdx ? 'var(--n-ink)' : 'transparent', outline: i === curIdx ? '2px solid var(--n-ink)' : undefined, outlineOffset: 3 }} />
+                            {i < FLOW_NAMES.length - 1 && (
+                              <span aria-hidden style={{ flex: 1, height: 2, background: i < curIdx ? 'var(--n-ink)' : 'repeating-linear-gradient(90deg,var(--n-ink) 0 4px,transparent 4px 10px)' }} />
+                            )}
+                          </div>
+                          <span className="n-small" style={{ fontWeight: i === curIdx ? 500 : 400, paddingRight: 8 }}>{name}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </>
+                )}
+
+                {result.status === 'cancelled' && (
+                  <div className="n-red-box" style={{ marginTop: 6 }}>
+                    <div className="n-small">Cancellation reason</div>
+                    <div className="n-text">{result.cancellationReason}</div>
                   </div>
-                  <div className="mono" style={{ fontSize: 9, letterSpacing: '0.1em', marginTop: 8, color: i <= curIdx ? 'var(--n-ink)' : '#8d8875' }}>{name}</div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {result.payment && (
-            <div style={panel}>
-              <div className="mono" style={panelHead}>PAYMENT DUE — VIA KO-FI</div>
-              <div style={{ display: 'flex', gap: 34, marginTop: 14, flexWrap: 'wrap' }}>
-                <div>
-                  <div className="mono" style={panelHead}>AMOUNT</div>
-                  <div className="mono" style={{ fontSize: 24, letterSpacing: '0.08em', marginTop: 4 }}>{formatPrice(result.payment.priceCents)}</div>
-                </div>
-                <div>
-                  <div className="mono" style={panelHead}>REF — PUT THIS IN YOUR KO-FI MESSAGE</div>
-                  <div className="mono" style={{ fontSize: 24, letterSpacing: '0.16em', marginTop: 4 }}>{result.payment.ref}</div>
-                </div>
+                )}
               </div>
-              <div className="mono" style={{ marginTop: 14, fontSize: 11, letterSpacing: '0.12em', color: 'var(--n-ink-2)' }}>
-                DUE BY {formatDate(result.payment.deadline)} · {timeLeft(result.payment.deadline)}
-              </div>
-              <div style={{ marginTop: 12, fontWeight: 200, fontSize: 15, lineHeight: 1.8, maxWidth: '54ch' }}>
-                Send exactly {formatPrice(result.payment.priceCents)} on Ko-fi and include <span className="mono">{result.payment.ref}</span> in the message so the payment can be matched. Your status changes to IN PROGRESS once it's confirmed.
-              </div>
-              <a className="btn-solid" href={result.payment.kofiUrl} target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', marginTop: 18, textDecoration: 'none' }}><span className="sq" />PAY ON KO-FI</a>
-            </div>
-          )}
-
-          {result.status === 'completed' && (
-            <div style={panel}>
-              <div className="mono" style={panelHead}>FINAL DELIVERABLE</div>
-              {downloads === null ? (
-                <button className="btn-solid" style={{ marginTop: 14 }} onClick={fetchDownloads} disabled={busy}><span className="sq" />{busy ? 'PREPARING…' : 'GET DOWNLOAD LINKS'}</button>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14 }}>
-                  {downloads.map(f => (
-                    <a key={f.url} className="mono" href={f.url} download={f.name} style={{ fontSize: 13, letterSpacing: '0.12em', color: 'var(--n-ink)' }}>▮ DOWNLOAD {f.name.toUpperCase()}</a>
-                  ))}
-                  <div className="mono" style={{ fontSize: 10, letterSpacing: '0.14em', color: 'var(--n-ink-2)' }}>LINKS EXPIRE IN 1 HOUR — COME BACK ANY TIME FOR NEW ONES</div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {result.status === 'cancelled' && (
-            <div style={{ ...panel, borderLeftColor: 'var(--n-red)', background: 'rgba(126,47,40,0.07)' }}>
-              <div className="mono" style={{ ...panelHead, color: 'var(--n-red)' }}>CANCELLATION REASON</div>
-              <div style={{ marginTop: 8, fontWeight: 200, fontSize: 15, lineHeight: 1.8 }}>{result.cancellationReason}</div>
             </div>
           )}
         </div>
-      )}
+
+        {result?.payment && (
+          <div className="n-col n-panel screen-in" style={{ flex: '1 1 320px' }}>
+            <div className="n-panel-head">Payment Due — via Ko-fi</div>
+            <div className="n-panel-body">
+              <div className="n-kv"><span>Amount:</span><span className="n-big">{formatPrice(result.payment.priceCents)}</span></div>
+              <div className="n-kv"><span>Reference:</span><span className="n-big" style={{ letterSpacing: '0.12em' }}>{result.payment.ref}</span></div>
+              <div className="n-kv" style={{ flexWrap: 'wrap' }}><span>Due by:</span><span>{formatDate(result.payment.deadline)} · {timeLeft(result.payment.deadline)}</span></div>
+              <div className="n-line" />
+              <div className="n-text" style={{ fontSize: 17 }}>
+                Send exactly {formatPrice(result.payment.priceCents)} on Ko-fi and include <strong style={{ fontWeight: 500 }}>{result.payment.ref}</strong> in the message so the payment can be matched. Your status changes to IN PROGRESS once it's confirmed.
+              </div>
+              <span className="grow" />
+              <a className="btn-solid" href={result.payment.kofiUrl} target="_blank" rel="noopener noreferrer"><span className="sq" aria-hidden />Pay on Ko-fi</a>
+            </div>
+          </div>
+        )}
+
+        {result?.status === 'completed' && (
+          <div className="n-col n-panel screen-in" style={{ flex: '1 1 320px' }}>
+            <div className="n-panel-head">Final Deliverable</div>
+            <div className="n-panel-body">
+              {downloads === null ? (
+                <div><button className="btn-solid" onClick={fetchDownloads} disabled={busy}><span className="sq" aria-hidden />{busy ? 'Preparing…' : 'Get Download Links'}</button></div>
+              ) : (
+                <>
+                  {downloads.map(f => (
+                    <a key={f.url} className="n-row" href={f.url} download={f.name} style={{ padding: '6px 0' }}><span className="dia" aria-hidden />Download {f.name}</a>
+                  ))}
+                  <div className="n-small">Links expire in 1 hour — come back any time for new ones.</div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
