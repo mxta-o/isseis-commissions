@@ -1,6 +1,6 @@
 /* M PLUS 1p ~ FOT-Rodin (all UI text: menus, labels, dialogs, boot log; Rodin itself needs a paid web licence);Comfortaa ~ the YoRHa wordmark; Marcellus ~ the title logotype (glyphic, flared serifs).
    No 200 weight on purpose: CSS falls back to 300, which reads better than M PLUS's hairline 100. */
-@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;500;700&family=Comfortaa:wght@400;500&family=Marcellus&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;500;700&family=Comfortaa:wght@400;500;700&family=Marcellus&display=swap');
 @import 'tailwindcss';
 
 :root {

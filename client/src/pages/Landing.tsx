@@ -79,7 +79,7 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
         <div className="absolute top-10 right-10 loading-orb" aria-hidden />
 
         <div className="yorha-watermark" aria-hidden>
-          <Wordmark size={150} />
+          <Wordmark size={120} />
         </div>
 
         <div className="absolute top-15 left-15 text-sm boot-log-text select-none boot-log-line boot-header">
