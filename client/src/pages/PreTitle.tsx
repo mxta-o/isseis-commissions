@@ -11,7 +11,7 @@ const GLYPHS = '▮▯■□◇/\\<>#%&01¦=+*'
 const scramble = (keep: number) =>
   TITLE.split('').map(c => (c === ' ' || Math.random() < keep ? c : GLYPHS[Math.floor(Math.random() * GLYPHS.length)])).join('')
 
-// Interstitial: bare game-title card on near-black, auto-advances after ~2.7s (App owns the timer)
+// Interstitial: bare game-title card on near-black, auto-advances after PRETITLE_MS (App owns the timer)
 export default function PreTitle({ onAdvance }: Props): React.ReactElement {
   const [text, setText] = useState(TITLE)
 
@@ -21,7 +21,7 @@ export default function PreTitle({ onAdvance }: Props): React.ReactElement {
     const start = performance.now()
     const id = window.setInterval(() => {
       const t = performance.now() - start
-      setText(t < 900 || t > 2300 ? TITLE : scramble(t > 1900 ? 0.6 : 0.2))
+      setText(t < 200 || t > 1250 ? TITLE : scramble(t > 1000 ? 0.6 : 0.2))
     }, 80)
     return () => window.clearInterval(id)
   }, [])

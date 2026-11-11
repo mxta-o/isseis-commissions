@@ -15,6 +15,7 @@ const AdminConsole = lazy(() => import('./pages/AdminConsole'))
 
 type Stage = 'boot' | 'pretitle' | 'title' | 'app'
 const FADE_MS = 300
+const PRETITLE_MS = 1500 // how long the pretitle glitch card shows before auto-advancing (keep in step with the scramble timings in PreTitle.tsx)
 const DEV_STAGE_KEY = 'dev:stage'
 
 // Emailed status links look like /?id=<tracking id>. They skip the boot intro and open the
@@ -63,13 +64,13 @@ export default function App(): React.ReactElement {
     later(() => {
       cb()
       setOverlay('out')
-      later(() => { setOverlay('none'); fading.current = false }, 520)
+      later(() => { setOverlay('none'); fading.current = false }, 340)
     }, FADE_MS)
   }, [])
 
   const toPretitle = useCallback(() => fade(() => {
     setStage('pretitle')
-    later(() => fade(() => setStage('title')), 2900)   // auto-advance
+    later(() => fade(() => setStage('title')), PRETITLE_MS)   // auto-advance
   }), [fade])
   const toTitle = useCallback(() => fade(() => setStage('title')), [fade])
   const toApp = useCallback(() => fade(() => { setStage('app'); setScreen('menu') }), [fade])
