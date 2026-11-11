@@ -5,6 +5,7 @@ import ConfirmDialog from '../components/ConfirmDialog'
 import { TIERS, formatPrice, statusMeta, type Status } from '../lib/commissions'
 import { ApiError, admin, type AdminCommission, type AdminCommissionDetail, type AdminFile } from '../lib/api'
 import { supabase } from '../lib/supabase'
+import { looksLikeEmail } from '../lib/validate'
 
 type Props = {
   toast: (msg: string) => void
@@ -36,11 +37,15 @@ function LoginPanel(): React.ReactElement {
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault()
+    // same pattern as the request form: the button always works, and says what's missing
+    if (!looksLikeEmail(email.trim())) return setError('A VALID EMAIL IS REQUIRED.')
+    if (!password) return setError('PASSWORD IS REQUIRED.')
+    setError('')
     setBusy(true)
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
     setBusy(false)
     // supabase's message is deliberately vague (doesn't say which part was wrong) — keep it that way
-    if (error) setError('SIGN-IN FAILED — CHECK YOUR EMAIL AND PASSWORD.')
+    if (error) setError('SIGN-IN FAILED. CHECK YOUR EMAIL AND PASSWORD.')
   }
 
   return (
@@ -57,9 +62,9 @@ function LoginPanel(): React.ReactElement {
           <input id="al-pass" className="field" type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} />
         </div>
         {error && <div className="n-err" role="alert">▮ {error}</div>}
-        <div className="confirm-actions" style={{ marginTop: 4 }}>
-          <span className="n-pointer" aria-hidden />
-          <button className="btn-solid lift" type="submit" disabled={busy || !email || !password}><span className="sq" aria-hidden />{busy ? 'Verifying…' : 'Sign In'}</button>
+        <div className="n-actions">
+          <span className="n-cursor" aria-hidden />
+          <button className="btn-solid lift" type="submit" disabled={busy}><span className="sq" aria-hidden />{busy ? 'Verifying…' : 'Sign In'}</button>
         </div>
       </div>
     </form>

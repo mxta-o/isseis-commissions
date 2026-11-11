@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 export type Screen = 'menu' | 'gallery' | 'about' | 'request' | 'status' | 'admin'
 
@@ -17,14 +17,58 @@ const TABS: { key: Screen; label: string }[] = [
   { key: 'about', label: 'ABOUT' },
 ]
 
-// one line of guidance in the footer bar, per screen
-const HINTS: Record<Screen, string> = {
-  menu: 'Select a destination.',
-  gallery: 'Select a work to view it.',
-  about: 'Who’s drawing, and what they will and won’t take on.',
-  request: 'Choose a type and describe what you’d like drawn.',
-  status: 'Enter a tracking ID to see where a commission stands.',
-  admin: 'Select an entry to review it.',
+// The footer bar: one line of guidance plus the keys that work on this screen.
+// arrows/confirm are omitted on screens where those keys do nothing. back replaces the ESC entry.
+export type FooterHint = {
+  msg: string
+  arrows?: string                  // key-chip text, e.g. '↑↓'
+  select?: string                  // what the arrows do (default "Select")
+  confirm?: string                 // what Enter does
+  back?: { label: string; onClick: () => void }
+}
+
+const HINTS: Record<Screen, FooterHint> = {
+  menu: { msg: 'Select a destination.', arrows: '↑↓', confirm: 'Confirm' },
+  gallery: { msg: 'Choose a category to browse.', arrows: '↑↓', confirm: 'Open' },
+  about: { msg: 'Who’s drawing, and what they will and won’t take on.' },
+  request: { msg: 'Choose a type and describe what you’d like drawn.', arrows: '↑↓', select: 'Type' },
+  status: { msg: 'Enter a tracking ID to see where a commission stands.', confirm: 'Search' },
+  admin: { msg: 'Select an entry to review it.' },
+}
+
+const HintContext = createContext<(hint: FooterHint | null) => void>(() => {})
+
+// Lets a page replace its footer hint while it's mounted, e.g. when its controls change by step.
+export function useFooterHint(hint: FooterHint): void {
+  const set = useContext(HintContext)
+  const latest = useRef(hint)
+  latest.current = hint
+  const key = JSON.stringify(hint)   // functions drop out, so this only changes when the text does
+  useEffect(() => { set(latest.current) }, [key, set])
+  useEffect(() => () => set(null), [set])
+}
+
+// Like a game's UI scale: the layout is drawn for a ~1600x1000 window and shrinks to fit smaller
+// ones, so pages don't scroll on a laptop. Phones keep 1 because their layout stacks and scrolls anyway.
+// Published as --ui on <html>; nier.css applies it with `zoom`.
+const DESIGN_W = 1600
+const DESIGN_H = 1000
+const MIN_SCALE = 0.62
+
+function uiScale(): number {
+  const w = window.innerWidth, h = window.innerHeight
+  if (w <= 760) return 1
+  return Math.max(MIN_SCALE, Math.min(1, w / DESIGN_W, h / DESIGN_H))
+}
+
+function useUiScale(): void {
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    const apply = () => root.style.setProperty('--ui', uiScale().toFixed(3))
+    apply()
+    window.addEventListener('resize', apply)
+    return () => { window.removeEventListener('resize', apply); root.style.removeProperty('--ui') }
+  }, [])
 }
 
 function Ornament(): React.ReactElement {
@@ -33,7 +77,11 @@ function Ornament(): React.ReactElement {
 
 // Beige in-app chrome: section tabs, ornament rules, footer hint bar
 export default function AppFrame({ screen, nav, onExit, children }: Props): React.ReactElement {
+  useUiScale()
+  const [override, setOverride] = useState<FooterHint | null>(null)
   const onMenu = screen === 'menu'
+  const hint = override ?? HINTS[screen]
+  const back = hint.back ?? (onMenu ? { label: 'Title Screen', onClick: onExit } : { label: 'Menu', onClick: () => nav('menu') })
   return (
     <div className="nier-app">
       <div className="nier-weave" />
@@ -54,15 +102,16 @@ export default function AppFrame({ screen, nav, onExit, children }: Props): Reac
         )}
         <Ornament />
 
-        <main className="n-body">{children}</main>
+        <HintContext.Provider value={setOverride}>
+          <main className="n-body">{children}</main>
+        </HintContext.Provider>
 
         <div className="n-hint">
-          <div className="n-hint-msg">{HINTS[screen]}</div>
+          <div className="n-hint-msg">{hint.msg}</div>
           <div className="n-keys">
-            <span><span className="n-key">ENTER</span>Confirm</span>
-            <button onClick={onMenu ? onExit : () => nav('menu')}>
-              <span className="n-key">ESC</span>{onMenu ? 'Title Screen' : 'Menu'}
-            </button>
+            {hint.arrows && <span><span className="n-key">{hint.arrows}</span>{hint.select ?? 'Select'}</span>}
+            {hint.confirm && <span><span className="n-key">ENTER</span>{hint.confirm}</span>}
+            <button onClick={back.onClick}><span className="n-key">ESC</span>{back.label}</button>
           </div>
         </div>
         <Ornament />

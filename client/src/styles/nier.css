@@ -14,6 +14,7 @@
   --n-field-focus: #c6c1ab;
   --n-red: #6b2a24;
   --n-plate: #f5f4de;
+  --ui: 1;                 /* window-fit UI scale, set by AppFrame (1 = full size) */
 }
 
 /* ============ keyframes (title glitch reveal) ============ */
@@ -67,8 +68,11 @@
 .tgl-wide{position:absolute;left:-2%;right:-2%;top:0;bottom:0;pointer-events:none;opacity:0}
 
 /* ============ app chrome ============ */
+/* zoom by --ui shrinks layout units too, so viewport-based sizes divide it back out: the frame stays
+   exactly one screen tall, and the content cap stays 1480 real pixels wide */
 .nier-app{
-  min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;
+  zoom:var(--ui);
+  min-height:calc(100vh / var(--ui));display:flex;flex-direction:column;position:relative;overflow:hidden;
   background:var(--n-bg);color:var(--n-ink);
   font-family:var(--font-ui);font-size:18px;
 }
@@ -87,7 +91,7 @@
 .nier-deco .diag.b{left:calc(36% + 100px)}
 .nier-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,rgba(69,65,56,0) 62%,rgba(69,65,56,0.2) 100%)}
 
-.n-shell{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;width:100%;max-width:1480px;margin:0 auto;padding:30px 56px 22px}
+.n-shell{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;width:100%;max-width:calc(1480px / var(--ui));margin:0 auto;padding:30px 56px 22px}
 .n-tabs{display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px;min-height:58px}
 .n-tab{display:flex;align-items:center;gap:12px;width:210px;height:46px;padding:0 16px;border:none;background:var(--n-bar);color:var(--n-ink);font-family:inherit;font-size:19px;letter-spacing:.14em;cursor:pointer;transition:background .12s,color .12s}
 .n-tab:hover{background:var(--n-bar-hover)}
@@ -103,7 +107,7 @@
 
 .n-title{margin:24px 0 0;font-weight:400;font-size:clamp(32px,3.6vw,48px);line-height:1.1;letter-spacing:.1em;text-shadow:5px 5px 0 rgba(69,65,56,0.16)}
 .n-title small{font-size:22px;letter-spacing:.06em;text-shadow:none;white-space:nowrap}
-.n-body{flex:1;padding:30px 0 26px}
+.n-body{flex:1;display:flex;flex-direction:column;padding:30px 0 26px}
 .screen-in{animation:screen-in 360ms ease both}
 
 /* footer hint bar */
@@ -123,7 +127,10 @@
 
 .n-bar-btn{display:flex;align-items:center;gap:14px;width:100%;min-height:48px;padding:6px 18px;border:none;background:var(--n-bar);color:var(--n-ink);font-family:inherit;font-size:20px;letter-spacing:.06em;text-align:left;cursor:pointer;transition:background .12s,color .12s}
 .n-bar-btn:hover{background:var(--n-bar-hover)}
-.n-bar-btn.on{background:var(--n-ink-2);color:var(--n-cream);box-shadow:3px 3px 0 rgba(69,65,56,0.25)}
+/* selected bar, as in the game: dark fill with a beige gap then a dark hairline above and below */
+.n-bar-btn.on{background:var(--n-ink);color:var(--n-cream);box-shadow:0 -4px 0 var(--n-bg),0 -5px 0 var(--n-ink),0 4px 0 var(--n-bg),0 5px 0 var(--n-ink)}
+/* parent of an opened sub-list (gallery category): marked, but quieter than the live cursor */
+.n-bar-btn.picked{background:var(--n-ink-2);color:var(--n-cream);box-shadow:3px 3px 0 rgba(69,65,56,0.25)}
 .n-bar-btn .sq{width:14px;height:14px}
 /* main-menu size: dark bar between two hairlines when hovered */
 .n-bar-btn.big{min-height:62px;padding:0 22px;gap:18px;font-size:clamp(18px,1.7vw,24px);letter-spacing:.2em;animation:screen-in 420ms ease both}
@@ -167,6 +174,23 @@
 .btn-solid .sq{width:13px;height:13px}
 .btn-ghost{display:inline-flex;align-items:center;gap:12px;min-height:48px;padding:0 20px;border:none;background:var(--n-bar);color:var(--n-ink);font-family:var(--font-ui);font-size:19px;letter-spacing:.06em;cursor:pointer;transition:background .12s}
 .btn-ghost:hover{background:var(--n-bar-hover)}
+/* ============ main menu ============ */
+/* screens that fill the body and centre their columns in the space under the title (menu, gallery) */
+.fill-screen{flex:1;display:flex;flex-direction:column}
+.center-cols{flex:1;align-content:center;padding-bottom:32px}
+/* system message swap: title flickers on, rule draws left to right, text wipes in */
+@keyframes sys-flick{0%{opacity:0;transform:translateX(-6px)}25%{opacity:.85}40%{opacity:.25}60%,100%{opacity:1;transform:none}}
+@keyframes sys-rule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.sys-msg{display:flex;flex-direction:column;gap:12px}
+.sys-title{animation:sys-flick 260ms linear both}
+.sys-rule{transform-origin:left;animation:sys-rule 320ms cubic-bezier(.2,.7,.2,1) both}
+.sys-desc{animation:type-reveal 520ms steps(32) 120ms both}
+/* gallery: rows cascade in on a new category; artwork scans in top to bottom on a new pick */
+@keyframes row-in{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+@keyframes img-scan{0%{clip-path:inset(0 0 100% 0);opacity:.4}100%{clip-path:inset(0);opacity:1}}
+.row-in{animation:row-in 220ms ease-out both}
+.img-in{animation:img-scan 380ms steps(10) both}
+
 .btn-danger-ghost{min-height:48px;padding:0 22px;border:2px solid var(--n-red);background:transparent;color:var(--n-red);font-family:var(--font-ui);font-size:19px;letter-spacing:.08em;cursor:pointer;transition:background .12s,color .12s}
 .btn-danger-ghost:hover{background:var(--n-red);color:var(--n-cream)}
 .btn-danger{min-height:48px;padding:0 22px;border:none;background:var(--n-red);color:var(--n-cream);font-family:var(--font-ui);font-size:19px;letter-spacing:.08em;cursor:pointer;transition:background .12s}
@@ -212,5 +236,5 @@ button:disabled{opacity:.55;cursor:wait}
 
 /* ============ reduced motion ============ */
 @media (prefers-reduced-motion: reduce){
-  .screen-in,.n-bar-btn.big{animation:none}
+  .screen-in,.n-bar-btn.big,.sys-title,.sys-rule,.sys-desc,.row-in,.img-in{animation:none}
 }

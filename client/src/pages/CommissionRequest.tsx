@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ScreenHead, Slot } from '../components/AppFrame'
 import { TIERS, formatPrice, type Tier } from '../lib/commissions'
 import { requestVerificationCode, submitCommission } from '../lib/api'
+import { stepIndex, useArrowKeys } from '../lib/useArrowKeys'
+import { looksLikeEmail } from '../lib/validate'
 import type { Screen } from '../components/AppFrame'
 
 type Props = {
@@ -21,12 +23,6 @@ const KICKERS: Record<Step, string> = {
 const MAX_FILES = 5
 const MAX_FILE_BYTES = 10 * 1024 * 1024
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-
-// Loose shape check only; the server does real validation.
-function looksLikeEmail(s: string): boolean {
-  const at = s.indexOf('@')
-  return at > 0 && s.lastIndexOf('.') > at + 1 && !s.endsWith('.') && !/\s/.test(s)
-}
 
 const message = (err: unknown) => (err instanceof Error ? err.message : 'Something went wrong.').toUpperCase()
 
@@ -116,6 +112,13 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
   )
   const picked = TIERS.find(t => t.key === tier) ?? TIERS[0]
 
+  // up/down cycles the commission type (ignored while typing in a field)
+  useArrowKeys(key => {
+    if (key !== 'up' && key !== 'down') return
+    const i = TIERS.findIndex(t => t.key === tier)
+    setTier(TIERS[stepIndex(i, key === 'down' ? 1 : -1, TIERS.length)].key)
+  }, step === 'form')
+
   return (
     <div className="screen-in">
       <ScreenHead title="COMMISSION" sub={KICKERS[step]} />
@@ -184,10 +187,17 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
 
           {/* right: what the picked type means, and the terms */}
           <div className="n-col n-panel" style={{ flex: '0.9 1 280px' }}>
-            <div className="n-panel-head"><span className="grow">{picked.name}</span><small>{formatPrice(picked.priceCents)}</small></div>
+            {/* keyed by tier so the name/detail replay the system-message swap animation on each pick */}
+            <div className="n-panel-head">
+              <span key={tier} className="sys-title" style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
+                <span className="grow">{picked.name}</span><small>{formatPrice(picked.priceCents)}</small>
+              </span>
+            </div>
             <div className="n-panel-body">
-              <div className="n-text">{picked.detail}</div>
-              <div className="n-line" />
+              <div key={tier} className="sys-msg">
+                <div className="n-text sys-desc">{picked.detail}</div>
+                <div className="n-line sys-rule" />
+              </div>
               <ul className="n-bullets n-small" style={{ lineHeight: 1.35 }}>
                 {['1 request per email / 30 min', 'Email verification required', 'Pay via Ko-fi only if accepted', 'Payment window: 24 h after acceptance', 'Delivery is final — no revisions'].map(rule => (
                   <li key={rule} style={{ minHeight: 34 }}><span className="sq" aria-hidden style={{ width: 7, height: 7 }} />{rule}</li>
@@ -211,8 +221,8 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
               <div className="n-small" style={{ marginTop: 8 }}>Code expires in 10 minutes · check spam if it doesn't arrive</div>
             </div>
             {error && <div className="n-err" role="alert">▮ {error}</div>}
-            <div className="confirm-actions" style={{ marginTop: 4 }}>
-              <span className="n-pointer" aria-hidden />
+            <div className="n-actions">
+              <span className="n-cursor" aria-hidden />
               <button className="btn-solid" onClick={verify} disabled={busy}><span className="sq" aria-hidden />{busy ? 'Submitting…' : 'Verify & Submit'}</button>
               <button className="btn-ghost" onClick={resendCode} disabled={busy}><span className="sq" aria-hidden />Resend Code</button>
               <button className="btn-ghost" onClick={() => { setStep('form'); setError('') }} disabled={busy}><span className="sq" aria-hidden />Back</button>
@@ -235,8 +245,8 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
             <div className="n-text">
               <strong style={{ fontWeight: 500 }}>Save this ID.</strong> It is the only way to check your commission status. A copy has also been emailed to <span style={{ wordBreak: 'break-all' }}>{email.trim()}</span>. If your request is accepted, you'll get another email with the price and how to pay on Ko-fi.
             </div>
-            <div className="confirm-actions" style={{ marginTop: 4 }}>
-              <span className="n-pointer" aria-hidden />
+            <div className="n-actions">
+              <span className="n-cursor" aria-hidden />
               <button className="btn-solid" onClick={() => nav('status', trackingId)}><span className="sq" aria-hidden />Check Status</button>
             </div>
           </div>

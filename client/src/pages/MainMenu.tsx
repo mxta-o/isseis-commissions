@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { ScreenHead, type Screen } from '../components/AppFrame'
-import Wordmark from '../components/Wordmark'
+import { stepIndex, useArrowKeys } from '../lib/useArrowKeys'
 
 type Props = { nav: (s: Screen) => void }
 
@@ -15,15 +15,26 @@ const ITEMS: { key: Screen; label: string; desc: string }[] = [
 export default function MainMenu({ nav }: Props): React.ReactElement {
   const [hover, setHover] = useState<Screen | null>(null)
   const hovered = ITEMS.find(i => i.key === hover)
+  const buttons = useRef<(HTMLButtonElement | null)[]>([])
+
+  // up/down moves focus (which also drives the system message); Enter then clicks the focused button
+  useArrowKeys(key => {
+    // Enter on a focused button already clicks it; this covers a destination picked by mouse hover
+    if (key === 'enter' && hover && !(document.activeElement instanceof HTMLButtonElement)) { nav(hover); return true }
+    if (key !== 'up' && key !== 'down') return
+    const cur = ITEMS.findIndex(i => i.key === hover)
+    const next = cur < 0 ? (key === 'down' ? 0 : ITEMS.length - 1) : stepIndex(cur, key === 'down' ? 1 : -1, ITEMS.length)
+    buttons.current[next]?.focus()
+  })
 
   return (
-    <div className="screen-in">
+    <div className="screen-in fill-screen">
       <ScreenHead title="MENU" sub="Destination Select" />
-      <div className="n-cols" style={{ marginTop: 32 }}>
+      <div className="n-cols center-cols">
         <nav className="n-col n-gutter" aria-label="Destinations" style={{ flex: '1.15 1 340px' }}>
           <div className="n-stack" style={{ gap: 18, padding: '6px 0' }}>
             {ITEMS.map((it, i) => (
-              <button key={it.key} className="n-bar-btn big" style={{ animationDelay: `${i * 70}ms` }}
+              <button key={it.key} ref={el => { buttons.current[i] = el }} className={`n-bar-btn big${hover === it.key ? ' on' : ''}`} style={{ animationDelay: `${i * 70}ms` }}
                 onClick={() => nav(it.key)} onMouseEnter={() => setHover(it.key)} onMouseLeave={() => setHover(null)}
                 onFocus={() => setHover(it.key)} onBlur={() => setHover(null)}>
                 <span className="sq" aria-hidden />
@@ -36,11 +47,12 @@ export default function MainMenu({ nav }: Props): React.ReactElement {
         <div className="n-col n-panel" style={{ minHeight: 360 }}>
           <div className="n-panel-head wide"><span className="sq" aria-hidden />SYSTEM MESSAGE</div>
           <div className="n-panel-body" aria-live="polite">
-            <div className="n-big">{hovered ? hovered.label : 'AWAITING INPUT'}</div>
-            <div className="n-line" />
-            <div className="n-text" style={{ fontSize: 20, minHeight: 104 }}>{hovered ? hovered.desc : 'Select a destination.'}</div>
-            <span className="grow" />
-            <Wordmark size={44} style={{ alignSelf: 'flex-end', textAlign: 'right', color: '#8f8a76' }} />
+            {/* keyed so it remounts, and replays the swap animation, whenever the destination changes */}
+            <div key={hover ?? 'idle'} className="sys-msg">
+              <div className="n-big sys-title">{hovered ? hovered.label : 'AWAITING INPUT'}</div>
+              <div className="n-line sys-rule" />
+              <div className="n-text sys-desc" style={{ fontSize: 20, minHeight: 104 }}>{hovered ? hovered.desc : 'Select a destination.'}</div>
+            </div>
           </div>
         </div>
       </div>
