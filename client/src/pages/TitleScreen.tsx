@@ -143,7 +143,7 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
           {/* The wordmark is an SVG so the plate can be one mask: everything inside the mask is cream
               with dark letters, everything outside is cream letters on the sky. The h1 is sized in em
               (9.483em x 1.172em = the 1100x136 viewBox at 116px type) so the glitch layers still line up. */}
-          <h1 aria-label={TITLE} style={{ margin: 0, position: 'relative', display: 'inline-block', fontFamily: 'var(--font-title)', fontSize: 'clamp(1.9rem,7.4vw,6.4rem)', fontWeight: 400, lineHeight: 1, animation: 'tg-twitch 8s steps(1,end) 4s infinite' }}>
+          <h1 aria-label={TITLE} style={{ margin: 0, position: 'relative', display: 'inline-block', fontFamily: 'var(--font-title)', fontSize: 'clamp(1.6rem,6.3vw,5.45rem)', fontWeight: 400, lineHeight: 1, animation: 'tg-twitch 8s steps(1,end) 4s infinite' }}>
             <svg aria-hidden viewBox="0 0 1100 136" style={{ display: 'block', width: '9.483em', height: '1.172em', overflow: 'visible' }}>
               <defs>
                 <mask id="tw-plate" maskUnits="userSpaceOnUse" x="0" y="0" width="1100" height="136">
@@ -184,16 +184,16 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
             <span aria-hidden className="tgl" style={{ zIndex: 3, animation: `tg-after ${A16}` }}>{AFTER_BLK.map(box)}</span>
           </h1>
 
-          <div style={{ position: 'relative', marginTop: '0.9rem', fontFamily: 'var(--font-accent)', fontSize: 'clamp(0.8rem,1.2vw,1rem)', letterSpacing: '0.28em', color: 'rgba(243,233,218,0.7)' }}>
+          <div style={{ position: 'relative', marginTop: '0.9rem', paddingLeft: '0.28em', fontFamily: 'var(--font-accent)', fontSize: 'clamp(0.8rem,1.2vw,1rem)', letterSpacing: '0.28em', color: 'rgba(243,233,218,0.7)' }}>
             <span style={{ animation: `sub-real ${A16}` }}>For the Vision of Creation</span>
-            <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: 0, animation: `sub-garble ${A16},sub-jit ${A16}` }}>{garble1}</span>
+            <span aria-hidden style={{ position: 'absolute', left: '0.28em', right: 0, top: 0, animation: `sub-garble ${A16},sub-jit ${A16}` }}>{garble1}</span>
           </div>
 
           <div style={{ marginTop: '2.5rem', display: 'inline-flex', alignItems: 'center', gap: '1rem', fontFamily: 'var(--font-accent)', color: 'rgba(243,233,218,0.85)', letterSpacing: '0.22em', fontSize: '0.8rem', animation: 'title-pulse 2.2s ease-in-out infinite,pab-jit 9s steps(1,end) 5s infinite' }}>
             <span style={{ height: 1, width: 'clamp(140px,24vw,280px)', background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.8),transparent)' }} />
-            <span style={{ position: 'relative' }}>
+            <span style={{ position: 'relative', paddingLeft: '0.22em' }}>
               <span style={{ animation: `sub-real ${A16}` }}>Click Anywhere</span>
-              <span aria-hidden style={{ position: 'absolute', inset: 0, animation: `sub-garble ${A16}` }}>{garble2}</span>
+              <span aria-hidden style={{ position: 'absolute', inset: '0 0 0 0.22em', animation: `sub-garble ${A16}` }}>{garble2}</span>
             </span>
             <span style={{ height: 1, width: 'clamp(140px,24vw,280px)', background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.8),transparent)' }} />
           </div>
@@ -201,7 +201,7 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
       </div>
 
       {/* licence line */}
-      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 34, zIndex: 10, padding: '0 1rem', textAlign: 'center', fontFamily: 'var(--font-accent)', fontSize: 'clamp(10px,1vw,13px)', letterSpacing: '0.22em', color: 'rgba(243,233,218,0.8)', animation: `sub-real ${A16}` }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 34, zIndex: 10, padding: '0 1rem 0 calc(1rem + 0.22em)', textAlign: 'center', fontFamily: 'var(--font-accent)', fontSize: 'clamp(6px,0.8vw,11px)', letterSpacing: '0.22em', color: 'rgba(243,233,218,0.8)', animation: `sub-real ${A16}` }}>
         © {new Date().getFullYear()} ISSEI · ALL ARTWORK BELONGS TO THE ARTIST
       </div>
     </div>
