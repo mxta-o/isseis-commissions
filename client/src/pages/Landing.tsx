@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 // Loading component removed; BootLog now handles loading
 import BootLog from '../components/BootLog'
 import CrtOverlay from '../components/CrtOverlay'
-import isseiLogo from '../assets/isseiLogo.png'
+import Wordmark from '../components/Wordmark'
 
 type Props = {
   onRequestTransition: () => void
@@ -79,10 +79,10 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
         <div className="absolute top-10 right-10 loading-orb" aria-hidden />
 
         <div className="yorha-watermark" aria-hidden>
-          <img className="yorha-logo" src={isseiLogo} alt="" />
+          <Wordmark size={120} />
         </div>
 
-        <div className="absolute top-15 left-15 text-sm font-mono select-none boot-log-line boot-header">
+        <div className="absolute top-15 left-15 text-sm boot-log-text select-none boot-log-line boot-header">
           <span className="boot-header-main"><span className="glitch" data-text="LOADING">LOADING</span></span>
           <BootingDots />
         </div>

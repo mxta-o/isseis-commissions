@@ -1,63 +1,128 @@
-import React from 'react'
+import React, { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 export type Screen = 'menu' | 'gallery' | 'about' | 'request' | 'status' | 'admin'
 
 type Props = {
   screen: Screen
-  onMenu: () => void
+  nav: (s: Screen) => void
   onExit: () => void
   children: React.ReactNode
 }
 
-const TITLES: Record<Screen, string> = {
-  menu: 'MAIN MENU', gallery: 'GALLERY', about: 'ABOUT',
-  request: 'COMMISSION REQUEST', status: 'CHECK STATUS', admin: 'ADMIN CONSOLE',
+// the section tabs across the top. admin is reached from the menu only, so it has no tab.
+const TABS: { key: Screen; label: string }[] = [
+  { key: 'gallery', label: 'GALLERY' },
+  { key: 'request', label: 'COMMISSION' },
+  { key: 'status', label: 'STATUS' },
+  { key: 'about', label: 'ABOUT' },
+]
+
+// The footer bar: one line of guidance plus the keys that work on this screen.
+// arrows/confirm are omitted on screens where those keys do nothing. back replaces the ESC entry.
+export type FooterHint = {
+  msg: string
+  arrows?: string                  // key-chip text, e.g. '↑↓'
+  select?: string                  // what the arrows do (default "Select")
+  confirm?: string                 // what Enter does
+  back?: { label: string; onClick: () => void }
 }
 
-const TODAY = new Date().toLocaleDateString('en-CA') // local YYYY-MM-DD
+const HINTS: Record<Screen, FooterHint> = {
+  menu: { msg: 'Select a destination.', arrows: '↑↓', confirm: 'Confirm' },
+  gallery: { msg: 'Choose a category to browse.', arrows: '↑↓', confirm: 'Open' },
+  about: { msg: 'Who’s drawing, and what they will and won’t take on.' },
+  request: { msg: 'Choose a type and describe what you’d like drawn.', arrows: '↑↓', select: 'Type' },
+  status: { msg: 'Enter a tracking ID to see where a commission stands.', confirm: 'Search' },
+  admin: { msg: 'Select an entry to review it.' },
+}
 
-// Beige in-app chrome: header strip, rule, footer hint bar
-export default function AppFrame({ screen, onMenu, onExit, children }: Props): React.ReactElement {
+const HintContext = createContext<(hint: FooterHint | null) => void>(() => {})
+
+// Lets a page replace its footer hint while it's mounted, e.g. when its controls change by step.
+export function useFooterHint(hint: FooterHint): void {
+  const set = useContext(HintContext)
+  const latest = useRef(hint)
+  latest.current = hint
+  const key = JSON.stringify(hint)   // functions drop out, so this only changes when the text does
+  useEffect(() => { set(latest.current) }, [key, set])
+  useEffect(() => () => set(null), [set])
+}
+
+// Like a game's UI scale: the layout is drawn for a ~1600x1000 window and shrinks to fit smaller
+// ones, so pages don't scroll on a laptop. Phones keep 1 because their layout stacks and scrolls anyway.
+// Published as --ui on <html>; nier.css applies it with `zoom`.
+const DESIGN_W = 1600
+const DESIGN_H = 1000
+const MIN_SCALE = 0.62
+
+function uiScale(): number {
+  const w = window.innerWidth, h = window.innerHeight
+  if (w <= 760) return 1
+  return Math.max(MIN_SCALE, Math.min(1, w / DESIGN_W, h / DESIGN_H))
+}
+
+function useUiScale(): void {
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    const apply = () => root.style.setProperty('--ui', uiScale().toFixed(3))
+    apply()
+    window.addEventListener('resize', apply)
+    return () => { window.removeEventListener('resize', apply); root.style.removeProperty('--ui') }
+  }, [])
+}
+
+function Ornament(): React.ReactElement {
+  return <div aria-hidden><div className="n-rule" /><div className="n-orn" /></div>
+}
+
+// Beige in-app chrome: section tabs, ornament rules, footer hint bar
+export default function AppFrame({ screen, nav, onExit, children }: Props): React.ReactElement {
+  useUiScale()
+  const [override, setOverride] = useState<FooterHint | null>(null)
+  const onMenu = screen === 'menu'
+  const hint = override ?? HINTS[screen]
+  const back = hint.back ?? (onMenu ? { label: 'Title Screen', onClick: onExit } : { label: 'Menu', onClick: () => nav('menu') })
   return (
     <div className="nier-app">
-      <div className="nier-grid" />
-      <div className="nier-scan" />
+      <div className="nier-weave" />
+      <div className="nier-deco" aria-hidden><i className="arc" /><i className="arc b" /><i className="diag" /><i className="diag b" /></div>
+      <div className="nier-vig" />
 
-      <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', gap: 20, padding: '22px 48px 14px', flexWrap: 'wrap' }}>
-        <span style={{ width: 10, height: 10, background: 'var(--n-ink)', display: 'inline-block', flex: 'none' }} />
-        <span className="mono" style={{ fontSize: 13, letterSpacing: '0.32em' }}>ISSEI'S COMMS</span>
-        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.22em', color: 'var(--n-ink-2)' }}>{'// ' + TITLES[screen]}</span>
-        <span style={{ flex: 1 }} />
-        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)' }}>LINK: STABLE</span>
-        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)' }}>{TODAY}</span>
-      </div>
-      <div style={{ position: 'relative', zIndex: 2, margin: '0 48px', height: 2, background: 'linear-gradient(90deg,var(--n-ink) 0%,var(--n-ink) 34%,rgba(69,65,54,0.18) 100%)' }} />
+      <div className="n-shell">
+        {!onMenu && (
+          <nav className="n-tabs" aria-label="Sections">
+            {TABS.map(t => (
+              <button key={t.key} className={`n-tab${screen === t.key ? ' on' : ''}`} aria-current={screen === t.key ? 'page' : undefined} onClick={() => nav(t.key)}>
+                <span className="sq" aria-hidden />{t.label}
+              </button>
+            ))}
+            <span className="grow" />
+            <button className="n-tab narrow" onClick={() => nav('menu')}><span className="sq" aria-hidden />MENU</button>
+          </nav>
+        )}
+        <Ornament />
 
-      <div style={{ position: 'relative', zIndex: 2, flex: 1, padding: '36px 48px 28px' }}>{children}</div>
+        <HintContext.Provider value={setOverride}>
+          <main className="n-body">{children}</main>
+        </HintContext.Provider>
 
-      <div className="mono" style={{ position: 'relative', zIndex: 2, display: 'flex', gap: 28, padding: '14px 48px 20px', borderTop: '1px solid rgba(69,65,54,0.35)', fontSize: 11, letterSpacing: '0.2em', color: 'var(--n-ink-2)', flexWrap: 'wrap' }}>
-        <span className="hint-link" onClick={screen === 'menu' ? onExit : onMenu}>
-          {screen === 'menu' ? '[ESC] TITLE SCREEN' : '[ESC] MAIN MENU'}
-        </span>
-        <span>[CLICK] SELECT</span>
-        <span style={{ flex: 1 }} />
-        <span>ISSEI'S COMMS v0.3</span>
+        <div className="n-hint">
+          <div className="n-hint-msg">{hint.msg}</div>
+          <div className="n-keys">
+            {hint.arrows && <span><span className="n-key">{hint.arrows}</span>{hint.select ?? 'Select'}</span>}
+            {hint.confirm && <span><span className="n-key">ENTER</span>{hint.confirm}</span>}
+            <button onClick={back.onClick}><span className="n-key">ESC</span>{back.label}</button>
+          </div>
+        </div>
+        <Ornament />
       </div>
     </div>
   )
 }
 
-// Shared screen header: square bullet + tracked title + typing kicker
-export function ScreenHead({ title, kicker }: { title: string; kicker: string }): React.ReactElement {
-  return (
-    <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-        <span style={{ width: 12, height: 12, background: 'var(--n-ink)', flex: 'none' }} />
-        <h1 style={{ margin: 0, fontWeight: 200, fontSize: 34, letterSpacing: '0.38em' }}>{title}</h1>
-      </div>
-      <div className="kicker">{kicker}</div>
-    </>
-  )
+// Shared screen header: big tracked title with a quiet "- subtitle" after it
+export function ScreenHead({ title, sub }: { title: string; sub: string }): React.ReactElement {
+  return <h1 className="n-title">{title}<small>{` - ${sub}`}</small></h1>
 }
 
 // Placeholder image well (replace with real <img> / upload previews)

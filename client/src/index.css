@@ -1,15 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@200;400;600&family=Playfair+Display:wght@400&display=swap');
+/* M PLUS 1p ~ FOT-Rodin (all UI text: menus, labels, dialogs, boot log; Rodin itself needs a paid web licence);Comfortaa ~ the YoRHa wordmark; Marcellus ~ the title logotype (glyphic, flared serifs).
+   No 200 weight on purpose: CSS falls back to 300, which reads better than M PLUS's hairline 100. */
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;500;700&family=Comfortaa:wght@400;500;700&family=Marcellus&display=swap');
 @import 'tailwindcss';
 
 :root {
-  /* Open-licensed (SIL OFL) fonts; change these three to retheme all text */
-  --font-ui: 'Noto Sans', 'Helvetica Neue', sans-serif;
-  --font-title: 'Playfair Display', Georgia, serif;
+  /* Open-licensed (SIL OFL) fonts; change these to retheme all text */
+  --font-ui: 'M PLUS 1p', 'Helvetica Neue', sans-serif;
+  --font-title: 'Marcellus', Georgia, serif;
   --font-accent: var(--font-ui);
-  font-family: 'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Courier New', monospace;
+  --font-wordmark: 'Comfortaa', var(--font-ui);
+  font-family: var(--font-ui);
   line-height: 1.5;
-  font-weight: 10;
+  font-weight: 400;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -122,14 +124,15 @@
   z-index: 20;
 }
 
-/* Center watermark using provided logo */
+/* Center watermark: the ISSEI wordmark, faded into the background */
 .yorha-watermark {
   /* center by default, then offset by CSS vars for pixel-precise positioning */
   --yorha-x: 0px; /* horizontal offset from center */
-  --yorha-y: 400px; /* vertical offset from center */
+  --yorha-y: 20px; /* vertical offset from center */
   --yorha-scale: 1; /* default shrink value (1 = native size) */
 
-  position: absolute;
+  /* fixed = centred on the viewport, not on .crt-content (which has almost no height) */
+  position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%) translate(var(--yorha-x), var(--yorha-y)) scale(var(--yorha-scale));
@@ -141,15 +144,6 @@
   opacity: 0.12;
   mix-blend-mode: screen;
   transition: transform 120ms linear, opacity 160ms linear;
-}
-
-.yorha-watermark img {
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: 90vw; /* responsive cap */
-  max-height: 90vh;
-  image-rendering: optimizeQuality;
 }
 
 /* Loading orb (top-right) */
@@ -254,6 +248,13 @@
     0 0 8px var(--crt-glow),
     1px 0 rgba(0, 220, 255, 0.22),
     -1px 0 var(--crt-red);
+}
+
+/* the boot log lines: bold Rodin-style sans, like NieR's own boot screen */
+.boot-log-text {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .boot-header-main {

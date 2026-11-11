@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import type { Screen } from '../components/AppFrame'
-import isseiLogo from '../assets/isseiLogo.png'
+import React, { useRef, useState } from 'react'
+import { ScreenHead, type Screen } from '../components/AppFrame'
+import { stepIndex, useArrowKeys } from '../lib/useArrowKeys'
 
 type Props = { nav: (s: Screen) => void }
 
@@ -15,28 +15,46 @@ const ITEMS: { key: Screen; label: string; desc: string }[] = [
 export default function MainMenu({ nav }: Props): React.ReactElement {
   const [hover, setHover] = useState<Screen | null>(null)
   const hovered = ITEMS.find(i => i.key === hover)
+  const buttons = useRef<(HTMLButtonElement | null)[]>([])
+
+  // up/down moves focus (which also drives the system message); Enter then clicks the focused button
+  useArrowKeys(key => {
+    // Enter on a focused button already clicks it; this covers a destination picked by mouse hover
+    if (key === 'enter' && hover && !(document.activeElement instanceof HTMLButtonElement)) { nav(hover); return true }
+    if (key !== 'up' && key !== 'down') return
+    const cur = ITEMS.findIndex(i => i.key === hover)
+    const next = cur < 0 ? (key === 'down' ? 0 : ITEMS.length - 1) : stepIndex(cur, key === 'down' ? 1 : -1, ITEMS.length)
+    buttons.current[next]?.focus()
+  })
 
   return (
-    <div className="screen-in" style={{ display: 'flex', gap: 64, alignItems: 'stretch', flexWrap: 'wrap' }}>
-      <div style={{ flex: 1.2, minWidth: 340, maxWidth: 640 }}>
-        <div className="mono" style={{ fontSize: 11, letterSpacing: '0.3em', color: 'var(--n-ink-2)', marginBottom: 18 }}>DESTINATION SELECT</div>
-        {ITEMS.map((it, i) => (
-          <div key={it.key} className="menu-item" style={{ animationDelay: `${i * 70}ms` }}
-            onClick={() => nav(it.key)} onMouseEnter={() => setHover(it.key)} onMouseLeave={() => setHover(null)}>
-            <span style={{ width: 10, height: 10, background: 'currentColor', flex: 'none' }} />
-            <span style={{ fontWeight: 400, fontSize: 19, letterSpacing: '0.32em' }}>{it.label}</span>
-            <span style={{ flex: 1 }} />
-            <span className="mono" style={{ fontSize: 11, letterSpacing: '0.2em', opacity: 0.55 }}>{`0${i + 1}`}</span>
+    <div className="screen-in fill-screen">
+      <ScreenHead title="MENU" sub="Destination Select" />
+      <div className="n-cols center-cols">
+        <nav className="n-col n-gutter" aria-label="Destinations" style={{ flex: '1.15 1 340px' }}>
+          <div className="n-stack" style={{ gap: 18, padding: '6px 0' }}>
+            {ITEMS.map((it, i) => (
+              <button key={it.key} ref={el => { buttons.current[i] = el }} className={`n-bar-btn big${hover === it.key ? ' on' : ''}`} style={{ animationDelay: `${i * 70}ms` }}
+                onClick={() => nav(it.key)} onMouseEnter={() => setHover(it.key)} onMouseLeave={() => setHover(null)}
+                onFocus={() => setHover(it.key)} onBlur={() => setHover(null)}>
+                <span className="sq" aria-hidden />
+                <span className="grow">{it.label}</span>
+                <span className="n-small" aria-hidden>{`0${i + 1}`}</span>
+              </button>
+            ))}
           </div>
-        ))}
-      </div>
-      <div style={{ flex: 1, minWidth: 300, borderLeft: '1px solid rgba(69,65,54,0.3)', paddingLeft: 40, display: 'flex', flexDirection: 'column' }}>
-        <div className="mono" style={{ fontSize: 11, letterSpacing: '0.3em', color: 'var(--n-ink-2)' }}>SYSTEM MESSAGE</div>
-        <div style={{ marginTop: 18, fontWeight: 200, fontSize: 17, lineHeight: 1.85, maxWidth: '36ch', minHeight: 110 }}>
-          {hovered ? hovered.desc : 'Awaiting input. Select a destination.'}
+        </nav>
+        <div className="n-col n-panel" style={{ minHeight: 360 }}>
+          <div className="n-panel-head wide"><span className="sq" aria-hidden />SYSTEM MESSAGE</div>
+          <div className="n-panel-body" aria-live="polite">
+            {/* keyed so it remounts, and replays the swap animation, whenever the destination changes */}
+            <div key={hover ?? 'idle'} className="sys-msg">
+              <div className="n-big sys-title">{hovered ? hovered.label : 'AWAITING INPUT'}</div>
+              <div className="n-line sys-rule" />
+              <div className="n-text sys-desc" style={{ fontSize: 20, minHeight: 104 }}>{hovered ? hovered.desc : 'Select a destination.'}</div>
+            </div>
+          </div>
         </div>
-        <div style={{ flex: 1 }} />
-        <img src={isseiLogo} alt="" style={{ width: 340, maxWidth: '100%', alignSelf: 'flex-end', mixBlendMode: 'multiply', opacity: 0.35, pointerEvents: 'none' }} />
       </div>
     </div>
   )

@@ -15,6 +15,7 @@ const AdminConsole = lazy(() => import('./pages/AdminConsole'))
 
 type Stage = 'boot' | 'pretitle' | 'title' | 'app'
 const FADE_MS = 300
+const PRETITLE_MS = 1500 // how long the pretitle glitch card shows before auto-advancing (keep in step with the scramble timings in PreTitle.tsx)
 const DEV_STAGE_KEY = 'dev:stage'
 
 // Emailed status links look like /?id=<tracking id>. They skip the boot intro and open the
@@ -63,13 +64,13 @@ export default function App(): React.ReactElement {
     later(() => {
       cb()
       setOverlay('out')
-      later(() => { setOverlay('none'); fading.current = false }, 520)
+      later(() => { setOverlay('none'); fading.current = false }, 340)
     }, FADE_MS)
   }, [])
 
   const toPretitle = useCallback(() => fade(() => {
     setStage('pretitle')
-    later(() => fade(() => setStage('title')), 2900)   // auto-advance
+    later(() => fade(() => setStage('title')), PRETITLE_MS)   // auto-advance
   }), [fade])
   const toTitle = useCallback(() => fade(() => setStage('title')), [fade])
   const toApp = useCallback(() => fade(() => { setStage('app'); setScreen('menu') }), [fade])
@@ -102,14 +103,14 @@ export default function App(): React.ReactElement {
       {stage === 'pretitle' && <PreTitle onAdvance={toTitle} />}
       {stage === 'title' && <TitleScreen onAdvance={toApp} />}
       {stage === 'app' && (
-        <AppFrame screen={screen} onMenu={() => nav('menu')} onExit={() => setConfirmExit(true)}>
+        <AppFrame screen={screen} nav={nav} onExit={() => setConfirmExit(true)}>
           {screen === 'menu' && <MainMenu nav={nav} />}
-          {screen === 'gallery' && <Gallery />}
-          {screen === 'about' && <About />}
+          {screen === 'gallery' && <Gallery nav={nav} />}
+          {screen === 'about' && <About nav={nav} />}
           {screen === 'request' && <CommissionRequest toast={toast} nav={nav} />}
           {screen === 'status' && <CheckStatus key={statusPrefill ?? 'blank'} prefill={statusPrefill} toast={toast} />}
           {screen === 'admin' && (
-            <Suspense fallback={<div className="mono" style={{ fontSize: 12, letterSpacing: '0.22em', color: 'var(--n-ink-2)' }}>LOADING CONSOLE…</div>}>
+            <Suspense fallback={<div className="n-text">Loading console…</div>}>
               <AdminConsole toast={toast} />
             </Suspense>
           )}
