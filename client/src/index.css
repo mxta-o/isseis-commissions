@@ -284,6 +284,20 @@ body {
   color: var(--crt-text);
 }
 
+/* phones: a smaller header tucked under the orb (they used to collide), and the log pulled in to match */
+@media (max-width: 760px) {
+  :root {
+    --boot-header-main-size: 28px;
+    --boot-header-sub-size: 12px;
+    --boot-header-gap: 1.25rem;
+  }
+  .loading-orb { top: 1.25rem; right: 1.25rem; width: 28px; height: 28px; }
+  .boot-title { top: 3.5rem; left: 1.5rem; }
+  .boot-lines { top: 6.75rem; left: 1.75rem; }
+  .ca-rule { width: 12vw !important; }   /* the title screen's lines beside "Click Anywhere" (their 140px minimum is inline, hence !important) */
+  .wordmark-watermark { --wm-scale: 0.8; }   /* at full size ISSEI is wider than a 360px screen */
+}
+
 @media (prefers-reduced-motion: reduce) {
   .loading-orb::before {
     animation: none;

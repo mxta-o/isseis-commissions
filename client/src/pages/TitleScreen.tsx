@@ -185,12 +185,12 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
           </div>
 
           <div style={{ marginTop: '2.5rem', display: 'inline-flex', alignItems: 'center', gap: '1rem', fontFamily: 'var(--font-accent)', color: 'rgba(243,233,218,0.85)', letterSpacing: '0.22em', fontSize: '0.8rem', animation: 'title-pulse 2.2s ease-in-out infinite,pab-jit 9s steps(1,end) 5s infinite' }}>
-            <span style={{ height: 1, width: 'clamp(140px,24vw,280px)', background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.8),transparent)' }} />
+            <span className="ca-rule" style={{ height: 1, width: 'clamp(140px,24vw,280px)', background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.8),transparent)' }} />
             <span style={{ position: 'relative', paddingLeft: '0.22em' }}>
               <span style={{ animation: `sub-real ${A16}` }}>Click Anywhere</span>
               <span aria-hidden style={{ position: 'absolute', inset: '0 0 0 0.22em', animation: `sub-garble ${A16}` }}>{garble2}</span>
             </span>
-            <span style={{ height: 1, width: 'clamp(140px,24vw,280px)', background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.8),transparent)' }} />
+            <span className="ca-rule" style={{ height: 1, width: 'clamp(140px,24vw,280px)', background: 'linear-gradient(90deg,transparent,rgba(243,233,218,0.8),transparent)' }} />
           </div>
         </div>
       </div>

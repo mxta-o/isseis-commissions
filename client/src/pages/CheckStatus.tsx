@@ -101,7 +101,7 @@ export default function CheckStatus({ prefill, toast }: Props): React.ReactEleme
                 {result.status !== 'cancelled' && (
                   <>
                     <div className="n-line" />
-                    <ol aria-label="Progress" style={{ listStyle: 'none', margin: '14px 0 6px', padding: 0, display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
+                    <ol aria-label="Progress" className="n-steps" style={{ listStyle: 'none', margin: '14px 0 6px', padding: 0, display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
                       {FLOW_NAMES.map((name, i) => (
                         <li key={name} aria-current={i === curIdx ? 'step' : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                           <div style={{ display: 'flex', alignItems: 'center' }}>
