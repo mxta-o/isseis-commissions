@@ -78,7 +78,7 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
       <div className="crt-content w-full">
         <div className="absolute top-10 right-10 loading-orb" aria-hidden />
 
-        <div className="yorha-watermark" aria-hidden>
+        <div className="wordmark-watermark" aria-hidden>
           <Wordmark size={120} />
         </div>
 

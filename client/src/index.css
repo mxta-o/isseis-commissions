@@ -1,4 +1,4 @@
-/* M PLUS 1p ~ FOT-Rodin (all UI text: menus, labels, dialogs, boot log; Rodin itself needs a paid web licence);Comfortaa ~ the YoRHa wordmark; Bellefair ~ the title logotype (high-contrast display serif).
+/* M PLUS 1p ~ FOT-Rodin (all UI text: menus, labels, dialogs, boot log; Rodin itself needs a paid web licence);Comfortaa ~ the ISSEI wordmark; Bellefair ~ the title logotype (high-contrast display serif).
    No 200 weight on purpose: CSS falls back to 300, which reads better than M PLUS's hairline 100. */
 @import './fonts.css';  /* self-hosted copies of the three Google Fonts below; no requests to Google */
 @import 'tailwindcss';
@@ -125,17 +125,17 @@
 }
 
 /* Center watermark: the ISSEI wordmark, faded into the background */
-.yorha-watermark {
+.wordmark-watermark {
   /* center by default, then offset by CSS vars for pixel-precise positioning */
-  --yorha-x: 0px; /* horizontal offset from center */
-  --yorha-y: 20px; /* vertical offset from center */
-  --yorha-scale: 1; /* default shrink value (1 = native size) */
+  --wm-x: 0px; /* horizontal offset from center */
+  --wm-y: 20px; /* vertical offset from center */
+  --wm-scale: 1; /* default shrink value (1 = native size) */
 
   /* fixed = centred on the viewport, not on .crt-content (which has almost no height) */
   position: fixed;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) translate(var(--yorha-x), var(--yorha-y)) scale(var(--yorha-scale));
+  transform: translate(-50%, -50%) translate(var(--wm-x), var(--wm-y)) scale(var(--wm-scale));
   transform-origin: center center;
   display: grid;
   place-items: center;
