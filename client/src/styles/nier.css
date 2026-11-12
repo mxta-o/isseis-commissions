@@ -307,6 +307,39 @@ button:disabled{opacity:.55;cursor:wait}
 .nier-app a.pick-btn,.nier-app a.pick-btn:hover{color:var(--n-ink);text-decoration:none}
 .nier-app a.pick-btn.on,.nier-app a.pick-btn.on:hover,.nier-app a.pick-btn:focus-visible{color:var(--n-cream)}
 
+/* ============ gallery camera roll (phones; see pages/GalleryRoll.tsx) ============ */
+.roll-filters{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 12px}
+.roll-filters .tag-btn{flex:1 1 auto;padding:0 12px;font-size:14px}
+/* edge to edge like a photo library: -16px cancels the phone shell's side padding */
+.roll-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;margin:0 -16px}
+.roll-cell{position:relative;aspect-ratio:1;padding:0;border:none;overflow:hidden;background:var(--n-bar);cursor:pointer}
+.roll-cell img{display:block;width:100%;height:100%;object-fit:cover}
+.roll-cell:active{opacity:.7}
+.roll-cell:focus-visible{outline:3px solid var(--n-ink);outline-offset:-3px}
+
+.roll-viewer{position:fixed;inset:0;z-index:9400;height:100vh;height:100dvh;display:flex;flex-direction:column;background:#1d1a15;color:var(--n-cream);font-family:var(--font-ui);font-size:18px;overscroll-behavior:contain;animation:nier-fade-in 160ms ease both}
+.roll-top{display:flex;align-items:center;gap:12px;min-height:68px;padding:10px 12px 10px 20px}
+.roll-title{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;font-size:20px;letter-spacing:.08em}
+.roll-title small{font-size:13px;letter-spacing:.12em;opacity:.7}
+.roll-close,.roll-nav{display:grid;place-items:center;flex:none;border:1px solid rgba(226,221,198,0.35);background:rgba(29,26,21,0.55);color:var(--n-cream);cursor:pointer}
+.roll-close{width:48px;height:48px}
+/* touch-action: the page can't scroll under the viewer, our own swipes still arrive, and pinch still zooms */
+.roll-stage{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:pinch-zoom}
+.roll-stage img{display:block;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.roll-nav{position:absolute;top:50%;width:40px;height:64px;margin-top:-32px}
+.roll-nav.prev{left:6px}
+.roll-nav.next{right:6px}
+.roll-bottom{display:flex;flex-direction:column;gap:10px;padding:12px 20px calc(18px + env(safe-area-inset-bottom))}
+.roll-count{text-align:center;font-size:14px;letter-spacing:.2em;opacity:.7}
+.roll-fan{text-align:center;font-size:14px;letter-spacing:.04em;opacity:.85}
+.roll-bottom .btn-solid{justify-content:center;background:var(--n-cream);color:var(--n-ink);box-shadow:none}
+.roll-bottom .btn-solid:hover{background:var(--n-plate)}
+@keyframes roll-next{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes roll-prev{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+/* backwards, not both: holding the last frame would override the finger-drag offset set inline */
+.roll-in-next{animation:roll-next 200ms ease-out backwards}
+.roll-in-prev{animation:roll-prev 200ms ease-out backwards}
+
 /* ============ small screens ============ */
 @media (max-width: 760px){
   .nier-app{min-height:100dvh}   /* the phone's address bar comes and goes, so 100vh would leave the page taller than what's visible */
@@ -335,5 +368,5 @@ button:disabled{opacity:.55;cursor:wait}
 
 /* ============ reduced motion ============ */
 @media (prefers-reduced-motion: reduce){
-  .screen-in,.n-bar-btn.big,.sys-title,.sys-rule,.sys-desc,.row-in,.img-in{animation:none}
+  .screen-in,.n-bar-btn.big,.sys-title,.sys-rule,.sys-desc,.row-in,.img-in,.roll-viewer,.roll-in-next,.roll-in-prev{animation:none}
 }
