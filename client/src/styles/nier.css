@@ -276,23 +276,6 @@ button:disabled{opacity:.55;cursor:wait}
 .n-cursor::after{content:'';position:absolute;right:0;top:1px;width:4px;height:4px;background:var(--n-ink);box-shadow:0 12px 0 var(--n-ink)}
 /* a row of form buttons, left-aligned, with the cursor before the main action */
 .n-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px 16px;margin-top:4px}
-
-/* ============ small screens ============ */
-@media (max-width: 760px){
-  .n-shell{padding:18px 16px 14px}
-  .n-rule{margin:0 -16px}
-  .n-tabs{gap:8px}
-  .n-tab,.n-tab.narrow{width:auto;flex:1 1 40%;font-size:16px}
-  .n-tab.on{height:46px;padding-bottom:0}
-  .nier-deco{display:none}
-  .n-hint-msg{font-size:17px}
-  .n-title small{white-space:normal}
-}
-
-/* ============ reduced motion ============ */
-@media (prefers-reduced-motion: reduce){
-  .screen-in,.n-bar-btn.big,.sys-title,.sys-rule,.sys-desc,.row-in,.img-in{animation:none}
-}
 /* a button with its own cursor slot (reserved so nothing shifts); the highlighted one goes dark and shows the cursor */
 .cursor-choice{display:flex;align-items:center;gap:10px}
 .cursor-choice .n-cursor{opacity:0;transition:opacity .12s}
@@ -313,3 +296,20 @@ button:disabled{opacity:.55;cursor:wait}
 /* when a pick-btn is a link, keep the app's link colour and underline from overriding it */
 .nier-app a.pick-btn,.nier-app a.pick-btn:hover{color:var(--n-ink);text-decoration:none}
 .nier-app a.pick-btn.on,.nier-app a.pick-btn.on:hover,.nier-app a.pick-btn:focus-visible{color:var(--n-cream)}
+
+/* ============ small screens ============ */
+@media (max-width: 760px){
+  .n-shell{padding:18px 16px 14px}
+  .n-rule{margin:0 -16px}
+  .n-tabs{gap:8px}
+  .n-tab,.n-tab.narrow{width:auto;flex:1 1 40%;font-size:16px}
+  .n-tab.on{height:46px;padding-bottom:0}
+  .nier-deco{display:none}
+  .n-hint-msg{font-size:17px}
+  .n-title small{white-space:normal}
+}
+
+/* ============ reduced motion ============ */
+@media (prefers-reduced-motion: reduce){
+  .screen-in,.n-bar-btn.big,.sys-title,.sys-rule,.sys-desc,.row-in,.img-in{animation:none}
+}
