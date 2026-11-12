@@ -1,10 +1,17 @@
-import React from 'react'
-import { ScreenHead, Slot, type Screen } from '../components/AppFrame'
+import React, { useState } from 'react'
+import { ScreenHead, type Screen } from '../components/AppFrame'
+import portrait from '../assets/artist_portrait.jpg'
 import { WILL_DRAW, WONT_DRAW } from '../lib/commissions'
 
 type Props = { nav: (s: Screen) => void }
 
+const SOCIALS = [
+  { label: 'Twitter/X', href: 'https://x.com/isseimx' },
+  { label: 'Instagram', href: 'https://www.instagram.com/cudiirl/' },
+]
+
 export default function About({ nav }: Props): React.ReactElement {
+  const [hot, setHot] = useState<number | null>(null)   // which social link is hovered/focused
   return (
     <div className="screen-in">
       <ScreenHead title="ABOUT" sub="Artist Profile" />
@@ -13,16 +20,25 @@ export default function About({ nav }: Props): React.ReactElement {
           <div className="n-panel-head"><span className="grow">isseimx</span><small>Digital Artist</small></div>
           <div className="n-panel-body">
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-              <div style={{ width: 150, height: 150, flex: 'none' }}><Slot label="artist portrait" /></div>
+              <div style={{ width: 150, height: 150, flex: 'none', background: 'var(--n-bar)' }}>
+                <img src={portrait} alt="Portrait of the artist" width={150} height={150} style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
               <div className="n-stack" style={{ flex: '1 1 220px', gap: 8 }}>
                 <div className="n-kv"><span>Focus:</span><span>Character art</span></div>
                 <div className="n-kv"><span>Payment:</span><span>Ko-fi</span></div>
                 <div className="n-kv"><span>Revisions:</span><span>None, final</span></div>
                 <div className="n-line" />
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 4 }}>
-                  <a className="tag-btn" href="#" onClick={e => e.preventDefault()} style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>Twitter/X</a>
-                  <a className="tag-btn" href="#" onClick={e => e.preventDefault()} style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>Instagram</a>
-                  <a className="tag-btn" href="#" onClick={e => e.preventDefault()} style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>VGen</a>
+                <div style={{ display: 'flex', gap: '10px 14px', flexWrap: 'wrap', marginTop: 4 }}>
+                  {SOCIALS.map((l, i) => (
+                    <div key={l.label} className={`cursor-choice${hot === i ? ' on' : ''}`}>
+                      <span className="n-cursor" aria-hidden />
+                      <a className={`pick-btn${hot === i ? ' on' : ''}`} href={l.href} target="_blank" rel="noopener noreferrer"
+                        style={{ minHeight: 44, width: 156, padding: '0 18px', fontSize: 17 }}
+                        onMouseEnter={() => setHot(i)} onMouseLeave={() => setHot(null)} onFocus={() => setHot(i)} onBlur={() => setHot(null)}>
+                        <span className="sq" aria-hidden />{l.label}
+                      </a>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
