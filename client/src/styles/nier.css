@@ -109,7 +109,7 @@
 .n-rule{height:1px;background:var(--n-ink);margin:0 -56px}
 .n-orn{height:5px;margin-top:6px;background:repeating-linear-gradient(90deg,var(--n-ink) 0 12px,transparent 12px 20px,var(--n-ink) 20px 23px,transparent 23px 29px,var(--n-ink) 29px 32px,transparent 32px 80px)}
 
-.n-title{margin:24px 0 0;font-weight:400;font-size:clamp(32px,3.6vw,48px);line-height:1.1;letter-spacing:.1em;text-shadow:5px 5px 0 rgba(69,65,56,0.16)}
+.n-title{margin:24px 0 0;font-weight:400;font-size:48px;line-height:1.1;letter-spacing:.1em;text-shadow:5px 5px 0 rgba(69,65,56,0.16)}
 .n-title small{font-size:22px;letter-spacing:.06em;text-shadow:none;white-space:nowrap}
 .n-body{flex:1;display:flex;flex-direction:column;padding:30px 0 26px}
 .screen-in{animation:screen-in 360ms ease both}
@@ -140,10 +140,10 @@
 .n-bar-btn.picked{background:var(--n-ink-2);color:var(--n-cream);box-shadow:3px 3px 0 rgba(69,65,56,0.25)}
 .n-bar-btn .sq{width:14px;height:14px}
 /* main-menu size: dark bar between two hairlines when hovered */
-.n-bar-btn.big{min-height:62px;padding:0 22px;gap:18px;font-size:clamp(18px,1.7vw,24px);letter-spacing:.2em;animation:screen-in 420ms ease both}
+.n-bar-btn.big{min-height:62px;padding:0 22px;gap:18px;font-size:24px;letter-spacing:.2em;animation:screen-in 420ms ease both}
 .n-bar-btn.big .sq{width:16px;height:16px}
 /* the small side-by-side variant (main menu terms/privacy): same highlight and cursor, just not full width */
-.n-bar-btn.big.compact{width:auto;min-height:48px;padding:0 26px;gap:14px;font-size:clamp(15px,1.2vw,18px)}
+.n-bar-btn.big.compact{width:auto;min-height:48px;padding:0 26px;gap:14px;font-size:18px}
 .n-bar-btn.big.compact .sq{width:13px;height:13px}
 .n-bar-btn.big:hover,.n-bar-btn.big:focus-visible,.n-bar-btn.big.on{outline:none;background:var(--n-ink);color:var(--n-cream);box-shadow:0 -4px 0 var(--n-bg),0 -5px 0 var(--n-ink),0 4px 0 var(--n-bg),0 5px 0 var(--n-ink)}
 
@@ -309,7 +309,10 @@ button:disabled{opacity:.55;cursor:wait}
   .n-tab.on{height:46px;padding-bottom:0}
   .nier-deco{display:none}
   .n-hint-msg{font-size:17px}
+  .n-title{font-size:32px}
   .n-title small{white-space:normal}
+  .n-bar-btn.big{font-size:18px}
+  .n-bar-btn.big.compact{font-size:15px}
 }
 
 /* ============ reduced motion ============ */
