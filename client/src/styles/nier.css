@@ -307,6 +307,15 @@ button:disabled{opacity:.55;cursor:wait}
 .nier-app a.pick-btn,.nier-app a.pick-btn:hover{color:var(--n-ink);text-decoration:none}
 .nier-app a.pick-btn.on,.nier-app a.pick-btn.on:hover,.nier-app a.pick-btn:focus-visible{color:var(--n-cream)}
 
+/* ============ subheader decode (components/DecodeText.tsx) ============ */
+/* each letter shows a block glyph (its ::before) that flickers out as the real letter (.ltr-r) flickers in.
+   Letters start one after another: --i is the letter's position, --step the gap between letters. */
+.ltr-on .ltr{position:relative;display:inline-block}
+.ltr-on .ltr::before{content:attr(data-g);position:absolute;inset:0;text-align:center;animation:ltr-glyph 380ms steps(1,end) both;animation-delay:calc(var(--i) * var(--step))}
+.ltr-on .ltr-r{display:inline-block;animation:ltr-real 380ms steps(1,end) both;animation-delay:calc(var(--i) * var(--step))}
+@keyframes ltr-glyph{0%{opacity:.95}20%{opacity:.35}38%{opacity:1}56%,100%{opacity:0}}
+@keyframes ltr-real{0%,55%{opacity:0}56%{opacity:1}68%{opacity:.35}80%,100%{opacity:1}}
+
 /* ============ gallery camera roll (phones; see pages/GalleryRoll.tsx) ============ */
 .roll-filters{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 12px}
 .roll-filters .tag-btn{flex:1 1 auto;padding:0 12px;font-size:14px}
@@ -369,4 +378,6 @@ button:disabled{opacity:.55;cursor:wait}
 /* ============ reduced motion ============ */
 @media (prefers-reduced-motion: reduce){
   .screen-in,.n-bar-btn.big,.sys-title,.sys-rule,.sys-desc,.row-in,.img-in,.roll-viewer,.roll-in-next,.roll-in-prev{animation:none}
+  .ltr-on .ltr::before{display:none}   /* (DecodeText already skips the effect for reduced motion; this covers it changing mid-session) */
+  .ltr-on .ltr-r{animation:none}
 }
