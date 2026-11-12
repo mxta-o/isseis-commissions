@@ -13,7 +13,7 @@ export const DESIGN_W = 1600   // keep in step with .n-shell's max-width in nier
 export const DESIGN_H = 1000
 export const MIN_SCALE = 0.62
 export const MAX_SCALE = 2
-const PHONE_MAX_W = 760        // keep in step with the max-width:760px queries in nier.css
+export const PHONE_MAX_W = 760   // keep in step with the max-width:760px queries in nier.css
 
 export function uiScale(w: number, h: number): number {
   if (w <= PHONE_MAX_W) return 1

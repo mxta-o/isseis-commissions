@@ -41,3 +41,14 @@ export const WORKS: Work[] = Object.entries(FILES)
   .filter((w): w is Parsed => w !== null)
   .sort((a, b) => a.sortKey.localeCompare(b.sortKey, undefined, { numeric: true }))
   .map(({ sortKey: _sortKey, ...w }, i) => ({ ...w, n: String(i + 1).padStart(2, '0') }))
+
+// the categories the gallery can be filtered by, shared by the desktop list and the phone's camera roll
+export const CATEGORIES = [
+  { key: 'ALL', name: 'All Works' },
+  { key: 'CHARACTER', name: 'Characters' },
+  { key: 'SCENE', name: 'Scenes' },
+  { key: 'CHIBI', name: 'Chibi' },
+] as const
+export type CategoryKey = (typeof CATEGORIES)[number]['key']
+
+export const worksIn = (cat: CategoryKey): Work[] => (cat === 'ALL' ? WORKS : WORKS.filter(w => w.tag === cat))
