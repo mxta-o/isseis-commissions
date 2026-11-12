@@ -40,10 +40,9 @@ async function sendVerificationCode(email, code) {
       ].join('\n'),
     })
   } catch (err) {
-    console.error('Verification email failed:', err.message)
-    // in development resend's test sender only reaches the account owner
-    const hint = env.nodeEnv !== 'production' && err.resend ? ` (${err.resend.message})` : ''
-    throw new HttpError(502, `We couldn't send the code to that address.${hint}`)
+    // the real reason (e.g. resend's test sender only reaching the account owner) goes to the server log, never to the visitor
+    console.error('Verification email failed:', err.resend?.message ?? err.message)
+    throw new HttpError(502, 'We couldn\'t send the code to that address. Check it for typos and try again in a moment.')
   }
 }
 
@@ -54,8 +53,8 @@ function sendTrackingId(commission) {
     text: [
       'Your commission request has been received and is waiting for review.',
       '',
-      `Payment reference: ${paymentRef(commission.id)}`,
       `Tracking ID: ${commission.id}`,
+      `Payment reference: ${paymentRef(commission.id)}`,
       `Check status: ${statusUrl(commission.id)}`,
       '',
       'Keep this email. If your request is accepted, you\'ll get another email with the price and how to pay. Put the payment reference above in your Ko-fi message then, so the payment can be matched to your request.',

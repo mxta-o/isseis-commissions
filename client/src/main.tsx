@@ -22,11 +22,21 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren, ErrorBounda
 
   render(): React.ReactNode {
     if (this.state.hasError) {
+      // visitors get a calm message in the app's colours; the technical detail only shows in dev (and always goes to the console)
       return (
-        <div className="min-h-screen w-full bg-black text-white flex items-center justify-center p-6">
-          <div className="max-w-xl text-center">
-            <h1 className="text-2xl font-bold">UI crashed</h1>
-            <p className="mt-2 text-sm text-stone-300">{this.state.message ?? 'Unknown error'}</p>
+        <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, background: '#14110c', color: '#f3e9da', fontFamily: 'var(--font-ui)', textAlign: 'center' }}>
+          <div style={{ maxWidth: 520 }}>
+            <h1 style={{ margin: 0, fontSize: 24, fontWeight: 400, letterSpacing: '0.3em' }}>SYSTEM ERROR</h1>
+            <p style={{ margin: '16px 0 24px', lineHeight: 1.6, opacity: 0.85 }}>
+              Something went wrong on this page. Reloading usually fixes it. If it keeps happening, please contact the artist.
+            </p>
+            {import.meta.env.DEV && this.state.message && (
+              <p style={{ margin: '0 0 24px', fontSize: 13, opacity: 0.6, wordBreak: 'break-word' }}>{this.state.message}</p>
+            )}
+            <button onClick={() => window.location.reload()}
+              style={{ minHeight: 48, padding: '0 28px', border: 'none', background: '#ece6da', color: '#25221c', fontFamily: 'inherit', fontSize: 18, letterSpacing: '0.08em', cursor: 'pointer' }}>
+              Reload
+            </button>
           </div>
         </div>
       )

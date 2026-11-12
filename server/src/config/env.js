@@ -26,12 +26,28 @@ function serviceRoleKey() {
   return key
 }
 
+const nodeEnv = process.env.NODE_ENV || 'development'
+
+// where the site lives. In production there is no sensible default: a localhost fallback would
+// block the real site with CORS and put localhost links in customers' emails, so refuse to start.
+// Anywhere else the local dev server is assumed, with a warning so the fallback is never silent.
+function siteUrl(name, fallback) {
+  const value = process.env[name]
+  if (value) return value
+  if (nodeEnv === 'production') {
+    throw new Error(`Missing required environment variable ${name} in production. See server/.env.example.`)
+  }
+  console.warn(`${name} is not set; using ${fallback} (fine for local dev, not for production).`)
+  return fallback
+}
+
 // fail on startup rather than on the first request that needs a missing value
+const clientUrl = siteUrl('CLIENT_URL', 'http://localhost:3001')
 const env = {
-  nodeEnv: process.env.NODE_ENV || 'development',
+  nodeEnv,
   port: Number(process.env.PORT || 4000),
-  clientUrl: process.env.CLIENT_URL || 'http://localhost:3001',
-  publicSiteUrl: (process.env.PUBLIC_SITE_URL || process.env.CLIENT_URL || 'http://localhost:3001').replace(/\/$/, ''),
+  clientUrl,
+  publicSiteUrl: (process.env.PUBLIC_SITE_URL || clientUrl).replace(/\/$/, ''),
   supabaseUrl: required('SUPABASE_URL'),
   supabaseServiceRoleKey: serviceRoleKey(),
   storageBucket: process.env.SUPABASE_STORAGE_BUCKET || 'commissions',
