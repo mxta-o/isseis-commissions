@@ -63,7 +63,17 @@ function Ornament(): React.ReactElement {
 // Beige in-app chrome: section tabs, ornament rules, footer hint bar
 export default function AppFrame({ screen, nav, onExit, children }: Props): React.ReactElement {
   const [override, setOverride] = useState<FooterHint | null>(null)
+  const strip = useRef<HTMLDivElement>(null)
   const onMenu = screen === 'menu'
+
+  // on a phone the section tabs scroll sideways (MENU stays put beside them): centre the current one when it changes
+  useEffect(() => {
+    const row = strip.current
+    const on = row?.querySelector<HTMLElement>('[aria-current="page"]')
+    if (!row || !on || row.scrollWidth <= row.clientWidth) return
+    row.scrollLeft += on.getBoundingClientRect().left - row.getBoundingClientRect().left - (row.clientWidth - on.offsetWidth) / 2
+  }, [screen])
+
   const hint = override ?? HINTS[screen]
   const back = hint.back ?? (onMenu ? { label: 'Title Screen', onClick: onExit } : { label: 'Menu', onClick: () => nav('menu') })
   return (
@@ -75,18 +85,21 @@ export default function AppFrame({ screen, nav, onExit, children }: Props): Reac
       <div className="n-shell">
         {!onMenu && (
           <nav className="n-tabs" aria-label="Sections">
-            {TABS.map(t => (
-              <button key={t.key} className={`n-tab${screen === t.key ? ' on' : ''}`} aria-current={screen === t.key ? 'page' : undefined} onClick={() => nav(t.key)}>
-                <span className="sq" aria-hidden />{t.label}
-              </button>
-            ))}
-            <span className="grow" />
-            {LEGAL_TABS.map(t => (
-              <button key={t.key} className={`n-tab narrow${screen === t.key ? ' on' : ''}`} aria-current={screen === t.key ? 'page' : undefined} onClick={() => nav(t.key)}>
-                <span className="sq" aria-hidden />{t.label}
-              </button>
-            ))}
-            <button className="n-tab narrow" onClick={() => nav('menu')}><span className="sq" aria-hidden />MENU</button>
+            {/* a plain pass-through on desktop; on a phone it's the part that scrolls */}
+            <div ref={strip} className="n-tabs-strip">
+              {TABS.map(t => (
+                <button key={t.key} className={`n-tab${screen === t.key ? ' on' : ''}`} aria-current={screen === t.key ? 'page' : undefined} onClick={() => nav(t.key)}>
+                  <span className="sq" aria-hidden />{t.label}
+                </button>
+              ))}
+              <span className="grow" />
+              {LEGAL_TABS.map(t => (
+                <button key={t.key} className={`n-tab narrow${screen === t.key ? ' on' : ''}`} aria-current={screen === t.key ? 'page' : undefined} onClick={() => nav(t.key)}>
+                  <span className="sq" aria-hidden />{t.label}
+                </button>
+              ))}
+            </div>
+            <button className="n-tab n-tab-menu narrow" onClick={() => nav('menu')}><span className="sq" aria-hidden />MENU</button>
           </nav>
         )}
         <Ornament />
