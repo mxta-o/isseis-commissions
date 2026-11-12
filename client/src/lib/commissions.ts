@@ -9,18 +9,25 @@ export type Status =
 
 export type Tier = 'sketch' | 'full' | 'scene'
 
-// Default price per tier, prefilled when Loraine approves (she can change it per request).
-// TODO: replace the nulls with Loraine's prices; null shows as "$ —".
-export const TIERS: { key: Tier; name: string; detail: string; priceCents: number | null }[] = [
-  { key: 'sketch', name: 'SKETCH', detail: 'Bust · clean lines + flat tone', priceCents: null },
-  { key: 'full', name: 'FULL ILLUSTRATION', detail: 'Full body · fully rendered', priceCents: null },
-  { key: 'scene', name: 'SCENE', detail: '1–2 characters · full background', priceCents: null },
+// All prices are in Canadian dollars. `priceLabel` is the range shown to buyers; `priceCents` is the
+// low end of it and is what gets prefilled when Loraine approves a request (she sets the final price
+// per request, anywhere in or above the range).
+export const CURRENCY = 'CAD'
+export const TIERS: { key: Tier; name: string; detail: string; priceLabel: string; priceCents: number }[] = [
+  { key: 'sketch', name: 'SKETCH', detail: 'Bust · clean lines + flat tone', priceLabel: '$5–10 CAD', priceCents: 500 },
+  { key: 'full', name: 'FULL ILLUSTRATION', detail: 'Full body · fully rendered', priceLabel: '$10–20 CAD', priceCents: 1000 },
+  { key: 'scene', name: 'SCENE', detail: '1–2 characters · full background', priceLabel: '$25+ CAD', priceCents: 2500 },
 ]
 
 export function formatPrice(priceCents: number | null): string {
   if (priceCents == null) return '$ —'
   const dollars = priceCents / 100
   return `$${Number.isInteger(dollars) ? dollars : dollars.toFixed(2)}`
+}
+
+// an actual amount owed, with its currency: "$10 CAD"
+export function formatMoney(priceCents: number | null): string {
+  return priceCents == null ? formatPrice(null) : `${formatPrice(priceCents)} ${CURRENCY}`
 }
 
 // Progress bar on the public status page. Buyers see "ACCEPTED" for awaiting_payment, because
@@ -50,7 +57,7 @@ export function genGarble(str: string): string {
 export const WILL_DRAW = [
   'Original characters & sonas',
   'Fanart (most series)',
-  'Ship art — canon or OC pairings',
+  'Ship art (canon or OC pairings)',
   'Chibi sets, emotes, badges',
   'Tabletop / D&D party portraits',
 ]

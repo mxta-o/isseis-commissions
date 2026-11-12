@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ScreenHead, Slot } from '../components/AppFrame'
-import { TIERS, formatPrice, type Tier } from '../lib/commissions'
+import { TIERS, type Tier } from '../lib/commissions'
 import { requestVerificationCode, submitCommission } from '../lib/api'
 import { stepIndex, useArrowKeys } from '../lib/useArrowKeys'
 import { looksLikeEmail } from '../lib/validate'
@@ -190,7 +190,7 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
             {/* keyed by tier so the name/detail replay the system-message swap animation on each pick */}
             <div className="n-panel-head">
               <span key={tier} className="sys-title" style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
-                <span className="grow">{picked.name}</span><small>{formatPrice(picked.priceCents)}</small>
+                <span className="grow">{picked.name}</span><small>{picked.priceLabel}</small>
               </span>
             </div>
             <div className="n-panel-body">

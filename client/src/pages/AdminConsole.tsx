@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { ScreenHead } from '../components/AppFrame'
 import ConfirmDialog from '../components/ConfirmDialog'
-import { TIERS, formatPrice, statusMeta, type Status } from '../lib/commissions'
+import { TIERS, formatMoney, statusMeta, type Status } from '../lib/commissions'
 import { ApiError, admin, type AdminCommission, type AdminCommissionDetail, type AdminFile } from '../lib/api'
 import { supabase } from '../lib/supabase'
 import { looksLikeEmail } from '../lib/validate'
@@ -333,7 +333,7 @@ export default function AdminConsole({ toast }: Props): React.ReactElement {
                   {sel.status === 'pending_review' && (
                     <>
                       <div>
-                        <div className="n-label"><label htmlFor="ad-price">Price (USD) — sent to the buyer with the Ko-fi link</label></div>
+                        <div className="n-label"><label htmlFor="ad-price">Price (CAD) — sent to the buyer with the Ko-fi link</label></div>
                         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                           <input id="ad-price" className="field" inputMode="decimal" value={price} onChange={e => setPrice(e.target.value.replace(/[^\d.]/g, ''))} placeholder="25" style={{ width: 120 }} />
                           <button className="btn-solid" disabled={busy} onClick={approve}><span className="sq" aria-hidden />Approve</button>
@@ -358,7 +358,7 @@ export default function AdminConsole({ toast }: Props): React.ReactElement {
                     <>
                       <div className="n-small">Expected Ko-fi payment — match both before marking paid</div>
                       <div style={{ display: 'flex', gap: '8px 40px', flexWrap: 'wrap', alignItems: 'baseline' }}>
-                        <span>Amount <span className="n-big" style={{ marginLeft: 8 }}>{formatPrice(sel.priceCents)}</span></span>
+                        <span>Amount <span className="n-big" style={{ marginLeft: 8 }}>{formatMoney(sel.priceCents)}</span></span>
                         <span>Ref <span className="n-big" style={{ marginLeft: 8, letterSpacing: '0.1em' }}>{sel.ref}</span></span>
                       </div>
                       <div className="n-small" style={{ color: sel.overdue ? 'var(--n-red)' : undefined }}>
@@ -366,7 +366,7 @@ export default function AdminConsole({ toast }: Props): React.ReactElement {
                       </div>
                       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                         <button className="btn-solid" disabled={busy} onClick={() => setConfirm({
-                          message: `Mark as paid? Only do this once Ko-fi shows ${formatPrice(sel.priceCents)} with REF ${sel.ref}. The buyer is told work has started.`,
+                          message: `Mark as paid? Only do this once Ko-fi shows ${formatMoney(sel.priceCents)} with REF ${sel.ref}. The buyer is told work has started.`,
                           run: () => void act('MARKED PAID — COMMISSION IN PROGRESS', () => admin.markPaid(sel.id)),
                         })}><span className="sq" aria-hidden />Mark Paid</button>
                         {sel.overdue && (
