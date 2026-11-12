@@ -82,12 +82,12 @@ export default function Landing({ onRequestTransition }: Props): React.ReactElem
           <Wordmark size={120} />
         </div>
 
-        <div className="absolute top-15 left-15 text-sm boot-log-text select-none boot-log-line boot-header">
+        <div className="absolute top-15 left-15 text-sm boot-log-text select-none boot-log-line boot-header boot-title">
           <span className="boot-header-main"><span className="glitch" data-text="LOADING">LOADING</span></span>
           <BootingDots />
         </div>
 
-        <div className="absolute top-33 left-18 w-[34rem] max-w-[46vw]">
+        <div className="absolute top-33 left-18 w-[34rem] max-w-[46vw] boot-lines">
           <BootLog
             lines={BOOT_LINES}
             typingSpeed={8}
