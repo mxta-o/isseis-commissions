@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 export type Screen = 'menu' | 'gallery' | 'about' | 'request' | 'status' | 'admin' | 'terms' | 'privacy'
 
@@ -56,36 +56,12 @@ export function useFooterHint(hint: FooterHint): void {
   useEffect(() => () => set(null), [set])
 }
 
-// Like a game's UI scale: the layout is drawn for a ~1600x1000 window and shrinks to fit smaller
-// ones, so pages don't scroll on a laptop. Phones keep 1 because their layout stacks and scrolls anyway.
-// Published as --ui on <html>; nier.css applies it with `zoom`.
-const DESIGN_W = 1600
-const DESIGN_H = 1000
-const MIN_SCALE = 0.62
-
-function uiScale(): number {
-  const w = window.innerWidth, h = window.innerHeight
-  if (w <= 760) return 1
-  return Math.max(MIN_SCALE, Math.min(1, w / DESIGN_W, h / DESIGN_H))
-}
-
-function useUiScale(): void {
-  useLayoutEffect(() => {
-    const root = document.documentElement
-    const apply = () => root.style.setProperty('--ui', uiScale().toFixed(3))
-    apply()
-    window.addEventListener('resize', apply)
-    return () => { window.removeEventListener('resize', apply); root.style.removeProperty('--ui') }
-  }, [])
-}
-
 function Ornament(): React.ReactElement {
   return <div aria-hidden><div className="n-rule" /><div className="n-orn" /></div>
 }
 
 // Beige in-app chrome: section tabs, ornament rules, footer hint bar
 export default function AppFrame({ screen, nav, onExit, children }: Props): React.ReactElement {
-  useUiScale()
   const [override, setOverride] = useState<FooterHint | null>(null)
   const onMenu = screen === 'menu'
   const hint = override ?? HINTS[screen]

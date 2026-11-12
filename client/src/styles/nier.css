@@ -67,9 +67,15 @@
 .tgl{position:absolute;inset:0;pointer-events:none;opacity:0}
 .tgl-wide{position:absolute;left:-2%;right:-2%;top:0;bottom:0;pointer-events:none;opacity:0}
 
+/* intro screens (boot, title): they size by window width already, so they only scale up, on windows bigger than the canvas */
+.ui-up{zoom:var(--ui-up,1)}
+
 /* ============ app chrome ============ */
-/* zoom by --ui shrinks layout units too, so viewport-based sizes divide it back out: the frame stays
-   exactly one screen tall, and the content cap stays 1480 real pixels wide */
+/* --ui (see lib/uiScale.ts) zooms everything drawn inside the app, so all sizes below are in design
+   pixels, on a 1600x1000 canvas. Zoom scales layout units too, so viewport units divide it back out where
+   a real window size is meant: the frame stays exactly one screen tall. Widths are NOT divided back out:
+   the content cap below is in design pixels, so the layout has the same shape at every window size and
+   extra width becomes margin. */
 .nier-app{
   zoom:var(--ui);
   min-height:calc(100vh / var(--ui));display:flex;flex-direction:column;position:relative;overflow:hidden;
@@ -91,7 +97,7 @@
 .nier-deco .diag.b{left:calc(36% + 100px)}
 .nier-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,rgba(69,65,56,0) 62%,rgba(69,65,56,0.2) 100%)}
 
-.n-shell{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;width:100%;max-width:calc(1480px / var(--ui));margin:0 auto;padding:30px 56px 22px}
+.n-shell{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;width:100%;max-width:1600px;margin:0 auto;padding:30px 56px 22px}  /* 1600 = DESIGN_W in lib/uiScale.ts */
 .n-tabs{display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px;min-height:58px}
 @media (min-width:761px){.n-tabs{flex-wrap:nowrap}}
 .n-tab{display:flex;align-items:center;gap:12px;width:210px;height:46px;padding:0 16px;border:none;background:var(--n-bar);color:var(--n-ink);font-family:inherit;font-size:19px;letter-spacing:.14em;cursor:pointer;transition:background .12s,color .12s}
@@ -106,7 +112,7 @@
 .n-rule{height:1px;background:var(--n-ink);margin:0 -56px}
 .n-orn{height:5px;margin-top:6px;background:repeating-linear-gradient(90deg,var(--n-ink) 0 12px,transparent 12px 20px,var(--n-ink) 20px 23px,transparent 23px 29px,var(--n-ink) 29px 32px,transparent 32px 80px)}
 
-.n-title{margin:24px 0 0;font-weight:400;font-size:clamp(32px,3.6vw,48px);line-height:1.1;letter-spacing:.1em;text-shadow:5px 5px 0 rgba(69,65,56,0.16)}
+.n-title{margin:24px 0 0;font-weight:400;font-size:48px;line-height:1.1;letter-spacing:.1em;text-shadow:5px 5px 0 rgba(69,65,56,0.16)}
 .n-title small{font-size:22px;letter-spacing:.06em;text-shadow:none;white-space:nowrap}
 .n-body{flex:1;display:flex;flex-direction:column;padding:30px 0 26px}
 .screen-in{animation:screen-in 360ms ease both}
@@ -137,10 +143,10 @@
 .n-bar-btn.picked{background:var(--n-ink-2);color:var(--n-cream);box-shadow:3px 3px 0 rgba(69,65,56,0.25)}
 .n-bar-btn .sq{width:14px;height:14px}
 /* main-menu size: dark bar between two hairlines when hovered */
-.n-bar-btn.big{min-height:62px;padding:0 22px;gap:18px;font-size:clamp(18px,1.7vw,24px);letter-spacing:.2em;animation:screen-in 420ms ease both}
+.n-bar-btn.big{min-height:62px;padding:0 22px;gap:18px;font-size:24px;letter-spacing:.2em;animation:screen-in 420ms ease both}
 .n-bar-btn.big .sq{width:16px;height:16px}
 /* the small side-by-side variant (main menu terms/privacy): same highlight and cursor, just not full width */
-.n-bar-btn.big.compact{width:auto;min-height:48px;padding:0 26px;gap:14px;font-size:clamp(15px,1.2vw,18px)}
+.n-bar-btn.big.compact{width:auto;min-height:48px;padding:0 26px;gap:14px;font-size:18px}
 .n-bar-btn.big.compact .sq{width:13px;height:13px}
 .n-bar-btn.big:hover,.n-bar-btn.big:focus-visible,.n-bar-btn.big.on{outline:none;background:var(--n-ink);color:var(--n-cream);box-shadow:0 -4px 0 var(--n-bg),0 -5px 0 var(--n-ink),0 4px 0 var(--n-bg),0 5px 0 var(--n-ink)}
 
@@ -213,7 +219,7 @@
 @keyframes img-scan{0%{clip-path:inset(0 0 100% 0);opacity:.4}100%{clip-path:inset(0);opacity:1}}
 .row-in{animation:row-in 220ms ease-out both}
 /* the gallery's artwork frame: any aspect ratio fits whole, on the bar colour */
-.work-frame{height:clamp(240px,40vh,400px);background:var(--n-bar);overflow:hidden}
+.work-frame{height:clamp(240px,calc(40vh / var(--ui)),400px);background:var(--n-bar);overflow:hidden}
 .work-frame img{display:block;width:100%;height:100%;object-fit:contain}  /* explicit size: Chrome can't resolve max-height:100% inside a grid, which cropped the art */
 .img-in{animation:img-scan 380ms steps(10) both}
 
@@ -249,7 +255,7 @@ button:disabled{opacity:.55;cursor:wait}
 /* ============ overlays ============ */
 .transition-overlay-in{position:fixed;inset:0;background:#000;z-index:9999;pointer-events:none;animation:nier-fade-in 250ms ease both}
 .transition-overlay-out{position:fixed;inset:0;background:#000;z-index:9999;pointer-events:none;animation:nier-fade-out 300ms ease both}
-.nier-toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,0);z-index:9000;max-width:92vw;background:#2e2b23;color:var(--n-cream);font-family:var(--font-ui);font-size:16px;letter-spacing:.1em;padding:14px 26px;box-shadow:5px 5px 0 rgba(0,0,0,0.25);animation:toast-in 240ms ease both;display:flex;align-items:center;gap:12px}
+.nier-toast{zoom:var(--ui);position:fixed;left:50%;bottom:34px;transform:translate(-50%,0);z-index:9000;max-width:calc(92vw / var(--ui));background:#2e2b23;color:var(--n-cream);font-family:var(--font-ui);font-size:16px;letter-spacing:.1em;padding:14px 26px;box-shadow:5px 5px 0 rgba(0,0,0,0.25);animation:toast-in 240ms ease both;display:flex;align-items:center;gap:12px}
 
 .confirm-backdrop{position:fixed;inset:0;z-index:9500;background:rgba(37,34,28,0.55);display:flex;align-items:center;justify-content:center;animation:nier-fade-in 160ms ease both}
 /* the root-level dialog sits outside .nier-app, so it takes the scale itself (but not twice) */
@@ -306,7 +312,10 @@ button:disabled{opacity:.55;cursor:wait}
   .n-tab.on{height:46px;padding-bottom:0}
   .nier-deco{display:none}
   .n-hint-msg{font-size:17px}
+  .n-title{font-size:32px}
   .n-title small{white-space:normal}
+  .n-bar-btn.big{font-size:18px}
+  .n-bar-btn.big.compact{font-size:15px}
 }
 
 /* ============ reduced motion ============ */

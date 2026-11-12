@@ -11,6 +11,7 @@ import CommissionRequest from './pages/CommissionRequest'
 import CheckStatus from './pages/CheckStatus'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
+import { useUiScale } from './lib/uiScale'
 
 // split into its own chunk: it pulls in the supabase client, which buyers never need
 const AdminConsole = lazy(() => import('./pages/AdminConsole'))
@@ -57,6 +58,7 @@ function initialStage(): Stage {
 // Stage machine: boot → pretitle → title → app, each hop through a black fade.
 // Replaces the Landing/TitleScreen switch previously in main.tsx — render <App /> from main.tsx.
 export default function App(): React.ReactElement {
+  useUiScale()
   const [stage, setStage] = useState<Stage>(initialStage)
   const [screen, setScreen] = useState<Screen>(DEEP_LINK_ID ? 'status' : HASH_SCREEN ?? 'menu')
   const [statusPrefill, setStatusPrefill] = useState<string | undefined>(DEEP_LINK_ID)
