@@ -2,9 +2,9 @@
 
 **Live:** https://isseiscommissions.com
 
-Commissioning store for digital art from the artist, isseimx, with a Nier Automata-inspired product flow.
+Commissioning store for digital art made for my friend :D with a Nier Automata-inspired product flow.
 
-> Fan project. Not affiliated with or endorsed by Square Enix or PlatinumGames. All UI code, fonts and artwork used here are original or openly licensed.
+Just to be clear that this is a fan project. NOT AT ALL affiliated with or endorsed by Square Enix or PlatinumGames. All UI code, fonts and artwork used here are original or openly licensed.
 
 ## Tech stack
 
