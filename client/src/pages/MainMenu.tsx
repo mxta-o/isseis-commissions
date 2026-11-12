@@ -56,7 +56,7 @@ export default function MainMenu({ nav }: Props): React.ReactElement {
             ))}
           </div>
         </nav>
-        <div className="n-col n-panel" style={{ minHeight: 360 }}>
+        <div className="n-col n-panel menu-panel" style={{ minHeight: 360 }}>
           <div className="n-panel-head wide"><span className="sq" aria-hidden />SYSTEM MESSAGE</div>
           <div className="n-panel-body" aria-live="polite">
             {/* keyed so it remounts, and replays the swap animation, whenever the destination changes */}

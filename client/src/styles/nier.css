@@ -325,7 +325,10 @@ button:disabled{opacity:.55;cursor:wait}
   .n-body{padding:18px 0 14px}
   .n-title{font-size:32px;text-shadow:3px 3px 0 rgba(69,65,56,0.16)}
   .n-title small{white-space:normal}
-  .n-bar-btn.big{font-size:18px}
+  /* the menu's system message panel only fills in on hover, and a tap goes straight to the screen, so it has nothing to say here */
+  .menu-panel{display:none}
+  .n-bar-btn.big{min-height:56px;padding:0 16px;gap:14px;font-size:17px;letter-spacing:.12em}
+  .n-bar-btn.big .sq{width:14px;height:14px}
   .n-bar-btn.big.compact{font-size:15px}
 }
 
