@@ -212,6 +212,9 @@
 @keyframes row-in{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
 @keyframes img-scan{0%{clip-path:inset(0 0 100% 0);opacity:.4}100%{clip-path:inset(0);opacity:1}}
 .row-in{animation:row-in 220ms ease-out both}
+/* the gallery's artwork frame: any aspect ratio fits whole, on the bar colour */
+.work-frame{height:clamp(240px,40vh,400px);background:var(--n-bar);overflow:hidden}
+.work-frame img{display:block;width:100%;height:100%;object-fit:contain}  /* explicit size: Chrome can't resolve max-height:100% inside a grid, which cropped the art */
 .img-in{animation:img-scan 380ms steps(10) both}
 
 /* ============ controls ============ */

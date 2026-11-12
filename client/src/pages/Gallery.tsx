@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ScreenHead, Slot, useFooterHint, type Screen } from '../components/AppFrame'
+import { ScreenHead, useFooterHint, type Screen } from '../components/AppFrame'
+import { WORKS } from '../lib/gallery'
 import { stepIndex, useArrowKeys } from '../lib/useArrowKeys'
 
 type Props = { nav: (s: Screen) => void }
@@ -11,13 +12,9 @@ const CATEGORIES = [
   { key: 'CHIBI', name: 'Chibi' },
 ] as const
 type CategoryKey = (typeof CATEGORIES)[number]['key']
-const CYCLE = ['CHARACTER', 'SCENE', 'CHIBI'] as const
 
-// placeholder archive until real works are wired in
-const ITEMS = Array.from({ length: 12 }, (_, i) => {
-  const n = String(i + 1).padStart(2, '0')
-  return { n, label: `ARCHIVE ${n}`, tag: CYCLE[i % 3] }
-})
+// the real works, read from src/assets/gallery (see lib/gallery.ts for how folders and filenames map)
+const ITEMS = WORKS
 
 const worksIn = (cat: CategoryKey) => (cat === 'ALL' ? ITEMS : ITEMS.filter(g => g.tag === cat))
 
@@ -27,7 +24,7 @@ const worksIn = (cat: CategoryKey) => (cat === 'ALL' ? ITEMS : ITEMS.filter(g =>
 export default function Gallery({ nav }: Props): React.ReactElement {
   const [cursor, setCursor] = useState(0)                     // highlighted category
   const [open, setOpen] = useState<CategoryKey | null>(null)  // opened category, null = still choosing
-  const [picked, setPicked] = useState<string>(ITEMS[0].n)
+  const [picked, setPicked] = useState<string>(ITEMS[0]?.n ?? '')
   const list = useRef<HTMLDivElement>(null)
 
   const shown = open ? worksIn(open) : []
@@ -38,7 +35,7 @@ export default function Gallery({ nav }: Props): React.ReactElement {
     const key = CATEGORIES[i].key
     setCursor(i)
     setOpen(key)
-    setPicked(worksIn(key)[0].n)
+    setPicked(worksIn(key)[0]?.n ?? '')
   }
   const close = () => setOpen(null)
 
@@ -113,8 +110,8 @@ export default function Gallery({ nav }: Props): React.ReactElement {
               </div>
               <div className="n-panel-body">
                 <div key={sel.n} className="sys-msg">
-                  <div className="img-in" style={{ aspectRatio: '16/10', maxHeight: 260 }}><Slot label={`artwork ${sel.n}`} /></div>
-                  <div className="n-text sys-desc">{'// placeholder — a short note about this piece goes here //'}</div>
+                  <div className="img-in work-frame"><img src={sel.src} alt={`${sel.label.toLowerCase()}${sel.fan ? ' (fan art)' : ''}`} /></div>
+                  {sel.fan && <div className="n-small sys-desc">Fan art only. Characters belong to their owners.</div>}
                   <div className="n-line sys-rule" />
                   <div className="n-kv sys-title"><span>Type:</span><span>{sel.tag}</span></div>
                 </div>
