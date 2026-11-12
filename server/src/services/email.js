@@ -19,11 +19,13 @@ async function send({ to, subject, text }) {
 
 // For emails whose failure shouldn't fail the request (the commission already exists; the
 // tracking ID is on screen). Logs and moves on.
-async function sendQuietly(message) {
+// The log line names the email kind and the payment ref only: no address and no subject (it holds
+// the buyer's title), and not the full tracking ID, since that's the secret to their status page.
+async function sendQuietly(kind, commissionId, message) {
   try {
     await send(message)
   } catch (err) {
-    console.error(`Email "${message.subject}" to ${message.to} failed:`, err.message)
+    console.error(`Email "${kind}" for ref ${paymentRef(commissionId)} failed:`, err.resend?.message ?? err.message)
   }
 }
 
@@ -47,7 +49,7 @@ async function sendVerificationCode(email, code) {
 }
 
 function sendTrackingId(commission) {
-  return sendQuietly({
+  return sendQuietly('request received', commission.id, {
     to: commission.email,
     subject: `Request received — ${commission.title}`,
     text: [
@@ -65,7 +67,7 @@ function sendTrackingId(commission) {
 
 function notifyNewCommission(commission, fileCount) {
   if (!env.notifyEmail) return Promise.resolve()
-  return sendQuietly({
+  return sendQuietly('new request alert', commission.id, {
     to: env.notifyEmail,
     subject: `New commission request — ${commission.title}`,
     text: [
@@ -85,7 +87,7 @@ function notifyNewCommission(commission, fileCount) {
 function sendApproved(c) {
   const ref = paymentRef(c.id)
   const price = `${formatPrice(c.price_cents)} CAD`
-  return sendQuietly({
+  return sendQuietly('accepted', c.id, {
     to: c.email,
     subject: `Accepted — ${c.title} (payment due within 24 h)`,
     text: [
@@ -108,7 +110,7 @@ function sendApproved(c) {
 }
 
 function sendRejected(c) {
-  return sendQuietly({
+  return sendQuietly('declined', c.id, {
     to: c.email,
     subject: `Request declined — ${c.title}`,
     text: [
@@ -124,7 +126,7 @@ function sendRejected(c) {
 }
 
 function sendPaymentConfirmed(c) {
-  return sendQuietly({
+  return sendQuietly('payment received', c.id, {
     to: c.email,
     subject: `Payment received — ${c.title}`,
     text: [
@@ -138,7 +140,7 @@ function sendPaymentConfirmed(c) {
 }
 
 function sendExpired(c) {
-  return sendQuietly({
+  return sendQuietly('expired', c.id, {
     to: c.email,
     subject: `Request cancelled — ${c.title}`,
     text: [
@@ -152,7 +154,7 @@ function sendExpired(c) {
 }
 
 function sendCompleted(c) {
-  return sendQuietly({
+  return sendQuietly('completed', c.id, {
     to: c.email,
     subject: `Your commission is ready — ${c.title}`,
     text: [
