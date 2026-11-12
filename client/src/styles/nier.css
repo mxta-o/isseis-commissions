@@ -330,6 +330,7 @@ button:disabled{opacity:.55;cursor:wait}
   .n-bar-btn.big{min-height:56px;padding:0 16px;gap:14px;font-size:17px;letter-spacing:.12em}
   .n-bar-btn.big .sq{width:14px;height:14px}
   .n-bar-btn.big.compact{font-size:15px}
+  .n-steps .n-small{font-size:12px;letter-spacing:.02em}   /* four labels share one row; at 16px "ACCEPTED" ran into "IN PROGRESS" */
 }
 
 /* ============ reduced motion ============ */
