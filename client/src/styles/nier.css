@@ -67,6 +67,9 @@
 .tgl{position:absolute;inset:0;pointer-events:none;opacity:0}
 .tgl-wide{position:absolute;left:-2%;right:-2%;top:0;bottom:0;pointer-events:none;opacity:0}
 
+/* the page behind the app is beige too, so overscroll and the gap a phone's hidden toolbar leaves aren't black */
+html:has(.nier-app){background:var(--n-bg)}
+
 /* intro screens (boot, title): they size by window width already, so they only scale up, on windows bigger than the canvas */
 .ui-up{zoom:var(--ui-up,1)}
 
@@ -305,14 +308,16 @@ button:disabled{opacity:.55;cursor:wait}
 
 /* ============ small screens ============ */
 @media (max-width: 760px){
-  .n-shell{padding:18px 16px 14px}
+  .nier-app{min-height:100dvh}   /* the phone's address bar comes and goes, so 100vh would leave the page taller than what's visible */
+  .n-shell{padding:14px 16px 10px}
   .n-rule{margin:0 -16px}
   .n-tabs{gap:8px}
   .n-tab,.n-tab.narrow{width:auto;flex:1 1 40%;font-size:16px}
   .n-tab.on{height:46px;padding-bottom:0}
   .nier-deco{display:none}
-  .n-hint-msg{font-size:17px}
-  .n-title{font-size:32px}
+  .n-hint{display:none}   /* its keys (arrows, Enter, Esc) don't exist on a touchscreen; the tabs and browser back cover the rest */
+  .n-body{padding:18px 0 14px}
+  .n-title{font-size:32px;text-shadow:3px 3px 0 rgba(69,65,56,0.16)}
   .n-title small{white-space:normal}
   .n-bar-btn.big{font-size:18px}
   .n-bar-btn.big.compact{font-size:15px}
