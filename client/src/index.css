@@ -1,12 +1,12 @@
-/* M PLUS 1p ~ FOT-Rodin (all UI text: menus, labels, dialogs, boot log; Rodin itself needs a paid web licence);Comfortaa ~ the YoRHa wordmark; Marcellus ~ the title logotype (glyphic, flared serifs).
+/* M PLUS 1p ~ FOT-Rodin (all UI text: menus, labels, dialogs, boot log; Rodin itself needs a paid web licence);Comfortaa ~ the YoRHa wordmark; Bellefair ~ the title logotype (high-contrast display serif).
    No 200 weight on purpose: CSS falls back to 300, which reads better than M PLUS's hairline 100. */
-@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;500;700&family=Comfortaa:wght@400;500;700&family=Marcellus&display=swap');
+@import './fonts.css';  /* self-hosted copies of the three Google Fonts below; no requests to Google */
 @import 'tailwindcss';
 
 :root {
   /* Open-licensed (SIL OFL) fonts; change these to retheme all text */
   --font-ui: 'M PLUS 1p', 'Helvetica Neue', sans-serif;
-  --font-title: 'Marcellus', Georgia, serif;
+  --font-title: 'Bellefair', Georgia, serif;
   --font-accent: var(--font-ui);
   --font-wordmark: 'Comfortaa', var(--font-ui);
   font-family: var(--font-ui);
