@@ -9,6 +9,8 @@ import Gallery from './pages/Gallery'
 import About from './pages/About'
 import CommissionRequest from './pages/CommissionRequest'
 import CheckStatus from './pages/CheckStatus'
+import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
 
 // split into its own chunk: it pulls in the supabase client, which buyers never need
 const AdminConsole = lazy(() => import('./pages/AdminConsole'))
@@ -109,6 +111,8 @@ export default function App(): React.ReactElement {
           {screen === 'about' && <About nav={nav} />}
           {screen === 'request' && <CommissionRequest toast={toast} nav={nav} />}
           {screen === 'status' && <CheckStatus key={statusPrefill ?? 'blank'} prefill={statusPrefill} toast={toast} />}
+          {screen === 'terms' && <Terms nav={nav} />}
+          {screen === 'privacy' && <Privacy nav={nav} />}
           {screen === 'admin' && (
             <Suspense fallback={<div className="n-text">Loading console…</div>}>
               <AdminConsole toast={toast} />

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-export type Screen = 'menu' | 'gallery' | 'about' | 'request' | 'status' | 'admin'
+export type Screen = 'menu' | 'gallery' | 'about' | 'request' | 'status' | 'admin' | 'terms' | 'privacy'
 
 type Props = {
   screen: Screen
@@ -15,6 +15,12 @@ const TABS: { key: Screen; label: string }[] = [
   { key: 'request', label: 'COMMISSION' },
   { key: 'status', label: 'STATUS' },
   { key: 'about', label: 'ABOUT' },
+]
+
+// Terms and Privacy sit on the right of the tab row, next to MENU.
+const LEGAL_TABS: { key: Screen; label: string }[] = [
+  { key: 'terms', label: 'TERMS' },
+  { key: 'privacy', label: 'PRIVACY' },
 ]
 
 // The footer bar: one line of guidance plus the keys that work on this screen.
@@ -34,6 +40,8 @@ const HINTS: Record<Screen, FooterHint> = {
   request: { msg: 'Choose a type and describe what you’d like drawn.', arrows: '↑↓', select: 'Type' },
   status: { msg: 'Enter a tracking ID to see where a commission stands.', confirm: 'Search' },
   admin: { msg: 'Select an entry to review it.' },
+  terms: { msg: 'The rules for requests, payment and delivery.' },
+  privacy: { msg: 'What this site collects, why, and who handles it.' },
 }
 
 const HintContext = createContext<(hint: FooterHint | null) => void>(() => {})
@@ -97,6 +105,11 @@ export default function AppFrame({ screen, nav, onExit, children }: Props): Reac
               </button>
             ))}
             <span className="grow" />
+            {LEGAL_TABS.map(t => (
+              <button key={t.key} className={`n-tab narrow${screen === t.key ? ' on' : ''}`} aria-current={screen === t.key ? 'page' : undefined} onClick={() => nav(t.key)}>
+                <span className="sq" aria-hidden />{t.label}
+              </button>
+            ))}
             <button className="n-tab narrow" onClick={() => nav('menu')}><span className="sq" aria-hidden />MENU</button>
           </nav>
         )}

@@ -212,6 +212,10 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
             {error && <div className="n-err" role="alert">▮ {error}</div>}
             <div>
               <button className="btn-solid lift" onClick={sendCode} disabled={busy}><span className="sq" aria-hidden />{busy ? 'Sending…' : 'Request Verification Code'}</button>
+              <div className="n-small" style={{ marginTop: 10 }}>
+                By requesting a code you agree to the <button type="button" className="n-link" onClick={() => nav('terms')}>Terms</button> and
+                the <button type="button" className="n-link" onClick={() => nav('privacy')}>Privacy Notice</button>.
+              </div>
             </div>
           </div>
 
@@ -242,11 +246,11 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
         <div className="n-panel screen-in" style={{ maxWidth: 700, margin: '40px auto 0' }}>
           <div className="n-panel-head wide"><span className="sq" aria-hidden />SYSTEM MESSAGE</div>
           <div className="n-panel-body" style={{ gap: 16 }}>
+            <VerifyHint />
             <div className="n-text">A 6-digit code was sent to <strong style={{ fontWeight: 500, wordBreak: 'break-all' }}>{email.trim()}</strong>. Enter it to submit your request.</div>
             <div>
               {label('Verification code', 'rq-code')}
               <input id="rq-code" className="field" value={code} onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="······" maxLength={6}
-            <VerifyHint />
                 inputMode="numeric" autoComplete="one-time-code" onKeyDown={e => {
                   // in the field, left/right keep moving the caret; up/down walk the three buttons, Enter runs the highlighted one
                   if (e.key === 'Enter') { e.preventDefault(); runHot() }
