@@ -52,28 +52,23 @@ const AFTER_BLK: Box[] = [
   { l: '17%', t: '-30%', w: '0.45em', h: '0.22em', bg: '#a49e8f', o: 0.7 }, { l: '64%', t: '-24%', w: '0.3em', h: '0.3em', bg: '#f5f4de', o: 0.75 },
   { l: '72%', t: '-30%', w: '0.4em', h: '0.2em', bg: '#cfc9b8', o: 0.65 },
 ]
-// The plate behind "…missions", in the wordmark SVG's own units (1100 x 136, baseline rule at
-// y=124). Each entry is [x, y, width, height]. PLATE is what the plate covers: the solid block,
-// the three steps eaten out of its top-left corner, the strip running left along the baseline,
-// and the loose debris above and beside it. PLATE_HOLES are notches punched back out of it.
-// The left edge sits mid-way through the second "m", so that letter is half cream, half dark.
-// Positions are deliberate (placed against Marcellus at 116px); don't randomise.
+
 type Rect = [number, number, number, number, number?]
 const PLATE: Rect[] = [
-  [706, 40, 335, 84], [690, 48, 16, 76], [676, 60, 14, 64], [664, 74, 12, 50],
-  [656, 84, 8, 8], [650, 100, 14, 6], [658, 110, 6, 6], [600, 116, 40, 8], [646, 116, 18, 8],
-  [678, 48, 8, 6], [662, 62, 8, 6], [644, 70, 6, 6], [636, 90, 5, 5],
-  [708, 30, 20, 7], [734, 33, 8, 7], [748, 26, 12, 6], [800, 34, 8, 6], [722, 20, 8, 6],
-  [818, 33, 14, 7], [846, 35, 6, 5], [790, 22, 6, 6],
+  [696, 45, 309, 79], [682, 52, 14, 72], [670, 64, 12, 60], [659, 77, 11, 47],
+  [652, 86, 7, 8], [646, 101, 13, 6], [653, 111, 6, 5], [606, 116, 31, 8],
+  [643, 116, 16, 8], [671, 52, 7, 6], [657, 66, 7, 5], [641, 73, 5, 6],
+  [634, 92, 4, 5], [698, 35, 16, 7], [720, 38, 5, 7], [731, 32, 13, 5],
+  [784, 39, 9, 6], [708, 26, 8, 6], [804, 38, 10, 7], [829, 40, 2, 5],
+  [773, 28, 7, 6],
 ]
 const PLATE_HOLES: Rect[] = [
-  [664, 92, 8, 8], [672, 74, 8, 6], [684, 60, 8, 6], [700, 48, 8, 6], [676, 104, 6, 6], [712, 40, 12, 5], [690, 80, 6, 6],
+  [659, 94, 7, 7], [666, 77, 7, 6], [677, 64, 7, 5], [691, 52, 7, 6],
+  [670, 105, 5, 6], [702, 45, 8, 5], [682, 83, 5, 5],
 ]
-// two grey fragments in the debris band (last number is opacity)
-const PLATE_GREY: Rect[] = [[770, 31, 24, 9], [756, 16, 10, 6, 0.7]]
+const PLATE_GREY: Rect[] = [[755, 36, 23, 9], [740, 22, 11, 6, 0.7]]
 const rect = ([x, y, w, h, o]: Rect, i: number) => <rect key={i} x={x} y={y} width={w} height={h} opacity={o} />
-// where the title text sits inside the SVG
-const T = { x: 59, y: 123, fontSize: 116 }
+const T = { x: 93, y: 123, fontSize: 130, letterSpacing: -3 }
 
 type Particle = { x: string; y: string; s: string; o: string; blur: string; anim: string }
 function genParticles(): Particle[] {
