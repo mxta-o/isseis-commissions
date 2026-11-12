@@ -67,6 +67,9 @@
 .tgl{position:absolute;inset:0;pointer-events:none;opacity:0}
 .tgl-wide{position:absolute;left:-2%;right:-2%;top:0;bottom:0;pointer-events:none;opacity:0}
 
+/* intro screens (boot, title): they size by window width already, so they only scale up, on windows bigger than the canvas */
+.ui-up{zoom:var(--ui-up,1)}
+
 /* ============ app chrome ============ */
 /* --ui (see lib/uiScale.ts) zooms everything drawn inside the app, so all sizes below are in design
    pixels, on a 1600x1000 canvas. Zoom scales layout units too, so viewport units divide it back out where
