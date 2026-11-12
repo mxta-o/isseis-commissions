@@ -7,7 +7,7 @@ const SECTIONS: LegalSection[] = [
   {
     heading: 'Who this is with',
     paragraphs: [
-      'Commissions on this site are drawn by Loraine (isseimx), referred to below as "the artist". By submitting a request you agree to these terms.',
+      'Commissions on this site are drawn by isseimx, referred to below as "the artist". By submitting a request you agree to these terms.',
     ],
   },
   {

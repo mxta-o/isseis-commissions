@@ -6,7 +6,7 @@ import type { Screen } from '../components/AppFrame'
 const SECTIONS: LegalSection[] = [
   {
     heading: 'Who runs this site',
-    paragraphs: [`This site is run by Loraine (isseimx), based in Ontario, Canada, who decides how your information is used. To ask about your data, ${CONTACT_LINE}.`],
+    paragraphs: [`Commissions are provided by isseimx, who decides how your information is used. The site itself is built, hosted and maintained by jarlan, who runs it on isseimx's behalf and can access request data only as needed to keep it working. To ask about your data, ${CONTACT_LINE}.`],
   },
   {
     heading: 'What we collect',
@@ -25,7 +25,7 @@ const SECTIONS: LegalSection[] = [
   },
   {
     heading: 'Cookies and tracking',
-    paragraphs: ['This site does not use advertising, analytics or tracking cookies, and does not store anything about you in your browser. Its fonts are served from the site itself, so your browser does not contact Google for them. Only the artist signs in, using a separate admin login.'],
+    paragraphs: ['This site does not use advertising, analytics or tracking cookies, and does not store anything about you in your browser. Its fonts are served from the site itself, so your browser does not contact Google for them. Only the artist and jarlan sign in, using a separate admin login.'],
   },
   {
     heading: 'Why we use it',
@@ -38,6 +38,7 @@ const SECTIONS: LegalSection[] = [
       'Supabase: stores the database and your uploaded and finished files, in a private store that is only reachable through short-lived signed links.',
       'Resend: sends the emails (verification code, receipts and status updates), so it sees your address and the email text.',
       'Ko-fi: handles payment, if you pay.',
+      'jarlan: builds, hosts and maintains the site for the artist, and can see request data when needed to keep it running.',
       'Our hosting and domain providers: serve the site and may log visits.',
     ],
   },
@@ -55,7 +56,7 @@ const SECTIONS: LegalSection[] = [
   },
   {
     heading: 'Security',
-    paragraphs: ['Files sit in a private store, access to requests is limited to the artist\'s admin login, and verification codes are hashed. No system is perfectly secure, so please do not put sensitive personal information in a request.'],
+    paragraphs: ['Files sit in a private store, access to requests is limited to the admin logins of the artist and jarlan, and verification codes are hashed. No system is perfectly secure, so please do not put sensitive personal information in a request.'],
   },
   {
     heading: 'Children',
