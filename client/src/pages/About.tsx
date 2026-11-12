@@ -10,14 +10,14 @@ export default function About({ nav }: Props): React.ReactElement {
       <ScreenHead title="ABOUT" sub="Artist Profile" />
       <div className="n-cols" style={{ marginTop: 32 }}>
         <div className="n-col n-panel" style={{ flex: '1.6 1 380px' }}>
-          <div className="n-panel-head"><span className="grow">LORAINE</span><small>Digital Illustrator</small></div>
+          <div className="n-panel-head"><span className="grow">isseimx</span><small>Digital Artist</small></div>
           <div className="n-panel-body">
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
               <div style={{ width: 150, height: 150, flex: 'none' }}><Slot label="artist portrait" /></div>
               <div className="n-stack" style={{ flex: '1 1 220px', gap: 8 }}>
                 <div className="n-kv"><span>Focus:</span><span>Character art</span></div>
                 <div className="n-kv"><span>Payment:</span><span>Ko-fi</span></div>
-                <div className="n-kv"><span>Revisions:</span><span>None — final</span></div>
+                <div className="n-kv"><span>Revisions:</span><span>None, final</span></div>
                 <div className="n-line" />
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 4 }}>
                   <a className="tag-btn" href="#" onClick={e => e.preventDefault()} style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>Twitter/X</a>
@@ -28,9 +28,8 @@ export default function About({ nav }: Props): React.ReactElement {
             </div>
             <div className="n-line" />
             <div className="n-text" style={{ maxWidth: '60ch' }}>
-              <p style={{ margin: '0 0 12px' }}>{'// placeholder bio — replace with Loraine’s own words //'}</p>
-              <p style={{ margin: '0 0 12px' }}>Loraine is a digital illustrator focused on character art — expressive portraits, full-body designs, and quiet, atmospheric scenes. Comfortable across original characters, fanart, and tabletop-party commissions.</p>
-              <p style={{ margin: 0 }}>Every piece is drawn to order. Delivery is final — no revision rounds — so the intake form asks for everything up front: clear references, palette notes, and the mood you're after.</p>
+              <p style={{ margin: '0 0 12px' }}>hi, i'm isseimx, or riri. i'm a university student studying criminology and working as a barista on the side. i like one piece, dc comics and gummygoo.</p>
+              <p style={{ margin: 0 }}>more importantly i like 2 draw. i can draw almost anything for the right price. though i want it to be understood that delivery is FINAL, which means there are no revisions, so i advise you be as specific as possible when sending a commission.</p>
             </div>
           </div>
         </div>
@@ -50,7 +49,7 @@ export default function About({ nav }: Props): React.ReactElement {
             <ul className="n-bullets">
               {WONT_DRAW.map(w => <li key={w}><span aria-hidden style={{ width: 12, height: 2, background: 'var(--n-red)', flex: 'none' }} />{w}</li>)}
             </ul>
-            <div className="n-small">The ruleset is final — requests outside it are rejected at review.</div>
+            <div className="n-small">The ruleset is final. Requests outside it are rejected at review.</div>
             <span className="grow" />
             <button className="btn-solid" onClick={() => nav('request')}><span className="sq" aria-hidden />Start a request</button>
           </div>

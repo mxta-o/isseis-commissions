@@ -199,7 +199,7 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
                 <div className="n-line sys-rule" />
               </div>
               <ul className="n-bullets n-small" style={{ lineHeight: 1.35 }}>
-                {['1 request per email / 30 min', 'Email verification required', 'Pay via Ko-fi only if accepted', 'Payment window: 24 h after acceptance', 'Delivery is final — no revisions'].map(rule => (
+                {['1 request per email / 30 min', 'Email verification required', 'Pay via Ko-fi only if accepted', 'Payment window: 24 h after acceptance', 'Delivery is FINAL. no revisions'].map(rule => (
                   <li key={rule} style={{ minHeight: 34 }}><span className="sq" aria-hidden style={{ width: 7, height: 7 }} />{rule}</li>
                 ))}
               </ul>
