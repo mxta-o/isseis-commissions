@@ -267,3 +267,23 @@ button:disabled{opacity:.55;cursor:wait}
 @media (prefers-reduced-motion: reduce){
   .screen-in,.n-bar-btn.big,.sys-title,.sys-rule,.sys-desc,.row-in,.img-in{animation:none}
 }
+/* a button with its own cursor slot (reserved so nothing shifts); the highlighted one goes dark and shows the cursor */
+.cursor-choice{display:flex;align-items:center;gap:10px}
+.cursor-choice .n-cursor{opacity:0;transition:opacity .12s}
+.cursor-choice.on .n-cursor{opacity:1}
+.pick-btn{display:inline-flex;align-items:center;gap:12px;min-height:48px;padding:0 22px;border:none;background:var(--n-bar);color:var(--n-ink);font-family:var(--font-ui);font-size:19px;letter-spacing:.08em;cursor:pointer;transition:background .12s,color .12s,box-shadow .12s}
+.pick-btn .sq{width:13px;height:13px}
+/* verify step: two equal buttons side by side, the third centred underneath */
+/* the 40px of right padding balances the 40px cursor slot at the left of each button, so the buttons themselves are centred */
+.pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;margin-top:4px;padding-right:40px}
+.pick-grid .cursor-choice:not(.center){min-width:0}
+.pick-grid .cursor-choice:not(.center) .pick-btn{flex:1;min-width:0}
+.cursor-choice.center{grid-column:1 / -1;justify-content:center;padding-left:40px}
+.cc-btn{position:relative;display:flex}
+.cc-btn .n-cursor{position:absolute;right:100%;top:calc(50% - 9px);margin-right:10px}
+@media (max-width:760px){.pick-grid{grid-template-columns:1fr}}
+.pick-btn{white-space:nowrap}
+.pick-btn.on,.pick-btn:focus-visible{background:var(--n-ink);color:var(--n-cream);box-shadow:3px 3px 0 rgba(69,65,56,0.3);outline:none}
+/* when a pick-btn is a link, keep the app's link colour and underline from overriding it */
+.nier-app a.pick-btn,.nier-app a.pick-btn:hover{color:var(--n-ink);text-decoration:none}
+.nier-app a.pick-btn.on,.nier-app a.pick-btn.on:hover,.nier-app a.pick-btn:focus-visible{color:var(--n-cream)}
