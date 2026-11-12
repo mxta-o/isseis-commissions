@@ -54,10 +54,12 @@ function sendTrackingId(commission) {
     text: [
       'Your commission request has been received and is waiting for review.',
       '',
+      `Payment reference: ${paymentRef(commission.id)}`,
       `Tracking ID: ${commission.id}`,
       `Check status: ${statusUrl(commission.id)}`,
       '',
-      'Keep this email. If your request is accepted, you\'ll get another email with the price and how to pay.',
+      'Keep this email. If your request is accepted, you\'ll get another email with the price and how to pay. Put the payment reference above in your Ko-fi message then, so the payment can be matched to your request.',
+      'Please don\'t pay before your request is accepted.',
     ].join('\n'),
   })
 }

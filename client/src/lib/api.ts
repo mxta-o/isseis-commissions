@@ -53,7 +53,7 @@ export function requestVerificationCode(email: string): Promise<{ message: strin
 
 // `idempotencyKey` must stay the same across retries of one submission, so a request that
 // succeeded but whose response was lost returns the same tracking ID instead of a duplicate.
-export function submitCommission(input: CommissionInput, idempotencyKey: string): Promise<{ trackingId: string }> {
+export function submitCommission(input: CommissionInput, idempotencyKey: string): Promise<{ trackingId: string; ref: string }> {
   const form = new FormData()
   form.append('title', input.title)
   form.append('description', input.description)

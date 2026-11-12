@@ -53,6 +53,7 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [trackingId, setTrackingId] = useState('')
+  const [payRef, setPayRef] = useState('')   // short payment reference for the Ko-fi message, issued with the tracking ID
   // One key per form session: every retry of this submission reuses it, so a submit whose
   // response got lost returns the same tracking ID instead of creating a second request.
   const [idempotencyKey] = useState(() => crypto.randomUUID())
@@ -107,11 +108,11 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
     if (!/^\d{6}$/.test(code.trim())) return setError('ENTER THE 6-DIGIT CODE FROM YOUR EMAIL.')
     setBusy(true)
     try {
-      const { trackingId: id } = await submitCommission(
+      const { trackingId: id, ref } = await submitCommission(
         { title: title.trim(), description: desc.trim(), tier, email: email.trim(), code: code.trim(), files },
         idempotencyKey,
       )
-      setError(''); setTrackingId(id); setStep('done')
+      setError(''); setTrackingId(id); setPayRef(ref); setStep('done')
       toast('TRACKING ID ISSUED — CHECK YOUR EMAIL')
     } catch (err) {
       setError(message(err))
@@ -294,6 +295,9 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
               <button className="btn-ghost"
                 onClick={() => { navigator.clipboard?.writeText(trackingId).then(() => toast('ID COPIED TO CLIPBOARD'), () => toast('COPY FAILED — SELECT THE ID MANUALLY')) }}><span className="sq" aria-hidden />Copy ID</button>
             </div>
+            <div className="n-line" />
+            <div className="n-kv"><span>Payment reference:</span><span className="n-big" style={{ letterSpacing: '0.12em' }}>{payRef}</span></div>
+            <div className="n-small">Only needed if your request is accepted. Put it in your Ko-fi message then, and don't pay before you're accepted.</div>
             <div className="n-line" />
             <div className="n-text">
               <strong style={{ fontWeight: 500 }}>Save this ID.</strong> It is the only way to check your commission status. A copy has also been emailed to <span style={{ wordBreak: 'break-all' }}>{email.trim()}</span>. If your request is accepted, you'll get another email with the price and how to pay on Ko-fi.
