@@ -48,3 +48,5 @@ jobs:
       - run: npm run lint
       - run: npx tsc --noEmit -p .
       - run: npm run build
+        env:
+          VITE_API_URL: https://api.example.invalid  # placeholder: the build requires a value, CI never calls it

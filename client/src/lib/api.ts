@@ -1,6 +1,8 @@
 import type { Status, Tier } from './commissions'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+// Dev falls back to the local API. A production build must be given VITE_API_URL (vite.config.js refuses to
+// build without it), so a deployed site can never quietly call localhost.
+const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:4000' : '')
 
 // Carries the HTTP status so callers can tell "wrong code" (400) from "slow down" (429).
 export class ApiError extends Error {
@@ -18,11 +20,19 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   } catch {
     throw new ApiError(0, 'Could not reach the server. Check your connection and try again.')
   }
+  // Only trust a JSON body. A proxy or host error page (HTML) must never reach the user as a message.
   const payload = (response.headers.get('content-type') || '').includes('application/json')
-    ? await response.json()
-    : { message: await response.text() }
-  if (!response.ok) throw new ApiError(response.status, payload.message || 'Request failed.')
+    ? await response.json().catch(() => ({}))
+    : {}
+  if (!response.ok) throw new ApiError(response.status, payload.message || fallbackMessage(response.status))
   return payload as T
+}
+
+function fallbackMessage(status: number): string {
+  if (status === 413) return 'That upload is too large.'
+  if (status === 429) return 'Too many requests. Try again in a few minutes.'
+  if (status >= 500) return 'Something went wrong on our side. Please try again.'
+  return 'Request failed.'
 }
 
 export type PublicStatus = {
@@ -53,7 +63,7 @@ export function requestVerificationCode(email: string): Promise<{ message: strin
 
 // `idempotencyKey` must stay the same across retries of one submission, so a request that
 // succeeded but whose response was lost returns the same tracking ID instead of a duplicate.
-export function submitCommission(input: CommissionInput, idempotencyKey: string): Promise<{ trackingId: string }> {
+export function submitCommission(input: CommissionInput, idempotencyKey: string): Promise<{ trackingId: string; ref: string }> {
   const form = new FormData()
   form.append('title', input.title)
   form.append('description', input.description)

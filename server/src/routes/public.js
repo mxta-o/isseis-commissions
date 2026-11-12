@@ -61,7 +61,7 @@ function replay(res, existing, email) {
     throw new HttpError(422, 'This form was already submitted with a different email. Reload the page to start a new request.')
   }
   res.set('Idempotent-Replayed', 'true')
-  return res.status(201).json({ trackingId: existing.id })
+  return res.status(201).json({ trackingId: existing.id, ref: paymentRef(existing.id) })
 }
 
 function toPublicStatus(c) {
@@ -143,7 +143,7 @@ publicRouter.post('/commissions', submitLimiter, referenceUpload, async (req, re
   await verification.clearCode(input.email).catch(e => console.error('Clearing code failed:', e))
   await Promise.all([mail.sendTrackingId(commission), mail.notifyNewCommission(commission, files.length)])
 
-  res.status(201).json({ trackingId: commission.id })
+  res.status(201).json({ trackingId: commission.id, ref: paymentRef(commission.id) })
 })
 
 publicRouter.get('/commissions/:id', async (req, res) => {
