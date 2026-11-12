@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 type Props = {
   title?: string
@@ -40,7 +41,9 @@ export default function ConfirmDialog({ title = 'SYSTEM MESSAGE', message, onCon
     return () => window.removeEventListener('keydown', onKey, true)
   }, [sel, onConfirm, onCancel])
 
-  return (
+  // Portaled to <body>: screens animate `transform` (.screen-in), which makes position:fixed children
+  // measure against that screen instead of the window, so the shade and centring stopped short of the edges.
+  return createPortal(
     <div className="confirm-backdrop" onClick={onCancel}>
       <div className="confirm-panel" role="alertdialog" aria-label={title} onClick={e => e.stopPropagation()}>
         <div className="confirm-header">
@@ -55,6 +58,7 @@ export default function ConfirmDialog({ title = 'SYSTEM MESSAGE', message, onCon
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

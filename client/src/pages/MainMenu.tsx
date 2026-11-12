@@ -12,18 +12,30 @@ const ITEMS: { key: Screen; label: string; desc: string }[] = [
   { key: 'admin', label: 'ADMIN CONSOLE', desc: 'Restricted. Review queue, active board, and fulfillment controls.' },
 ]
 
+// the two small buttons at the foot of the screen; they highlight and talk to the system message like the bars above
+const LEGAL: { key: Screen; label: string; desc: string }[] = [
+  { key: 'terms', label: 'TERMS', desc: 'The rules for requests, payment, delivery and who owns the finished artwork.' },
+  { key: 'privacy', label: 'PRIVACY', desc: 'What this site collects when you request a commission, why, and who handles it.' },
+]
+const ALL = [...ITEMS, ...LEGAL]
+
 export default function MainMenu({ nav }: Props): React.ReactElement {
   const [hover, setHover] = useState<Screen | null>(null)
-  const hovered = ITEMS.find(i => i.key === hover)
+  const hovered = ALL.find(i => i.key === hover)
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
 
-  // up/down moves focus (which also drives the system message); Enter then clicks the focused button
+  // arrows move focus (which also drives the system message); Enter then clicks the focused button.
+  // up/down walk the five bars and then the two small buttons; left/right swap between those two
   useArrowKeys(key => {
     // Enter on a focused button already clicks it; this covers a destination picked by mouse hover
     if (key === 'enter' && hover && !(document.activeElement instanceof HTMLButtonElement)) { nav(hover); return true }
+    const cur = ALL.findIndex(i => i.key === hover)
+    if (key === 'left' || key === 'right') {
+      if (cur >= ITEMS.length) buttons.current[ITEMS.length + (key === 'right' ? 1 : 0)]?.focus()
+      return
+    }
     if (key !== 'up' && key !== 'down') return
-    const cur = ITEMS.findIndex(i => i.key === hover)
-    const next = cur < 0 ? (key === 'down' ? 0 : ITEMS.length - 1) : stepIndex(cur, key === 'down' ? 1 : -1, ITEMS.length)
+    const next = cur < 0 ? (key === 'down' ? 0 : ALL.length - 1) : stepIndex(cur, key === 'down' ? 1 : -1, ALL.length)
     buttons.current[next]?.focus()
   })
 
@@ -55,6 +67,19 @@ export default function MainMenu({ nav }: Props): React.ReactElement {
             </div>
           </div>
         </div>
+      </div>
+      {/* the legal pages have no tab row on this screen, so they get their own small buttons above the hint bar */}
+      <div className="menu-legal">
+        {LEGAL.map((it, j) => {
+          const i = ITEMS.length + j
+          return (
+            <button key={it.key} ref={el => { buttons.current[i] = el }} className={`n-bar-btn big compact${hover === it.key ? ' on' : ''}`} style={{ animationDelay: `${i * 70}ms` }}
+              onClick={() => nav(it.key)} onMouseEnter={() => setHover(it.key)} onMouseLeave={() => setHover(null)}
+              onFocus={() => setHover(it.key)} onBlur={() => setHover(null)}>
+              <span className="sq" aria-hidden />{it.label}
+            </button>
+          )
+        })}
       </div>
     </div>
   )

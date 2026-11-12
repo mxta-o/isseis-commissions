@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ScreenHead } from '../components/AppFrame'
-import { FLOW, FLOW_NAMES, formatPrice, statusMeta } from '../lib/commissions'
+import { FLOW, FLOW_NAMES, formatMoney, statusMeta } from '../lib/commissions'
 import { getCommissionStatus, getDownloadLinks, type PublicStatus } from '../lib/api'
 
 type Props = {
@@ -132,12 +132,12 @@ export default function CheckStatus({ prefill, toast }: Props): React.ReactEleme
           <div className="n-col n-panel screen-in" style={{ flex: '1 1 320px' }}>
             <div className="n-panel-head">Payment Due — via Ko-fi</div>
             <div className="n-panel-body">
-              <div className="n-kv"><span>Amount:</span><span className="n-big">{formatPrice(result.payment.priceCents)}</span></div>
+              <div className="n-kv"><span>Amount:</span><span className="n-big">{formatMoney(result.payment.priceCents)}</span></div>
               <div className="n-kv"><span>Reference:</span><span className="n-big" style={{ letterSpacing: '0.12em' }}>{result.payment.ref}</span></div>
               <div className="n-kv" style={{ flexWrap: 'wrap' }}><span>Due by:</span><span>{formatDate(result.payment.deadline)} · {timeLeft(result.payment.deadline)}</span></div>
               <div className="n-line" />
               <div className="n-text" style={{ fontSize: 17 }}>
-                Send exactly {formatPrice(result.payment.priceCents)} on Ko-fi and include <strong style={{ fontWeight: 500 }}>{result.payment.ref}</strong> in the message so the payment can be matched. Your status changes to IN PROGRESS once it's confirmed.
+                Send exactly {formatMoney(result.payment.priceCents)} on Ko-fi and include <strong style={{ fontWeight: 500 }}>{result.payment.ref}</strong> in the message so the payment can be matched. Your status changes to IN PROGRESS once it's confirmed.
               </div>
               <span className="grow" />
               <a className="btn-solid" href={result.payment.kofiUrl} target="_blank" rel="noopener noreferrer"><span className="sq" aria-hidden />Pay on Ko-fi</a>

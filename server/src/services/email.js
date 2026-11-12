@@ -83,7 +83,7 @@ function notifyNewCommission(commission, fileCount) {
 
 function sendApproved(c) {
   const ref = paymentRef(c.id)
-  const price = formatPrice(c.price_cents)
+  const price = `${formatPrice(c.price_cents)} CAD`
   return sendQuietly({
     to: c.email,
     subject: `Accepted — ${c.title} (payment due within 24 h)`,
@@ -127,7 +127,7 @@ function sendPaymentConfirmed(c) {
     to: c.email,
     subject: `Payment received — ${c.title}`,
     text: [
-      `Your payment of ${formatPrice(c.price_cents)} was received and your commission is now in progress.`,
+      `Your payment of ${formatPrice(c.price_cents)} CAD was received and your commission is now in progress.`,
       '',
       'You\'ll get another email with a download link when it\'s finished.',
       '',

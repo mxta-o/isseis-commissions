@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { ScreenHead, Slot } from '../components/AppFrame'
-import { TIERS, formatPrice, type Tier } from '../lib/commissions'
+import { ScreenHead, Slot, useFooterHint } from '../components/AppFrame'
+import { TIERS, type Tier } from '../lib/commissions'
 import { requestVerificationCode, submitCommission } from '../lib/api'
-import { stepIndex, useArrowKeys } from '../lib/useArrowKeys'
+import { stepIndex, useArrowKeys, type NavKey } from '../lib/useArrowKeys'
 import { looksLikeEmail } from '../lib/validate'
 import type { Screen } from '../components/AppFrame'
 
@@ -12,6 +12,21 @@ type Props = {
 }
 
 type Step = 'form' | 'verify' | 'done'
+
+function VerifyHint(): null {
+  useFooterHint({ msg: 'Enter the code we emailed you.', arrows: '↑↓←→', select: 'Select', confirm: 'Confirm' })
+  return null
+}
+
+// Where the highlight goes from button `from` (0 verify, 1 resend, 2 back) on an arrow key:
+// verify and resend sit side by side, back sits centred underneath them.
+function moveHighlight(key: NavKey, from: number): number {
+  if (key === 'left') return 0
+  if (key === 'right') return 1
+  if (key === 'up') return from === 2 ? 0 : from
+  if (key === 'down') return 2
+  return from
+}
 
 const KICKERS: Record<Step, string> = {
   form: 'New Request',
@@ -28,6 +43,7 @@ const message = (err: unknown) => (err instanceof Error ? err.message : 'Somethi
 
 export default function CommissionRequest({ toast, nav }: Props): React.ReactElement {
   const [step, setStep] = useState<Step>('form')
+  const [hot, setHot] = useState(0)   // which verify-step button is highlighted: 0 verify, 1 resend, 2 back
   const [title, setTitle] = useState('')
   const [desc, setDesc] = useState('')
   const [email, setEmail] = useState('')
@@ -65,7 +81,7 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
     setBusy(true)
     try {
       await requestVerificationCode(trimmed)
-      setError(''); setCode(''); setStep('verify')
+      setError(''); setCode(''); setHot(0); setStep('verify')
       toast('VERIFICATION CODE SENT')
     } catch (err) {
       setError(message(err))
@@ -118,6 +134,20 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
     const i = TIERS.findIndex(t => t.key === tier)
     setTier(TIERS[stepIndex(i, key === 'down' ? 1 : -1, TIERS.length)].key)
   }, step === 'form')
+
+  const goBack = () => { setStep('form'); setError('') }
+  // run whichever verify-step button is highlighted
+  const runHot = () => {
+    if (busy) return
+    if (hot === 0) void verify()
+    else if (hot === 1) void resendCode()
+    else goBack()
+  }
+  // verify step: arrows move the highlight, Enter runs it (not while typing in the code field, which has its own handler below)
+  useArrowKeys(key => {
+    if (key === 'enter') { runHot(); return true }
+    setHot(moveHighlight(key, hot))
+  }, step === 'verify')
 
   return (
     <div className="screen-in">
@@ -182,6 +212,10 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
             {error && <div className="n-err" role="alert">▮ {error}</div>}
             <div>
               <button className="btn-solid lift" onClick={sendCode} disabled={busy}><span className="sq" aria-hidden />{busy ? 'Sending…' : 'Request Verification Code'}</button>
+              <div className="n-small" style={{ marginTop: 10 }}>
+                By requesting a code you agree to the <button type="button" className="n-link" onClick={() => nav('terms')}>Terms</button> and
+                the <button type="button" className="n-link" onClick={() => nav('privacy')}>Privacy Notice</button>.
+              </div>
             </div>
           </div>
 
@@ -190,7 +224,7 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
             {/* keyed by tier so the name/detail replay the system-message swap animation on each pick */}
             <div className="n-panel-head">
               <span key={tier} className="sys-title" style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
-                <span className="grow">{picked.name}</span><small>{formatPrice(picked.priceCents)}</small>
+                <span className="grow">{picked.name}</span><small>{picked.priceLabel}</small>
               </span>
             </div>
             <div className="n-panel-body">
@@ -199,7 +233,7 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
                 <div className="n-line sys-rule" />
               </div>
               <ul className="n-bullets n-small" style={{ lineHeight: 1.35 }}>
-                {['1 request per email / 30 min', 'Email verification required', 'Pay via Ko-fi only if accepted', 'Payment window: 24 h after acceptance', 'Delivery is final — no revisions'].map(rule => (
+                {['1 request per email / 30 min', 'Email verification required', 'Pay via Ko-fi only if accepted', 'Payment window: 24 h after acceptance', 'Delivery is FINAL. no revisions'].map(rule => (
                   <li key={rule} style={{ minHeight: 34 }}><span className="sq" aria-hidden style={{ width: 7, height: 7 }} />{rule}</li>
                 ))}
               </ul>
@@ -209,23 +243,42 @@ export default function CommissionRequest({ toast, nav }: Props): React.ReactEle
       )}
 
       {step === 'verify' && (
-        <div className="n-panel screen-in" style={{ maxWidth: 640, margin: '40px auto 0' }}>
+        <div className="n-panel screen-in" style={{ maxWidth: 700, margin: '40px auto 0' }}>
           <div className="n-panel-head wide"><span className="sq" aria-hidden />SYSTEM MESSAGE</div>
           <div className="n-panel-body" style={{ gap: 16 }}>
+            <VerifyHint />
             <div className="n-text">A 6-digit code was sent to <strong style={{ fontWeight: 500, wordBreak: 'break-all' }}>{email.trim()}</strong>. Enter it to submit your request.</div>
             <div>
               {label('Verification code', 'rq-code')}
               <input id="rq-code" className="field" value={code} onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="······" maxLength={6}
-                inputMode="numeric" autoComplete="one-time-code" onKeyDown={e => { if (e.key === 'Enter' && !busy) void verify() }}
+                inputMode="numeric" autoComplete="one-time-code" onKeyDown={e => {
+                  // in the field, left/right keep moving the caret; up/down walk the three buttons, Enter runs the highlighted one
+                  if (e.key === 'Enter') { e.preventDefault(); runHot() }
+                  else if (e.key === 'ArrowDown') { e.preventDefault(); setHot(h => (h + 1) % 3) }
+                  else if (e.key === 'ArrowUp') { e.preventDefault(); setHot(h => (h + 2) % 3) }
+                }}
                 style={{ width: 300, maxWidth: '100%', minHeight: 60, fontSize: 32, letterSpacing: '0.6em', textAlign: 'center', padding: '0 0 0 0.6em' }} />
               <div className="n-small" style={{ marginTop: 8 }}>Code expires in 10 minutes · check spam if it doesn't arrive</div>
             </div>
             {error && <div className="n-err" role="alert">▮ {error}</div>}
-            <div className="n-actions">
-              <span className="n-cursor" aria-hidden />
-              <button className="btn-solid" onClick={verify} disabled={busy}><span className="sq" aria-hidden />{busy ? 'Submitting…' : 'Verify & Submit'}</button>
-              <button className="btn-ghost" onClick={resendCode} disabled={busy}><span className="sq" aria-hidden />Resend Code</button>
-              <button className="btn-ghost" onClick={() => { setStep('form'); setError('') }} disabled={busy}><span className="sq" aria-hidden />Back</button>
+            {/* the highlight (dark fill + cursor) follows the pointer and keyboard focus, like the confirm dialog */}
+            <div className="pick-grid">
+              {[
+                { label: busy ? 'Submitting…' : 'Verify & Submit', onClick: verify },
+                { label: 'Resend Code', onClick: resendCode },
+                { label: 'Back', onClick: goBack },
+              ].map((b, i) => {
+                const btn = (
+                  <button className={`pick-btn${hot === i ? ' on' : ''}`} onClick={b.onClick} disabled={busy}
+                    onMouseEnter={() => setHot(i)} onFocus={() => setHot(i)}><span className="sq" aria-hidden />{b.label}</button>
+                )
+                // Back sits centred under the other two; its cursor hangs off the button's left edge so the button itself is what's centred
+                return i < 2 ? (
+                  <div key={b.label} className={`cursor-choice${hot === i ? ' on' : ''}`}><span className="n-cursor" aria-hidden />{btn}</div>
+                ) : (
+                  <div key={b.label} className={`cursor-choice center${hot === i ? ' on' : ''}`}><div className="cc-btn"><span className="n-cursor" aria-hidden />{btn}</div></div>
+                )
+              })}
             </div>
           </div>
         </div>

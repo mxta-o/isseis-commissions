@@ -93,6 +93,7 @@
 
 .n-shell{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;width:100%;max-width:calc(1480px / var(--ui));margin:0 auto;padding:30px 56px 22px}
 .n-tabs{display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px;min-height:58px}
+@media (min-width:761px){.n-tabs{flex-wrap:nowrap}}
 .n-tab{display:flex;align-items:center;gap:12px;width:210px;height:46px;padding:0 16px;border:none;background:var(--n-bar);color:var(--n-ink);font-family:inherit;font-size:19px;letter-spacing:.14em;cursor:pointer;transition:background .12s,color .12s}
 .n-tab:hover{background:var(--n-bar-hover)}
 .n-tab.on{background:var(--n-ink);color:var(--n-cream);height:58px;padding-bottom:12px}
@@ -117,6 +118,9 @@
 .n-key{display:inline-block;min-width:26px;padding:0 6px;margin-right:8px;background:var(--n-ink);color:var(--n-cream);text-align:center;font-size:14px;line-height:24px}
 .n-keys button{background:none;border:none;padding:0;min-height:44px;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer}
 .n-keys button:hover{color:#25221c}
+/* an inline text link that is a button (navigates inside the app) */
+.n-link{background:none;border:none;padding:0;color:inherit;font:inherit;letter-spacing:inherit;text-decoration:underline;cursor:pointer}
+.n-link:hover{color:#25221c}
 
 /* ============ layout pieces ============ */
 .n-cols{display:flex;flex-wrap:wrap;gap:36px 44px;align-items:stretch}
@@ -135,6 +139,9 @@
 /* main-menu size: dark bar between two hairlines when hovered */
 .n-bar-btn.big{min-height:62px;padding:0 22px;gap:18px;font-size:clamp(18px,1.7vw,24px);letter-spacing:.2em;animation:screen-in 420ms ease both}
 .n-bar-btn.big .sq{width:16px;height:16px}
+/* the small side-by-side variant (main menu terms/privacy): same highlight and cursor, just not full width */
+.n-bar-btn.big.compact{width:auto;min-height:48px;padding:0 26px;gap:14px;font-size:clamp(15px,1.2vw,18px)}
+.n-bar-btn.big.compact .sq{width:13px;height:13px}
 .n-bar-btn.big:hover,.n-bar-btn.big:focus-visible,.n-bar-btn.big.on{outline:none;background:var(--n-ink);color:var(--n-cream);box-shadow:0 -4px 0 var(--n-bg),0 -5px 0 var(--n-ink),0 4px 0 var(--n-bg),0 5px 0 var(--n-ink)}
 
 /* the game's cursor (diamond + colon) hanging off the left of whatever is highlighted: bars, main-menu bars and
@@ -178,6 +185,22 @@
 /* screens that fill the body and centre their columns in the space under the title (menu, gallery) */
 .fill-screen{flex:1;display:flex;flex-direction:column}
 .center-cols{flex:1;align-content:center;padding-bottom:32px}
+/* small buttons at the foot of the main menu, left-aligned with the destination bars */
+/* ---- legal pages (terms / privacy): wide panel, three columns. --legal-font is the body text size ---- */
+.legal-body{--legal-font:15.5px;display:flex;flex-direction:column;gap:14px;padding:18px 26px 18px}
+.legal-top{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;flex-wrap:wrap}
+.legal-intro{font-size:var(--legal-font);line-height:1.45;max-width:72ch}
+.legal-actions{display:flex;gap:12px;flex-wrap:wrap}
+.legal-actions .btn-ghost{min-height:42px;font-size:16px}
+.legal-cols{columns:3 340px;column-gap:40px}
+.legal-sec{break-inside:avoid;margin:0 0 12px;padding-top:7px;border-top:1px solid rgba(69,65,56,0.45)}
+.legal-sec.flow{break-inside:auto}  /* the long bullet-heavy sections may split across columns so the columns come out even */
+.legal-sec h2{margin:0 0 5px;font-size:calc(var(--legal-font) + 3.5px);font-weight:400;letter-spacing:.05em}
+.legal-sec p{orphans:2;widows:2;margin:0 0 5px;font-size:var(--legal-font);line-height:1.45}
+.legal-sec ul{margin:0;padding:0;list-style:none}
+.legal-sec li{break-inside:avoid;display:flex;gap:9px;align-items:flex-start;padding:1px 0;font-size:var(--legal-font);line-height:1.45}
+.legal-sec li .dia{width:8px;height:8px;margin-top:7px}
+.menu-legal{display:flex;flex-wrap:wrap;gap:18px 46px;padding-left:24px;margin-top:6px}  /* column gap > the 38px the cursor hangs left of a button, so it never overlaps the neighbour */
 /* system message swap: title flickers on, rule draws left to right, text wipes in */
 @keyframes sys-flick{0%{opacity:0;transform:translateX(-6px)}25%{opacity:.85}40%{opacity:.25}60%,100%{opacity:1;transform:none}}
 @keyframes sys-rule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
@@ -189,6 +212,9 @@
 @keyframes row-in{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
 @keyframes img-scan{0%{clip-path:inset(0 0 100% 0);opacity:.4}100%{clip-path:inset(0);opacity:1}}
 .row-in{animation:row-in 220ms ease-out both}
+/* the gallery's artwork frame: any aspect ratio fits whole, on the bar colour */
+.work-frame{height:clamp(240px,40vh,400px);background:var(--n-bar);overflow:hidden}
+.work-frame img{display:block;width:100%;height:100%;object-fit:contain}  /* explicit size: Chrome can't resolve max-height:100% inside a grid, which cropped the art */
 .img-in{animation:img-scan 380ms steps(10) both}
 
 /* ============ controls ============ */
@@ -250,6 +276,26 @@ button:disabled{opacity:.55;cursor:wait}
 .n-cursor::after{content:'';position:absolute;right:0;top:1px;width:4px;height:4px;background:var(--n-ink);box-shadow:0 12px 0 var(--n-ink)}
 /* a row of form buttons, left-aligned, with the cursor before the main action */
 .n-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px 16px;margin-top:4px}
+/* a button with its own cursor slot (reserved so nothing shifts); the highlighted one goes dark and shows the cursor */
+.cursor-choice{display:flex;align-items:center;gap:10px}
+.cursor-choice .n-cursor{opacity:0;transition:opacity .12s}
+.cursor-choice.on .n-cursor{opacity:1}
+.pick-btn{display:inline-flex;align-items:center;gap:12px;min-height:48px;padding:0 22px;border:none;background:var(--n-bar);color:var(--n-ink);font-family:var(--font-ui);font-size:19px;letter-spacing:.08em;cursor:pointer;transition:background .12s,color .12s,box-shadow .12s}
+.pick-btn .sq{width:13px;height:13px}
+/* verify step: two equal buttons side by side, the third centred underneath */
+/* the 40px of right padding balances the 40px cursor slot at the left of each button, so the buttons themselves are centred */
+.pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;margin-top:4px;padding-right:40px}
+.pick-grid .cursor-choice:not(.center){min-width:0}
+.pick-grid .cursor-choice:not(.center) .pick-btn{flex:1;min-width:0}
+.cursor-choice.center{grid-column:1 / -1;justify-content:center;padding-left:40px}
+.cc-btn{position:relative;display:flex}
+.cc-btn .n-cursor{position:absolute;right:100%;top:calc(50% - 9px);margin-right:10px}
+@media (max-width:760px){.pick-grid{grid-template-columns:1fr}}
+.pick-btn{white-space:nowrap}
+.pick-btn.on,.pick-btn:focus-visible{background:var(--n-ink);color:var(--n-cream);box-shadow:3px 3px 0 rgba(69,65,56,0.3);outline:none}
+/* when a pick-btn is a link, keep the app's link colour and underline from overriding it */
+.nier-app a.pick-btn,.nier-app a.pick-btn:hover{color:var(--n-ink);text-decoration:none}
+.nier-app a.pick-btn.on,.nier-app a.pick-btn.on:hover,.nier-app a.pick-btn:focus-visible{color:var(--n-cream)}
 
 /* ============ small screens ============ */
 @media (max-width: 760px){
