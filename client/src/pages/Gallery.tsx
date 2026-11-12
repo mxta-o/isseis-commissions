@@ -1,33 +1,29 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ScreenHead, useFooterHint, type Screen } from '../components/AppFrame'
-import { WORKS } from '../lib/gallery'
+import { CATEGORIES, WORKS, worksIn, type CategoryKey } from '../lib/gallery'
+import { usePhone } from '../lib/usePhone'
 import { stepIndex, useArrowKeys } from '../lib/useArrowKeys'
+import GalleryRoll from './GalleryRoll'
 
 type Props = { nav: (s: Screen) => void }
-
-const CATEGORIES = [
-  { key: 'ALL', name: 'All Works' },
-  { key: 'CHARACTER', name: 'Characters' },
-  { key: 'SCENE', name: 'Scenes' },
-  { key: 'CHIBI', name: 'Chibi' },
-] as const
-type CategoryKey = (typeof CATEGORIES)[number]['key']
 
 // the real works, read from src/assets/gallery (see lib/gallery.ts for how folders and filenames map)
 const ITEMS = WORKS
 
-const worksIn = (cat: CategoryKey) => (cat === 'ALL' ? ITEMS : ITEMS.filter(g => g.tag === cat))
+// Phones get a camera roll (a grid of thumbnails you tap and swipe through); everything else gets the
+// menu-style screen below. Split into two components so each only runs its own hooks and key handlers.
+export default function Gallery(props: Props): React.ReactElement {
+  return usePhone() ? <GalleryRoll nav={props.nav} /> : <GalleryDesktop nav={props.nav} />
+}
 
 // Two steps, like an inventory screen: pick a category first, then browse its works.
 // Category step: ↑↓ moves the cursor, Enter/→ (or a click) opens it.
 // Works step: ↑↓ walks the list, ←/Esc goes back to the categories.
-export default function Gallery({ nav }: Props): React.ReactElement {
+function GalleryDesktop({ nav }: Props): React.ReactElement {
   const [cursor, setCursor] = useState(0)                     // highlighted category
   const [open, setOpen] = useState<CategoryKey | null>(null)  // opened category, null = still choosing
   const [picked, setPicked] = useState<string>(ITEMS[0]?.n ?? '')
   const list = useRef<HTMLDivElement>(null)
-  const listCol = useRef<HTMLDivElement>(null)
-  const viewer = useRef<HTMLDivElement>(null)
 
   const shown = open ? worksIn(open) : []
   const sel = shown.find(g => g.n === picked) ?? shown[0]
@@ -62,15 +58,6 @@ export default function Gallery({ nav }: Props): React.ReactElement {
     list.current?.querySelector<HTMLElement>('.n-row.on')?.scrollIntoView({ block: 'nearest' })
   }, [sel?.n, open])
 
-  // On a phone the categories, the works list and the artwork are stacked, so what you tap lands off screen:
-  // bring the list into view when a category opens (only as far as needed, so the categories stay in sight),
-  // and the artwork when a work is picked.
-  const bringIntoView = (el: HTMLElement | null, block: ScrollLogicalPosition) => {
-    if (!el || !window.matchMedia('(max-width: 760px)').matches) return
-    el.scrollIntoView({ block, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
-  }
-  useEffect(() => { if (open) bringIntoView(listCol.current, 'nearest') }, [open])
-
   return (
     <div className="screen-in fill-screen">
       <ScreenHead title="GALLERY" sub={openName ?? 'Categories'} />
@@ -91,7 +78,7 @@ export default function Gallery({ nav }: Props): React.ReactElement {
         </div>
 
         {/* the works list and detail only appear once a category is open; empty columns hold the layout */}
-        <div ref={listCol} className="n-col n-gutter" style={{ flex: '1 1 300px', visibility: open ? 'visible' : 'hidden' }}>
+        <div className="n-col n-gutter" style={{ flex: '1 1 300px', visibility: open ? 'visible' : 'hidden' }}>
           {open && (
             <>
               <div className="n-panel-head soft"><span className="sq" aria-hidden /><span key={open} className="sys-title">{openName}</span></div>
@@ -100,7 +87,7 @@ export default function Gallery({ nav }: Props): React.ReactElement {
                 <div key={open} className="n-list">
                   {shown.map((g, i) => (
                     <button key={g.n} className={`n-row row-in${g.n === sel.n ? ' on' : ''}`} style={{ animationDelay: `${i * 35}ms` }}
-                      aria-pressed={g.n === sel.n} onClick={() => { setPicked(g.n); bringIntoView(viewer.current, 'start') }}>
+                      aria-pressed={g.n === sel.n} onClick={() => setPicked(g.n)}>
                       <span className="dia" aria-hidden />
                       <span className="grow">{g.label}</span>
                       <small>{g.tag}</small>
@@ -112,7 +99,7 @@ export default function Gallery({ nav }: Props): React.ReactElement {
           )}
         </div>
 
-        <div ref={viewer} className="n-col n-panel" style={{ flex: '1 1 300px', visibility: open ? 'visible' : 'hidden' }}>
+        <div className="n-col n-panel" style={{ flex: '1 1 300px', visibility: open ? 'visible' : 'hidden' }}>
           {open && sel && (
             <>
               {/* keyed by the picked work so its header, image and notes replay the swap animation */}

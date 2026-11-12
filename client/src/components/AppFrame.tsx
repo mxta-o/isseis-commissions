@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
+import DecodeText from './DecodeText'
 
 export type Screen = 'menu' | 'gallery' | 'about' | 'request' | 'status' | 'admin' | 'terms' | 'privacy'
 
@@ -124,7 +125,9 @@ export default function AppFrame({ screen, nav, onExit, children }: Props): Reac
 
 // Shared screen header: big tracked title with a quiet "- subtitle" after it
 export function ScreenHead({ title, sub }: { title: string; sub: string }): React.ReactElement {
-  return <h1 className="n-title">{title}<small>{` - ${sub}`}</small></h1>
+  // The subheader decodes into place when its screen opens and whenever it changes (a gallery category,
+  // a form step, an admin view). Keyed by the text so every change restarts it.
+  return <h1 className="n-title">{title}<small><DecodeText key={sub} text={` - ${sub}`} /></small></h1>
 }
 
 // Placeholder image well (replace with real <img> / upload previews)
