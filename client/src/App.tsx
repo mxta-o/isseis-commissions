@@ -24,10 +24,30 @@ const DEV_STAGE_KEY = 'dev:stage'
 // status page with that ID already looked up.
 const DEEP_LINK_ID = new URLSearchParams(window.location.search).get('id') ?? undefined
 
+// The current screen lives in the URL hash (#gallery, #request, …), so a refresh or a shared link
+// reopens that screen without replaying the intro, and the browser's back button moves between
+// screens. Nothing is stored in the browser. A bare URL still plays the full boot → title intro.
+const SCREENS: readonly Screen[] = ['menu', 'gallery', 'about', 'request', 'status', 'terms', 'privacy', 'admin']
+
+function screenFromHash(): Screen | undefined {
+  const name = window.location.hash.slice(1)
+  return SCREENS.find(s => s === name)
+}
+
+// What the address bar should say for a given state. The ?id= is kept only while its status
+// page is open, so a refresh there looks the commission up again.
+function urlFor(stage: Stage, screen: Screen, statusId?: string): string {
+  if (stage !== 'app') return window.location.pathname
+  const query = screen === 'status' && statusId ? `?id=${encodeURIComponent(statusId)}` : ''
+  return `${window.location.pathname}${query}#${screen}`
+}
+
+const HASH_SCREEN = screenFromHash()
+
 // In dev, HMR reloads would otherwise replay the whole boot sequence — by far the most
 // expensive thing the app renders. Resume where we left off instead; ?intro=1 forces a replay.
 function initialStage(): Stage {
-  if (DEEP_LINK_ID) return 'app'
+  if (DEEP_LINK_ID || HASH_SCREEN) return 'app'
   if (!import.meta.env.DEV) return 'boot'
   if (new URLSearchParams(window.location.search).has('intro')) return 'boot'
   const saved = sessionStorage.getItem(DEV_STAGE_KEY)
@@ -38,7 +58,7 @@ function initialStage(): Stage {
 // Replaces the Landing/TitleScreen switch previously in main.tsx — render <App /> from main.tsx.
 export default function App(): React.ReactElement {
   const [stage, setStage] = useState<Stage>(initialStage)
-  const [screen, setScreen] = useState<Screen>(DEEP_LINK_ID ? 'status' : 'menu')
+  const [screen, setScreen] = useState<Screen>(DEEP_LINK_ID ? 'status' : HASH_SCREEN ?? 'menu')
   const [statusPrefill, setStatusPrefill] = useState<string | undefined>(DEEP_LINK_ID)
   const [overlay, setOverlay] = useState<'none' | 'in' | 'out'>('none')
   const [confirmExit, setConfirmExit] = useState(false)
@@ -59,6 +79,14 @@ export default function App(): React.ReactElement {
     if (import.meta.env.DEV) sessionStorage.setItem(DEV_STAGE_KEY, stage)
   }, [stage])
 
+  // keep the address bar in step with the screen: each change becomes a history entry
+  useEffect(() => {
+    const url = urlFor(stage, screen, statusPrefill)
+    if (url !== window.location.pathname + window.location.search + window.location.hash) {
+      window.history.pushState(null, '', url)
+    }
+  }, [stage, screen, statusPrefill])
+
   const fade = useCallback((cb: () => void) => {
     if (fading.current) return
     fading.current = true
@@ -76,6 +104,23 @@ export default function App(): React.ReactElement {
   }), [fade])
   const toTitle = useCallback(() => fade(() => setStage('title')), [fade])
   const toApp = useCallback(() => fade(() => { setStage('app'); setScreen('menu') }), [fade])
+
+  // back/forward: follow the hash. Going back past the menu (to the bare URL) returns to the title.
+  useEffect(() => {
+    const onPop = () => {
+      const s = screenFromHash()
+      setConfirmExit(false)
+      if (s) {
+        setStage('app')
+        setScreen(s)
+        setStatusPrefill(new URLSearchParams(window.location.search).get('id') ?? undefined)
+      } else if (stage === 'app') {
+        toTitle()
+      }
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [stage, toTitle])
 
   useEffect(() => {
     const kb = (e: KeyboardEvent) => {
