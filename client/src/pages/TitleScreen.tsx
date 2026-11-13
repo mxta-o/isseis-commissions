@@ -206,8 +206,8 @@ export default function TitleScreen({ onAdvance, skipIntro = false }: Props): Re
       </div>
 
       {/* licence line */}
-      <div className="ui-up" style={{ position: 'absolute', left: 0, right: 0, bottom: 34, zIndex: 10, padding: '0 1rem 0 calc(1rem + 0.22em)', textAlign: 'center', textWrap: 'balance', fontFamily: 'var(--font-accent)', fontSize: 'clamp(6px,0.8vw,11px)', letterSpacing: '0.22em', color: 'rgba(243,233,218,0.8)', animation: `sub-real ${A16}` }}>
-        © {new Date().getFullYear()} ISSEI · ORIGINAL ARTWORK BY THE ARTIST{' '}· FAN ART CHARACTERS BELONG TO THEIR OWNERS
+      <div className="ui-up" style={{ position: 'absolute', left: 0, right: 0, bottom: 30, zIndex: 10, padding: '0 1rem 0 calc(1rem + 0.22em)', textAlign: 'center', textWrap: 'balance', fontFamily: 'var(--font-accent)', fontSize: 'clamp(6px,0.8vw,10px)', letterSpacing: '0.25em', color: 'rgba(243,233,218,0.8)', animation: `sub-real ${A16}` }}>
+        © {new Date().getFullYear()} ISSEI · ORIGINAL ARTWORK BY THE ARTIST{' '}
       </div>
     </div>
   )
