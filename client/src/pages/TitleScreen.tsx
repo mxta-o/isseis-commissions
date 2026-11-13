@@ -105,6 +105,10 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
 
   return (
     <div onClick={onAdvance} style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', background: '#14110c', color: '#f3e9da', cursor: 'pointer', userSelect: 'none' }}>
+      {/* the whole backdrop fades up from dark while it flickers and jitters in alongside the wordmark
+          (outer = smooth fade, inner = glitch; their opacities multiply) */}
+      <div aria-hidden className="title-bg" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', animation: 'tg-bgfade 1.6s ease-out both' }}>
+      <div className="title-bg" style={{ position: 'absolute', inset: 0, animation: `tg-bgin ${A16}` }}>
       {/* dusk sky */}
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#221c15 0%,#1a1510 55%,#14110c 100%)' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 62% 44% at 50% 40%,rgba(238,216,178,0.5),rgba(180,148,108,0.22) 45%,transparent 72%)' }} />
@@ -132,6 +136,8 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
         ))}
       </div>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', mixBlendMode: 'multiply', background: 'radial-gradient(circle at 50% 45%,rgba(0,0,0,0) 45%,rgba(0,0,0,0.55) 100%)' }} />
+      </div>
+      </div>
 
       <div className="ui-up" style={{ position: 'relative', zIndex: 10, minHeight: 'calc(100vh / var(--ui-up, 1))', display: 'grid', placeItems: 'center', textAlign: 'center', padding: '4rem 1.5rem' }}>
         <div>
