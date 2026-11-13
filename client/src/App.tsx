@@ -63,6 +63,7 @@ export default function App(): React.ReactElement {
   const [screen, setScreen] = useState<Screen>(DEEP_LINK_ID ? 'status' : HASH_SCREEN ?? 'menu')
   const [statusPrefill, setStatusPrefill] = useState<string | undefined>(DEEP_LINK_ID)
   const [overlay, setOverlay] = useState<'none' | 'in' | 'out'>('none')
+  const [overlayTone, setOverlayTone] = useState<'black' | 'beige'>('black')
   const [confirmExit, setConfirmExit] = useState(false)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const fading = useRef(false)
@@ -89,9 +90,11 @@ export default function App(): React.ReactElement {
     }
   }, [stage, screen, statusPrefill])
 
-  const fade = useCallback((cb: () => void) => {
+  // the hop into the app fades through the menu's beige rather than black
+  const fade = useCallback((cb: () => void, tone: 'black' | 'beige' = 'black') => {
     if (fading.current) return
     fading.current = true
+    setOverlayTone(tone)
     setOverlay('in')
     later(() => {
       cb()
@@ -104,8 +107,9 @@ export default function App(): React.ReactElement {
     setStage('pretitle')
     later(() => fade(() => setStage('title')), PRETITLE_MS)   // auto-advance
   }), [fade])
-  const toTitle = useCallback(() => fade(() => setStage('title')), [fade])
-  const toApp = useCallback(() => fade(() => { setStage('app'); setScreen('menu') }), [fade])
+  // leaving the app fades through beige too; skipping the dark title card stays black
+  const toTitle = useCallback(() => fade(() => setStage('title'), stage === 'app' ? 'beige' : 'black'), [fade, stage])
+  const toApp = useCallback(() => fade(() => { setStage('app'); setScreen('menu') }, 'beige'), [fade])
 
   // back/forward: follow the hash. Going back past the menu (to the bare URL) returns to the title.
   useEffect(() => {
@@ -168,8 +172,8 @@ export default function App(): React.ReactElement {
         </AppFrame>
       )}
 
-      {overlay === 'in' && <div className="transition-overlay-in" />}
-      {overlay === 'out' && <div className="transition-overlay-out" />}
+      {overlay === 'in' && <div className={`transition-overlay-in ${overlayTone}`} />}
+      {overlay === 'out' && <div className={`transition-overlay-out ${overlayTone}`} />}
       {toastMsg && <div className="nier-toast"><span className="sq" />{toastMsg}</div>}
       {confirmExit && (
         <ConfirmDialog
