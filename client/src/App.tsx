@@ -11,6 +11,7 @@ import CommissionRequest from './pages/CommissionRequest'
 import CheckStatus from './pages/CheckStatus'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
+import Credits from './pages/Credits'
 import { useUiScale } from './lib/uiScale'
 
 // split into its own chunk: it pulls in the supabase client, which buyers never need
@@ -24,7 +25,7 @@ const DEV_STAGE_KEY = 'dev:stage'
 
 const DEEP_LINK_ID = new URLSearchParams(window.location.search).get('id') ?? undefined
 
-const SCREENS: readonly Screen[] = ['menu', 'gallery', 'about', 'request', 'status', 'terms', 'privacy', 'admin']
+const SCREENS: readonly Screen[] = ['menu', 'gallery', 'about', 'request', 'status', 'terms', 'privacy', 'credits', 'admin']
 
 function screenFromHash(): Screen | undefined {
   const name = window.location.hash.slice(1)
@@ -168,6 +169,7 @@ export default function App(): React.ReactElement {
           {screen === 'status' && <CheckStatus key={statusPrefill ?? 'blank'} prefill={statusPrefill} toast={toast} />}
           {screen === 'terms' && <Terms nav={nav} />}
           {screen === 'privacy' && <Privacy nav={nav} />}
+          {screen === 'credits' && <Credits />}
           {screen === 'admin' && (
             <Suspense fallback={<div className="n-text">Loading console…</div>}>
               <AdminConsole toast={toast} />
