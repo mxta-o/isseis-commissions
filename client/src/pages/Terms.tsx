@@ -54,8 +54,8 @@ const SECTIONS: LegalSection[] = [
   {
     heading: 'Who owns the artwork',
     bullets: [
-      'The artist keeps the copyright in the artwork. You receive the finished piece to use for personal, non-commercial purposes, including sharing it online with credit to the artist.',
-      'Commercial use (selling it, putting it on merchandise, using it in ads, games or published works) needs the artist\'s written permission and may cost extra.',
+      'The artist keeps the copyright in the artwork. You receive the finished piece to use for any and all purposes, including sharing it online with credit to the artist.',
+      'Commercial use (selling it, putting it on merchandise, using it in ads, games or published works) may require the artist\'s written permission.',
       'You may not use the artwork to train AI models or generate similar images with AI.',
       'The artist may show the finished work in their portfolio and on social media. Ask before delivery if you would like it kept private.',
       'Fan art depicts characters owned by someone else. It is made for personal use, and what you do with it beyond that is your responsibility.',
