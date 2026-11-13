@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react'
 import { genGarble } from '../lib/commissions'
 
-type Props = { onAdvance: () => void }
+// skipIntro: coming back from the menu, so show the title already settled instead of glitching in
+type Props = { onAdvance: () => void; skipIntro?: boolean }
 
 const NOISE =
   "url(data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='180'%20height='180'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.8'%20numOctaves='1'%20stitchTiles='stitch'/%3E%3C/filter%3E%3Crect%20width='180'%20height='180'%20filter='url(%23n)'%20opacity='0.25'/%3E%3C/svg%3E)"
@@ -95,10 +96,13 @@ function genParticles(): Particle[] {
   return pts
 }
 
-const A16 = '1.6s steps(1,end) both'
+const REVEAL = '1.6s steps(1,end) both'
+// zero-length with fill: every reveal animation jumps straight to its settled last frame
+const SETTLED = '0s steps(1,end) both'
 const TITLE = "Issei's Commissions"
 
-export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
+export default function TitleScreen({ onAdvance, skipIntro = false }: Props): React.ReactElement {
+  const A16 = skipIntro ? SETTLED : REVEAL
   const particles = useMemo(genParticles, [])
   const garble1 = useMemo(() => genGarble('For the Vision of Creation'), [])
   const garble2 = useMemo(() => genGarble('Click Anywhere'), [])
@@ -107,7 +111,7 @@ export default function TitleScreen({ onAdvance }: Props): React.ReactElement {
     <div onClick={onAdvance} style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', background: '#14110c', color: '#f3e9da', cursor: 'pointer', userSelect: 'none' }}>
       {/* the whole backdrop fades up from dark while it flickers and jitters in alongside the wordmark
           (outer = smooth fade, inner = glitch; their opacities multiply) */}
-      <div aria-hidden className="title-bg" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', animation: 'tg-bgfade 1.6s ease-out both' }}>
+      <div aria-hidden className="title-bg" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', animation: skipIntro ? 'none' : 'tg-bgfade 1.6s ease-out both' }}>
       <div className="title-bg" style={{ position: 'absolute', inset: 0, animation: `tg-bgin ${A16}` }}>
       {/* dusk sky */}
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#221c15 0%,#1a1510 55%,#14110c 100%)' }} />

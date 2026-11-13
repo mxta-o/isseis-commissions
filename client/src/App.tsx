@@ -21,13 +21,9 @@ const FADE_MS = 300
 const PRETITLE_MS = 1400
 const DEV_STAGE_KEY = 'dev:stage'
 
-// Emailed status links look like /?id=<tracking id>. They skip the boot intro and open the
-// status page with that ID already looked up.
+
 const DEEP_LINK_ID = new URLSearchParams(window.location.search).get('id') ?? undefined
 
-// The current screen lives in the URL hash (#gallery, #request, …), so a refresh or a shared link
-// reopens that screen without replaying the intro, and the browser's back button moves between
-// screens. Nothing is stored in the browser. A bare URL still plays the full boot → title intro.
 const SCREENS: readonly Screen[] = ['menu', 'gallery', 'about', 'request', 'status', 'terms', 'privacy', 'admin']
 
 function screenFromHash(): Screen | undefined {
@@ -104,7 +100,9 @@ export default function App(): React.ReactElement {
     }, FADE_MS)
   }, [])
 
-  const cutToTitle = () => setStage(s => (s === 'pretitle' ? 'title' : s))
+  // the title screen glitches in when arriving from the title card, but not when coming back from the menu
+  const [titleSkipIntro, setTitleSkipIntro] = useState(false)
+  const cutToTitle = () => { setTitleSkipIntro(false); setStage(s => (s === 'pretitle' ? 'title' : s)) }
   const toPretitle = useCallback(() => fade(() => {
     setStage('pretitle')
     later(cutToTitle, PRETITLE_MS)   // auto-advance
@@ -113,7 +111,7 @@ export default function App(): React.ReactElement {
   // screen glitches its own background in (and only moves on if it's still on the card)
   const toTitle = useCallback(() => {
     if (stage === 'pretitle') cutToTitle()
-    else fade(() => setStage('title'), 'beige')
+    else fade(() => { setTitleSkipIntro(true); setStage('title') }, 'beige')
   }, [fade, stage])
   const toApp = useCallback(() => fade(() => { setStage('app'); setScreen('menu') }, 'beige'), [fade])
 
@@ -160,7 +158,7 @@ export default function App(): React.ReactElement {
     <>
       {stage === 'boot' && <Landing onRequestTransition={toPretitle} />}
       {stage === 'pretitle' && <PreTitle onAdvance={toTitle} />}
-      {stage === 'title' && <TitleScreen onAdvance={toApp} />}
+      {stage === 'title' && <TitleScreen onAdvance={toApp} skipIntro={titleSkipIntro} />}
       {stage === 'app' && (
         <AppFrame screen={screen} nav={nav} onExit={() => setConfirmExit(true)}>
           {screen === 'menu' && <MainMenu nav={nav} />}
