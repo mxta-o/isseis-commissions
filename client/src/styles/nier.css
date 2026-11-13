@@ -22,6 +22,9 @@
 @keyframes tg-blockjit{0%,5%{transform:none}6%,7%{transform:translate(3px,-2px)}8%,100%{transform:none}}
 @keyframes tg-smear1{0%,8%{opacity:0;transform:translateX(0.1em) scaleX(1.05)}9%,11%{opacity:.75;transform:translateX(0.13em) scaleX(1.07)}12%,13%{opacity:.4;transform:translateX(0.07em) scaleX(1.03)}14%,100%{opacity:0;transform:none}}
 @keyframes tg-smear2{0%,8%{opacity:0;transform:translateX(-0.1em)}9%,11%{opacity:.55;transform:translateX(-0.13em) scaleX(1.05)}12%,13%{opacity:.3;transform:translateX(-0.06em)}14%,100%{opacity:0;transform:none}}
+/* title backdrop: blinks in with the block flash, stutters sideways through the mosaic sweeps, settles as the wordmark does */
+@keyframes tg-bgin{0%,4%{opacity:0;transform:none;filter:none}5%,8%{opacity:.55;transform:translateX(-10px);filter:brightness(1.6)}9%,13%{opacity:.25;transform:translateX(6px);filter:none}14%,19%{opacity:.8;transform:translateX(-3px)}20%,23%{opacity:.4;transform:translateX(8px)}24%,30%{opacity:.9;transform:none;filter:brightness(1.25)}31%,33%{opacity:.6;transform:translateX(-4px);filter:none}34%,100%{opacity:1;transform:none;filter:none}}
+@keyframes tg-bgfade{from{opacity:0}to{opacity:1}}
 @keyframes tg-textin{0%,8%{opacity:0}9%,13%{opacity:1}14%,30%{opacity:0}31%,33%{opacity:1}34%,35%{opacity:.3}36%,100%{opacity:1}}
 @keyframes tg-mzlow{0%,13%{opacity:0;transform:none}14%,17%{opacity:1}18%,20%{opacity:1;transform:translateX(-4px)}21%,23%{opacity:.85;transform:translateX(3px)}24%,100%{opacity:0;transform:none}}
 @keyframes tg-mzmid{0%,15%{opacity:0;transform:none}16%,19%{opacity:1}20%,22%{opacity:.9;transform:translateX(4px)}23%,24%{opacity:.5}25%,100%{opacity:0;transform:none}}
@@ -381,4 +384,5 @@ button:disabled{opacity:.55;cursor:wait}
   .screen-in,.n-bar-btn.big,.sys-title,.sys-rule,.sys-desc,.row-in,.img-in,.roll-viewer,.roll-in-next,.roll-in-prev{animation:none}
   .ltr-on .ltr::before{display:none}   /* (DecodeText already skips the effect for reduced motion; this covers it changing mid-session) */
   .ltr-on .ltr-r{animation:none}
+  .title-bg{animation:none !important}
 }

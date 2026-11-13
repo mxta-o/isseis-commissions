@@ -55,7 +55,8 @@ function initialStage(): Stage {
   return saved === 'pretitle' || saved === 'title' || saved === 'app' ? saved : 'boot'
 }
 
-// Stage machine: boot → pretitle → title → app, each hop through a black fade.
+// Stage machine: boot → pretitle → title → app. boot → pretitle fades through black,
+// pretitle → title is a hard cut (the title glitches itself in), title ↔ app fades through beige.
 // Replaces the Landing/TitleScreen switch previously in main.tsx — render <App /> from main.tsx.
 export default function App(): React.ReactElement {
   useUiScale()
@@ -103,12 +104,17 @@ export default function App(): React.ReactElement {
     }, FADE_MS)
   }, [])
 
+  const cutToTitle = () => setStage(s => (s === 'pretitle' ? 'title' : s))
   const toPretitle = useCallback(() => fade(() => {
     setStage('pretitle')
-    later(() => fade(() => setStage('title')), PRETITLE_MS)   // auto-advance
+    later(cutToTitle, PRETITLE_MS)   // auto-advance
   }), [fade])
-  // leaving the app fades through beige too; skipping the dark title card stays black
-  const toTitle = useCallback(() => fade(() => setStage('title'), stage === 'app' ? 'beige' : 'black'), [fade, stage])
+  // leaving the app fades through beige too; the title card hard-cuts instead, since the title
+  // screen glitches its own background in (and only moves on if it's still on the card)
+  const toTitle = useCallback(() => {
+    if (stage === 'pretitle') cutToTitle()
+    else fade(() => setStage('title'), 'beige')
+  }, [fade, stage])
   const toApp = useCallback(() => fade(() => { setStage('app'); setScreen('menu') }, 'beige'), [fade])
 
   // back/forward: follow the hash. Going back past the menu (to the bare URL) returns to the title.
