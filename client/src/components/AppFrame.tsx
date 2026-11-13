@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import DecodeText from './DecodeText'
 
-export type Screen = 'menu' | 'gallery' | 'about' | 'request' | 'status' | 'admin' | 'terms' | 'privacy'
+export type Screen = 'menu' | 'gallery' | 'about' | 'request' | 'status' | 'admin' | 'terms' | 'privacy' | 'credits'
 
 type Props = {
   screen: Screen
@@ -43,6 +43,7 @@ const HINTS: Record<Screen, FooterHint> = {
   admin: { msg: 'Select an entry to review it.' },
   terms: { msg: 'The rules for requests, payment and delivery.' },
   privacy: { msg: 'What this site collects, why, and who handles it.' },
+  credits: { msg: 'Who built the site, and where to find them.', arrows: '←→', confirm: 'Open' },
 }
 
 const HintContext = createContext<(hint: FooterHint | null) => void>(() => {})

@@ -12,10 +12,11 @@ const ITEMS: { key: Screen; label: string; desc: string }[] = [
   { key: 'admin', label: 'ADMIN CONSOLE', desc: 'Restricted. Review queue, active board, and fulfillment controls.' },
 ]
 
-// the two small buttons at the foot of the screen; they highlight and talk to the system message like the bars above
+// the small buttons at the foot of the screen; they highlight and talk to the system message like the bars above
 const LEGAL: { key: Screen; label: string; desc: string }[] = [
   { key: 'terms', label: 'TERMS', desc: 'The rules for requests, payment, delivery and who owns the finished artwork.' },
   { key: 'privacy', label: 'PRIVACY', desc: 'What this site collects when you request a commission, why, and who handles it.' },
+  { key: 'credits', label: 'CREDITS', desc: 'Who designed and built this site, with links to the code and their socials.' },
 ]
 const ALL = [...ITEMS, ...LEGAL]
 
@@ -25,13 +26,13 @@ export default function MainMenu({ nav }: Props): React.ReactElement {
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
 
   // arrows move focus (which also drives the system message); Enter then clicks the focused button.
-  // up/down walk the five bars and then the two small buttons; left/right swap between those two
+  // up/down walk the five bars and then the small buttons; left/right step along the small buttons
   useArrowKeys(key => {
     // Enter on a focused button already clicks it; this covers a destination picked by mouse hover
     if (key === 'enter' && hover && !(document.activeElement instanceof HTMLButtonElement)) { nav(hover); return true }
     const cur = ALL.findIndex(i => i.key === hover)
     if (key === 'left' || key === 'right') {
-      if (cur >= ITEMS.length) buttons.current[ITEMS.length + (key === 'right' ? 1 : 0)]?.focus()
+      if (cur >= ITEMS.length) buttons.current[ITEMS.length + stepIndex(cur - ITEMS.length, key === 'right' ? 1 : -1, LEGAL.length)]?.focus()
       return
     }
     if (key !== 'up' && key !== 'down') return
