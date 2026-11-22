@@ -8,6 +8,8 @@ Just to be clear that this is a fan project. NOT AT ALL affiliated with or endor
 
 ## Tech stack
 
+blablablab
+
 - **Frontend:** React, Vite, TypeScript, Tailwind CSS
 - **Backend:** Node.js, Express (REST API)
 - **Database & auth:** Supabase (Postgres, Supabase Auth for the admin console)
