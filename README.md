@@ -1,6 +1,7 @@
 # isseis-commissions
 
 **Live:** https://isseiscommissions.com
+still in development!
 
 Commissioning store for digital art made for my friend :D with a Nier Automata-inspired product flow.
 
