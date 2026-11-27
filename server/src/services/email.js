@@ -17,10 +17,8 @@ async function send({ to, subject, text }) {
   }
 }
 
-// For emails whose failure shouldn't fail the request (the commission already exists; the
-// tracking ID is on screen). Logs and moves on.
-// The log line names the email kind and the payment ref only: no address and no subject (it holds
-// the buyer's title), and not the full tracking ID, since that's the secret to their status page.
+// For emails whose failure shouldn't fail the request (the commission already exists; the tracking ID is on screen). Logs and moves on.
+// The log line names the email kind and the payment ref only: no address and no subject (it holds the buyer's title), and not the full tracking ID, since that's the secret to their status page.
 async function sendQuietly(kind, commissionId, message) {
   try {
     await send(message)
